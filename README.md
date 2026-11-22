@@ -15,6 +15,14 @@
   <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="https://img.shields.io/badge/Linux-x86--64-E95420?style=flat-square" alt="Linux x86-64"></a>
 </p>
 
+<p align="center">
+  <b>Download:</b>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Windows-Setup.exe">Windows</a> ·
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg">macOS</a> ·
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-x86_64.AppImage">Linux AppImage</a> ·
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb">Linux .deb</a>
+</p>
+
 ![Coreplay playing God Being, made with Core Studio](docs/images/main.png)
 
 <p align="center"><sub>Background: <i>God Being</i>, made with <a href="https://imcore.ai/core-studio.html">Core Studio</a>.</sub></p>
