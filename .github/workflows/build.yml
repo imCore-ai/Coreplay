@@ -210,6 +210,9 @@ jobs:
                 build/Coreplay.app/Contents/PlugIns/imageformats/libqsvg.dylib \
                 build/Coreplay.app/Contents/PlugIns/iconengines/libqsvgicon.dylib \
                 build/Coreplay.app/Contents/PlugIns/platforminputcontexts/libqtvirtualkeyboardplugin.dylib
+          # Every library finds the others inside the app, nothing points outside it (fails
+          # the build otherwise). Before signing: install_name_tool changes the files.
+          bash tools/macos/fix_bundle.sh build/Coreplay.app
           if [ "$HAS_MAC_SIGNING" = "true" ]; then
             # Developer ID signing (hardened runtime, secure timestamp), in a throw-away keychain.
             kc="$RUNNER_TEMP/signing.keychain-db"; kcpw="$(uuidgen)"
