@@ -76,6 +76,25 @@ qint64 msSinceProcessStart() {
 
 QString serverName() { return "Coreplay-" + qEnvironmentVariable("USERNAME", qEnvironmentVariable("USER")); }
 
+#ifdef Q_OS_WIN
+// Makes each top-level window of a test run invisible and click-through when it appears:
+// layered with alpha 0 (Windows still paints it) plus WS_EX_TRANSPARENT (mouse passes on).
+class InvisibleTestWindows : public QObject {
+public:
+    bool eventFilter(QObject* o, QEvent* e) override {
+        if (e->type() == QEvent::Show) {
+            if (auto* w = qobject_cast<QWidget*>(o); w && w->isWindow()) {
+                auto h = reinterpret_cast<HWND>(w->winId());
+                const LONG_PTR ex = GetWindowLongPtrW(h, GWL_EXSTYLE);
+                SetWindowLongPtrW(h, GWL_EXSTYLE, ex | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW);
+                SetLayeredWindowAttributes(h, 0, 0, LWA_ALPHA);
+            }
+        }
+        return false;
+    }
+};
+#endif
+
 QStringList absolutePaths(const QStringList& args) {
     // Switches that take a value: the value is not a file to open.
     static const QStringList withValue = {"--test-script", "--test-log", "--test-slow-start", "--listen"};
@@ -334,6 +353,14 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<MainWindow> window = std::make_unique<MainWindow>();
     MainWindow& w = *window;
     if (testing) w.setAttribute(Qt::WA_ShowWithoutActivating);  // never take the user's focus
+#ifdef Q_OS_WIN
+    // Test windows are invisible and let clicks through, so a test run never covers the
+    // user's work: every window (player, dialogs, full screen) stays where it is and is
+    // painted as usual (so the checks and grabs are real), but fully transparent.
+    // COREPLAY_TEST_VISIBLE=1 shows them.
+    static InvisibleTestWindows invisible;
+    if (testing && !qEnvironmentVariableIsSet("COREPLAY_TEST_VISIBLE")) app.installEventFilter(&invisible);
+#endif
     w.show();
     if (!listenName.isEmpty()) w.move(w.pos() + QPoint(32, 32));  // not exactly over the first window
     qApp->setProperty("mainEnterMs", mainEnterMs);

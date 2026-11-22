@@ -11,8 +11,18 @@ cd "${COREPLAY_BUILD:-$HERE/../../build}" || exit 1   # COREPLAY_BUILD: another 
 exe=./coreplay.exe; [ -x ./coreplay.exe ] || exe=./coreplay
 tests=("$@")
 [ ${#tests[@]} -eq 0 ] && tests=($(cd "$HERE" && ls t*.txt | sed 's/\.txt$//'))
+# Every script starts from default settings: test runs keep their own (CoreplayTest, never
+# the user's), and an interrupted run can leave them changed (for example Loop turned off).
+reset_settings() {
+  if [ "$exe" = "./coreplay.exe" ]; then
+    MSYS_NO_PATHCONV=1 reg delete 'HKCU\Software\CoreplayTest' /f >/dev/null 2>&1
+  else
+    rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/CoreplayTest"
+  fi
+}
 total=0
 for t in "${tests[@]}"; do
+  reset_settings
   limit=120
   case "$t" in *export*) limit=900 ;; esac   # real encodes take longer
   timeout $limit $exe --test-script "$HERE/$t.txt" --test-log "$COREPLAY_TEST_OUT/$t.log"
