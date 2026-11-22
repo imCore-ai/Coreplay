@@ -19,6 +19,12 @@
 </p>
 
 <p align="center">
+  <b><a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Windows-Setup.exe">Windows installer</a></b> ·
+  <b><a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg">macOS .dmg</a></b> ·
+  <b><a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-x86_64.AppImage">Linux AppImage</a></b>
+</p>
+
+<p align="center">
   <sub>Windows 10 / 11 · macOS on Apple silicon (M1 and newer) · Linux x86-64 AppImage
   (<a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb">.deb for Ubuntu 26.04+</a>)
   · <a href="../../releases/latest">all files and release notes</a></sub>
