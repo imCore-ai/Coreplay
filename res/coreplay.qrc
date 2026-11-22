@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file>coreplay.png</file>
+    <file>coreplay_wordmark.png</file>
+  </qresource>
+</RCC>

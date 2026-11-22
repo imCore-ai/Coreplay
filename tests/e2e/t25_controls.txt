@@ -1,0 +1,51 @@
+# Control buttons: loop is on by default (the playlist; one clip loops by itself), the
+# loop button turns it off and on, and every control is readable under the mouse (dark
+# icon or letter on the light hover background).
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+expect repeat == all
+expect loopButton has Loop: on, the playlist
+clickbutton Loop
+expect repeat == none
+expect loopButton has Loop: off
+clickbutton Loop
+expect repeat == all
+action play.repeat.one
+expect repeat == one
+expect loopButton has Loop: on, this file
+clickbutton Loop
+expect repeat == none
+clickbutton Loop
+expect repeat == one
+action play.repeat.all
+expect repeat == all
+hover Play/Pause $OUT/t25_hover_play.png
+hover Stop $OUT/t25_hover_stop.png
+hover Previous $OUT/t25_hover_prev.png
+hover Next $OUT/t25_hover_next.png
+hover Frame_Step_Back $OUT/t25_hover_stepback.png
+hover Frame_Step_(Right) $OUT/t25_hover_step.png
+hover Loop $OUT/t25_hover_loop.png
+hover R $OUT/t25_hover_r.png
+hover G $OUT/t25_hover_g.png
+hover B $OUT/t25_hover_b.png
+hover Mute $OUT/t25_hover_mute.png
+# the menu bar's top-right link (not clicked here: a click opens the web page)
+hover Explore_Core_Studio $OUT/t25_hover_explore.png
+grabwindow $OUT/t25_controls.png
+# one clip with loop on: it plays past its end and starts again, without stopping
+open $MEDIA/gap_a.mp4
+until engine == mpv 3000
+mpvset pause no
+until position > 2.5 5000
+until position < 1 3000
+expect paused == false
+# the same for an image sequence (looped by its engine: no second copy decoding)
+open $MEDIA/png_seq/comp.0001.png
+until engine == seq 3000
+until frame > 40 8000
+until frame < 10 4000
+expect paused == false
+# at the end: loop back on (the default), so later scripts start as a user does
+action play.repeat.all
+expect repeat == all

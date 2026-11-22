@@ -1,0 +1,229 @@
+# A/B compare, as in RV: A = the playing clip, B = another playlist item, on one
+# frame-locked timeline. Red (A) and blue (B) clips make every mode checkable by colour.
+# ---- image sequences
+open $MEDIA/cmp_red/red.0001.png|$MEDIA/cmp_blue/blue.0001.png|$MEDIA/png_seq/comp.0001.png|$MEDIA/png_seq/comp.0001.png
+until engine == seq 3000
+until paused == false 2000
+key Space
+until paused == true 2000
+wait 300
+pixel 0.5 0.5 red
+expectpixel red == 192,32,32 40
+# Ctrl+Shift+A: compare with the next playlist item (Wipe is the first mode)
+key Ctrl+Shift+A
+until compare.on == true 2000
+expect compare.b == blue.0001.png
+expect compare.mode == Wipe
+until compare.ready == true 3000
+wait 300
+pixel 0.25 0.5 left
+pixel 0.75 0.5 right
+expectpixel left == red 12
+expectpixel right == 32,32,192 40
+expectpixel right != red 60
+# \ swaps the sides
+key \
+until compare.swap == true 1000
+wait 300
+pixel 0.25 0.5 left2
+expectpixel left2 == right 12
+key \
+until compare.swap == false 1000
+# drag the wipe line to the right: 0.75 is A now
+ldrag 0.5 0.5 0.9 0.5
+until compare.wipe > 0.8 1000
+expect paused == true
+wait 300
+pixel 0.75 0.5 right3
+expectpixel right3 == red 12
+# F6 flip: A whole, \ shows B whole
+key F6
+until compare.mode == A/B Flip 1000
+wait 300
+pixel 0.5 0.5 flipA
+expectpixel flipA == red 12
+key \
+wait 300
+pixel 0.5 0.5 flipB
+expectpixel flipB == right 12
+key \
+# F8 side by side: A on the left half of the view, B on the right
+key F8
+until compare.mode == Side by Side 1000
+wait 300
+pixel 0.25 0.5 sbsL
+pixel 0.75 0.5 sbsR
+expectpixel sbsL == red 12
+expectpixel sbsR == right 12
+# F9 difference: |red - blue|
+key F9
+until compare.mode == Difference 1000
+wait 300
+pixel 0.5 0.5 diff
+expectpixel diff == 160,0,160 40
+# B frame offset: Alt+Shift+Right / Left
+key Home
+until frame == 1 2000
+expect compare.bFrame == 1
+key Alt+Shift+Right
+key Alt+Shift+Right
+until compare.offset == 2 1000
+expect compare.bFrame == 3
+key Alt+Shift+Left
+until compare.offset == 1 1000
+key Ctrl+Shift+A
+until compare.on == false 2000
+expect compare.mode == Off
+# frame-locked while playing: a sequence against itself is black in Difference
+key Ctrl+PgDown
+key Ctrl+PgDown
+until title == comp.####.png [1-48] - Coreplay 3000
+compare start 3
+until compare.on == true 2000
+key F9
+until paused == false 2000
+wait 500
+expect paused == false
+pixel 0.3 0.4 lockA
+wait 300
+pixel 0.6 0.6 lockB
+expectpixel lockA == 0,0,0 24
+expectpixel lockB == 0,0,0 24
+expect frame > 12
+state
+key Ctrl+Shift+A
+until compare.on == false 2000
+# ---- movies
+open $MEDIA/cmp_red.mp4|$MEDIA/cmp_blue.mp4|$MEDIA/gap_a.mp4|$MEDIA/gap_b.mp4|$MEDIA/png_seq/comp.0001.png
+until engine == mpv 3000
+until media.w == 640 3000
+key Space
+until paused == true 2000
+key Ctrl+Shift+A
+until compare.on == true 2000
+expect compare.mode == Difference
+until compare.ready == true 3000
+expect media.w == 640
+key F7
+compare wipe 0.5
+wait 800
+pixel 0.25 0.5 mleft
+pixel 0.75 0.5 mright
+expectpixel mleft == 192,32,32 40
+expectpixel mright == 32,32,192 40
+key F8
+wait 400
+pixel 0.25 0.5 msbsL
+pixel 0.75 0.5 msbsR
+expectpixel msbsL == mleft 12
+expectpixel msbsR == mright 12
+key F6
+key \
+wait 400
+pixel 0.5 0.5 mflipB
+expectpixel mflipB == mright 12
+key \
+key Ctrl+Shift+A
+until compare.on == false 2000
+# mixed kinds are refused
+compare start 4
+expect compare.on == false
+until osd has Compare needs two movies or two image sequences 1000
+# frame-locked while playing: two identical moving clips are black in Difference
+key Ctrl+PgDown
+key Ctrl+PgDown
+until title == gap_a.mp4 - Coreplay 3000
+until media.w == 1280 3000
+compare start 3
+until compare.ready == true 3000
+key F9
+until paused == false 2000
+expect frame > 0
+wait 300
+pixel 0.3 0.4 mlockA
+wait 400
+pixel 0.6 0.6 mlockB
+expectpixel mlockA == 0,0,0 24
+expectpixel mlockB == 0,0,0 24
+state
+key Ctrl+Shift+A
+until compare.on == false 2000
+# ---- slots: the same clip in A and B, a LUT on B only, a new A keeps B
+open $MEDIA/png_seq/comp.0001.png
+until engine == seq 3000
+key Ctrl+Shift+A
+until compare.bar == true 1000
+expect compare.on == false
+until compare.slotA == comp.####.png [1-48] 1000
+compare slot b $MEDIA/png_seq/comp.0001.png
+until compare.on == true 2000
+expect compare.slotB == comp.####.png [1-48]
+key F9
+until paused == false 2000
+wait 400
+pixel 0.3 0.4 selfA
+pixel 0.6 0.6 selfB
+expectpixel selfA == 0,0,0 24
+expectpixel selfB == 0,0,0 24
+key Space
+until paused == true 2000
+key Home
+until frame == 1 2000
+key Alt+Shift+Right
+key Alt+Shift+Right
+key Alt+Shift+Right
+until compare.offset == 3 1000
+expect compare.bFrame == 4
+key Alt+Shift+Left
+key Alt+Shift+Left
+key Alt+Shift+Left
+until compare.offset == 0 1000
+# a LUT on B only: the same frames now differ
+compare lutb preset ARRI LogC3 (EI800)|Rec.709
+expect compare.lutB == ARRI LogC3 (EI800) to Rec.709
+expect lut == None
+wait 400
+pixel 0.5 0.5 lutdiff
+expectpixel lutdiff != 0,0,0 30
+compare lutb clear
+expect compare.lutB == None
+wait 400
+pixel 0.5 0.5 lutsame
+expectpixel lutsame == 0,0,0 24
+# a new clip in slot A: B stays, compare starts again with it
+compare slot a $MEDIA/tif_seq/plate.1001.tif
+until title == plate.####.tif [1001-1048] - Coreplay 3000
+until compare.on == true 3000
+expect compare.slotA == plate.####.tif [1001-1048]
+expect compare.slotB == comp.####.png [1-48]
+key Ctrl+Shift+A
+until compare.bar == false 1000
+expect compare.on == false
+# movies: the same clip in both slots, then a LUT on B (a mid-tone clip: a LUT changes it)
+open $MEDIA/cmp_red.mp4
+until engine == mpv 3000
+until media.w == 640 3000
+key Ctrl+Shift+A
+until compare.bar == true 1000
+compare slot b $MEDIA/cmp_red.mp4
+until compare.ready == true 3000
+expect compare.slotB == cmp_red.mp4
+key F9
+until paused == false 2000
+wait 300
+pixel 0.3 0.4 mselfA
+pixel 0.6 0.6 mselfB
+expectpixel mselfA == 0,0,0 24
+expectpixel mselfB == 0,0,0 24
+compare lutb preset ARRI LogC3 (EI800)|Rec.709
+until mpv.glsl-shaders.cmp == true 3000
+wait 400
+pixel 0.5 0.5 mlutdiff
+expectpixel mlutdiff != 0,0,0 30
+compare lutb clear
+until mpv.glsl-shaders.cmp == false 3000
+wait 400
+pixel 0.5 0.5 mlutsame
+expectpixel mlutsame == 0,0,0 24
+key Ctrl+Shift+A
+until compare.bar == false 1000

@@ -1,0 +1,22 @@
+# Driven by run_newwindow.sh. This window plays a file; with "Open each file in a new
+# window" on, a 3-file selection from Explorer must open ONE second window with all
+# three, and leave this window's playlist alone. With it off, a file replaces this one.
+settings open 0
+settings newwindow on
+settings apply
+settings close
+open $MEDIA/h264_23976.mp4
+until paused == false 3000
+until handovers has newwindow:1 20000
+until handovers has forward:1 forward:1 5000
+expect playlist.count == 1
+expect title == h264_23976.mp4 - Coreplay
+state
+settings open 0
+settings newwindow off
+settings apply
+settings close
+until handovers has open:1 20000
+until title == prores_25.mov - Coreplay 5000
+expect playlist.count == 1
+state

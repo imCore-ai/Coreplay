@@ -1,0 +1,65 @@
+# Subtitles: load an .srt, style it (box, colours, opacity), and burn it into an export.
+open $MEDIA/patches_709.mp4
+until fps.rational == 24/1 5000
+key Space
+until mpv.pause == yes 2000
+loadsub $MEDIA/subtest.srt
+wait 300
+expect subtitles.loaded == 1
+expect mpv.sid != no
+key Home
+wait 300
+key Shift+Right
+wait 600
+expect mpv.sub-text == COREPLAY SUBTITLE TEST LINE
+# Style: magenta text on a solid magenta box, so the whole subtitle area is one colour.
+substyle reset x
+substyle text #ff00ff
+substyle box on
+substyle boxColor #ff00ff
+substyle boxOpacity 100
+substyle size 60
+wait 500
+expect mpv.sub-border-style == background-box
+pixel 0.5 0.915 subOn
+expectpixel subOn == 255,0,255 40
+grab $OUT/t16_player_sub.png
+# Box at 50 % opacity over the white patch area blends: not solid magenta any more
+substyle boxOpacity 50
+substyle text #00000000
+wait 500
+pixel 0.3 0.915 half
+expectpixel half != 255,0,255 30
+substyle boxOpacity 100
+substyle text #ff00ff
+wait 300
+# Burn in
+export h264 $OUT/exp/sub_burned.mp4 subs
+until export.state != running 60000
+expect export.state == done
+export h264 $OUT/exp/sub_clean.mp4
+until export.state != running 60000
+expect export.state == done
+open $OUT/exp/sub_burned.mp4
+until fps.rational == 24/1 5000
+key Space
+until mpv.pause == yes 2000
+key Home
+wait 300
+key Shift+Right
+wait 800
+expect mpv.sid == no
+pixel 0.5 0.915 burned
+expectpixel burned == 255,0,255 40
+grab $OUT/t16_export_burned.png
+open $OUT/exp/sub_clean.mp4
+until fps.rational == 24/1 5000
+key Space
+until mpv.pause == yes 2000
+key Home
+wait 300
+key Shift+Right
+wait 800
+pixel 0.5 0.915 clean
+expectpixel clean != 255,0,255 60
+substyle reset x

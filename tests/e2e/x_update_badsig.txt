@@ -1,0 +1,5 @@
+# One changed byte in latest.json: refused before anything is downloaded.
+update check
+until update.state != checking 20000
+expect update.state == failed
+expect update.available == false

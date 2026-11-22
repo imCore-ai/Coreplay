@@ -1,0 +1,16 @@
+# 4K half-float EXR, 72 frames (~53 MB per frame in RAM): cold play from disk, then from the cache.
+open $MEDIA/exr4k/plate4k.1001.exr
+action play.repeat.none
+until seq.pixelType == f16 5000
+expect media.w == 4096
+wait 1200
+state
+until seq.cachedFrames == 72 30000
+until paused == true 30000
+key Home
+key Space
+expect paused == false
+wait 1500
+expect seq.measuredFps ~ 24
+state
+action play.repeat.all

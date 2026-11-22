@@ -1,0 +1,46 @@
+# Settings: General + Hotkeys. Keys are changed, moved off another command, saved,
+# used, and reset. Test builds keep their own hotkeys.json (CoreplayTest).
+settings open 1
+until settings.visible == true 2000
+settings resetall
+settings apply
+settings filter zoom
+expect settings.rows > 3
+expect settings.rows < 30
+settings filter
+settings select play.playpause
+settings add Ctrl+Shift+P
+expect settings.message has is now on Play/Pause
+settings apply
+keymap
+open $MEDIA/h264_23976.mp4
+until paused == false 3000
+key Ctrl+Shift+P
+until paused == true 2000
+key Ctrl+Shift+P
+until paused == false 2000
+# Space moves from Play/Pause to the info overlay
+settings select view.infooverlay
+settings add Space
+expect settings.message has It was removed from: Play/Pause
+settings apply
+keymap
+key Space
+until info.overlay == true 2000
+expect paused == false
+key Tab
+until info.overlay == false 2000
+settings resetall
+settings apply
+keymap
+key Space
+until paused == true 2000
+expect info.overlay == false
+settings newwindow on
+settings apply
+expect newWindow == true
+settings newwindow off
+settings apply
+expect newWindow == false
+settings close
+until settings.visible == false 2000

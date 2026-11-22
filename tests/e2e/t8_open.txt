@@ -1,0 +1,7 @@
+wait 1500
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+state
+open $MEDIA/exr_fps/bar.1001.exr
+until seq.pixelType == f16 4000
+expect firstPaintMs < 500

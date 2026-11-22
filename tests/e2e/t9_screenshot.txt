@@ -1,0 +1,12 @@
+# Whole-window screenshot: playlist with movies and sequences, a 4K EXR paused mid-way.
+open $MEDIA/h264_23976.mp4|$MEDIA/exr4k/plate4k.1001.exr|$MEDIA/png_seq/comp.0001.png|$MEDIA/prores_25.mov
+key Ctrl+PgDown
+until seq.pixelType == f16 5000
+until seq.cachedFrames == 72 30000
+key Ctrl+7
+key Ctrl+4
+wait 1500
+key Space
+expect paused == true
+wait 300
+grabwindow $OUT/coreplay_window.png

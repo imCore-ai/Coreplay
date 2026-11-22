@@ -1,0 +1,60 @@
+# Arrows step frames, Shift+arrows jump 5 s, Page Up/Down = previous/next clip in the folder.
+keymap
+open $MEDIA/exr_seq/shot_v001.1050.exr
+until seq.pixelType == f32 4000
+key Space
+expect paused == true
+key Home
+until frame == 1001 2000
+key Right
+until frame == 1002 2000
+key Right
+until frame == 1003 2000
+key Left
+until frame == 1002 2000
+# 120 frames (1001-1120): +5 s from 1002 stops at the last frame; -5 s from there = 1000 = first frame
+key Shift+Right
+until frame == 1120 2000
+key Shift+Left
+until frame == 1001 2000
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+key Space
+until mpv.pause == yes 2000
+key Home
+wait 600
+expect position < 0.05
+key Right
+wait 400
+expect frame == 1
+key Right
+wait 400
+expect frame == 2
+key Left
+wait 500
+expect frame == 1
+key Shift+Right
+wait 500
+expect position ~ 5.04
+key Shift+Left
+wait 500
+expect position < 0.1
+# Folder coreplay_test, sorted: h264_23976.mp4, patches_709.mp4, prores_25.mov (sequences sit in sub-folders)
+key PgDown
+until title == patches_709.mp4 - Coreplay 3000
+key PgDown
+until title == prores_25.mov - Coreplay 3000
+until fps.rational == 25/1 5000
+key PgDown
+wait 400
+expect title == prores_25.mov - Coreplay
+key PgUp
+until title == patches_709.mp4 - Coreplay 3000
+key PgUp
+until title == h264_23976.mp4 - Coreplay 3000
+# Sequences: next sequence in the same folder
+open $MEDIA/png_seq/comp.0001.png
+until engine == seq 3000
+key PgDown
+wait 300
+expect seq.pattern == $MEDIA/png_seq/comp.####.png

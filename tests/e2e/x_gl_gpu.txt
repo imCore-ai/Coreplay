@@ -1,0 +1,11 @@
+# Normal start: the GPU driver gives OpenGL 4.1; mpv keeps its quality scaler.
+wait 800
+settings open 0
+settings software off
+settings close
+until gl.state has gpu 3000
+expect gl.softwareSetting == false
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+wait 800
+expect mpv.fastScaling == false

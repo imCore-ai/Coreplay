@@ -1,0 +1,8 @@
+{
+  "name": "coreplay",
+  "version": "0.1.0",
+  "dependencies": [
+    "openimageio",
+    "opencolorio"
+  ]
+}

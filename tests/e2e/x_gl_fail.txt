@@ -1,0 +1,4 @@
+# A driver without OpenGL 4.1 (simulated): Coreplay records software OpenGL.
+wait 800
+until gl.state has unsupported 3000
+expect gl.softwareSetting == true

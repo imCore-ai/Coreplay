@@ -1,0 +1,32 @@
+# Full screen: controls float over the picture, half translucent, and hide when the mouse stops.
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+key Alt+Return
+wait 400
+expect fullscreen == true
+expect controls.overlay == true
+expect controls.shown == true
+grabwindow $OUT/t12_fullscreen_controls.png
+wait 2600
+expect controls.shown == false
+mousemove 0.5 0.5
+wait 100
+expect controls.shown == true
+wait 2600
+expect controls.shown == false
+key Alt+Return
+wait 400
+expect fullscreen == false
+expect controls.overlay == false
+expect controls.shown == true
+# Esc leaves full screen, and does nothing in a window
+key Alt+Return
+wait 400
+expect fullscreen == true
+key Esc
+wait 400
+expect fullscreen == false
+expect controls.overlay == false
+key Esc
+wait 300
+expect fullscreen == false

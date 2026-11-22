@@ -1,0 +1,21 @@
+# Playlist clips follow each other with no stop: movie -> movie and sequence ->
+# sequence go on inside the engine ("gapless"); a movie -> sequence change reopens.
+# switch.last = "<mode> <ms>": the gap between one clip's end and the next one's start.
+# The checks are made after the switch: polling the state reads mpv synchronously.
+open $MEDIA/gap_a.mp4|$MEDIA/gap_b.mp4|$MEDIA/png_seq/comp.0001.png|$MEDIA/tif_seq/plate.1001.tif
+until engine == mpv 3000
+wait 4600
+expect playlist.current == 1
+expect title == gap_b.mp4 - Coreplay
+expect switch.last has gapless
+state
+until playlist.current == 2 6000
+until engine == seq 3000
+until position > 0.3 4000
+expect switch.last has reopen
+until playlist.current == 3 6000
+until position > 0.5 4000
+expect switch.last has gapless
+expect title == plate.####.tif [1001-1048] - Coreplay
+expect seq.count == 48
+state

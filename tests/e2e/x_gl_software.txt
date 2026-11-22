@@ -1,0 +1,14 @@
+# The next start runs on software OpenGL with mpv's fast scaling; no dropped frames.
+wait 800
+until gl.state == software 3000
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+wait 800
+expect mpv.fastScaling == true
+expect mpv.scale == bilinear
+until position > 3 6000
+expect perf.mpvDropped < 6
+settings open 0
+settings software off
+settings close
+expect gl.softwareSetting == false

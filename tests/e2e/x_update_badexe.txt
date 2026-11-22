@@ -1,0 +1,7 @@
+# One changed byte in the installer: the download is refused and deleted.
+update check
+until update.state != checking 20000
+expect update.state == available
+update download
+until update.state != downloading 120000
+expect update.state == failed

@@ -1,0 +1,36 @@
+# F1 shows every hotkey over the whole window; F1, Esc or a click closes it.
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+expect hotkeys.shown == false
+key F1
+until hotkeys.shown == true 2000
+expect hotkeys.rows > 60
+expect hotkeys.text has Play/Pause = Space |
+expect hotkeys.text has Hotkey List = F1
+expect hotkeys.text has Subtitle Delay - = Shift+F2
+expect hotkeys.text has Pan&Scan Reset
+expect hotkeys.text has Color Grading = Alt+G
+expect hotkeys.text has Save = Ctrl+S
+expect hotkeys.text has Save As = Ctrl+Shift+S
+expect hotkeys.text has Color Grading = Alt+G | Channel: Red = R
+expect hotkeys.fontPx >= 9
+grabwindow $OUT/t23_hotkeylist_window.png
+key F1
+until hotkeys.shown == false 2000
+# Esc closes the list and keeps full screen
+key Alt+Return
+until fullscreen == true 2000
+key F1
+until hotkeys.shown == true 2000
+wait 300
+grabwindow $OUT/t23_hotkeylist_fullscreen.png
+key Esc
+until hotkeys.shown == false 2000
+expect fullscreen == true
+key Esc
+until fullscreen == false 2000
+# a click closes it too
+key F1
+until hotkeys.shown == true 2000
+clickat 0.5 0.5
+until hotkeys.shown == false 2000

@@ -1,0 +1,236 @@
+# LUTs on 8 flat patches: a LUT file and presets, on an image sequence (GPU shader)
+# and on a Rec.709 4:4:4 movie (baked .cube + FFmpeg lut3d). Both engines must agree.
+open $MEDIA/patch_seq/patch.0001.png
+until seq.pixelType == u8 3000
+wait 300
+lut clear
+wait 300
+pixel 0.125 0.25 s_none_0
+pixel 0.375 0.25 s_none_1
+pixel 0.625 0.25 s_none_2
+pixel 0.875 0.25 s_none_3
+pixel 0.125 0.75 s_none_4
+pixel 0.375 0.75 s_none_5
+pixel 0.625 0.75 s_none_6
+pixel 0.875 0.75 s_none_7
+lut file $MEDIA/invert.cube
+wait 300
+expect lut != None
+pixel 0.125 0.25 s_inv_0
+pixel 0.375 0.25 s_inv_1
+pixel 0.625 0.25 s_inv_2
+pixel 0.875 0.25 s_inv_3
+pixel 0.125 0.75 s_inv_4
+pixel 0.375 0.75 s_inv_5
+pixel 0.625 0.75 s_inv_6
+pixel 0.875 0.75 s_inv_7
+lut preset ARRI LogC3 (EI800)|Rec.709
+wait 300
+expect lut != None
+pixel 0.125 0.25 s_logc_0
+pixel 0.375 0.25 s_logc_1
+pixel 0.625 0.25 s_logc_2
+pixel 0.875 0.25 s_logc_3
+pixel 0.125 0.75 s_logc_4
+pixel 0.375 0.75 s_logc_5
+pixel 0.625 0.75 s_logc_6
+pixel 0.875 0.75 s_logc_7
+lut preset Sony S-Log3 S-Gamut3.Cine|Rec.2020
+wait 300
+expect lut != None
+pixel 0.125 0.25 s_slog_0
+pixel 0.375 0.25 s_slog_1
+pixel 0.625 0.25 s_slog_2
+pixel 0.875 0.25 s_slog_3
+pixel 0.125 0.75 s_slog_4
+pixel 0.375 0.75 s_slog_5
+pixel 0.625 0.75 s_slog_6
+pixel 0.875 0.75 s_slog_7
+lut preset Blackmagic Film WideGamut Gen5|sRGB
+wait 300
+expect lut != None
+pixel 0.125 0.25 s_bmd_0
+pixel 0.375 0.25 s_bmd_1
+pixel 0.625 0.25 s_bmd_2
+pixel 0.875 0.25 s_bmd_3
+pixel 0.125 0.75 s_bmd_4
+pixel 0.375 0.75 s_bmd_5
+pixel 0.625 0.75 s_bmd_6
+pixel 0.875 0.75 s_bmd_7
+lut preset Linear Rec.709 (sRGB primaries)|sRGB
+wait 300
+expect lut != None
+pixel 0.125 0.25 s_lin_0
+pixel 0.375 0.25 s_lin_1
+pixel 0.625 0.25 s_lin_2
+pixel 0.875 0.25 s_lin_3
+pixel 0.125 0.75 s_lin_4
+pixel 0.375 0.75 s_lin_5
+pixel 0.625 0.75 s_lin_6
+pixel 0.875 0.75 s_lin_7
+lut clear
+grab $OUT/t13_patches_seq.png
+open $MEDIA/patches_709.mp4
+until fps.rational == 24/1 5000
+key Space
+until mpv.pause == yes 2000
+wait 500
+lut clear
+wait 1000
+pixel 0.125 0.25 m_none_0
+pixel 0.375 0.25 m_none_1
+pixel 0.625 0.25 m_none_2
+pixel 0.875 0.25 m_none_3
+pixel 0.125 0.75 m_none_4
+pixel 0.375 0.75 m_none_5
+pixel 0.625 0.75 m_none_6
+pixel 0.875 0.75 m_none_7
+lut file $MEDIA/invert.cube
+wait 1000
+expect lut != None
+pixel 0.125 0.25 m_inv_0
+pixel 0.375 0.25 m_inv_1
+pixel 0.625 0.25 m_inv_2
+pixel 0.875 0.25 m_inv_3
+pixel 0.125 0.75 m_inv_4
+pixel 0.375 0.75 m_inv_5
+pixel 0.625 0.75 m_inv_6
+pixel 0.875 0.75 m_inv_7
+lut preset ARRI LogC3 (EI800)|Rec.709
+wait 1000
+expect lut != None
+pixel 0.125 0.25 m_logc_0
+pixel 0.375 0.25 m_logc_1
+pixel 0.625 0.25 m_logc_2
+pixel 0.875 0.25 m_logc_3
+pixel 0.125 0.75 m_logc_4
+pixel 0.375 0.75 m_logc_5
+pixel 0.625 0.75 m_logc_6
+pixel 0.875 0.75 m_logc_7
+lut preset Sony S-Log3 S-Gamut3.Cine|Rec.2020
+wait 1000
+expect lut != None
+pixel 0.125 0.25 m_slog_0
+pixel 0.375 0.25 m_slog_1
+pixel 0.625 0.25 m_slog_2
+pixel 0.875 0.25 m_slog_3
+pixel 0.125 0.75 m_slog_4
+pixel 0.375 0.75 m_slog_5
+pixel 0.625 0.75 m_slog_6
+pixel 0.875 0.75 m_slog_7
+lut preset Blackmagic Film WideGamut Gen5|sRGB
+wait 1000
+expect lut != None
+pixel 0.125 0.25 m_bmd_0
+pixel 0.375 0.25 m_bmd_1
+pixel 0.625 0.25 m_bmd_2
+pixel 0.875 0.25 m_bmd_3
+pixel 0.125 0.75 m_bmd_4
+pixel 0.375 0.75 m_bmd_5
+pixel 0.625 0.75 m_bmd_6
+pixel 0.875 0.75 m_bmd_7
+lut preset Linear Rec.709 (sRGB primaries)|sRGB
+wait 1000
+expect lut != None
+pixel 0.125 0.25 m_lin_0
+pixel 0.375 0.25 m_lin_1
+pixel 0.625 0.25 m_lin_2
+pixel 0.875 0.25 m_lin_3
+pixel 0.125 0.75 m_lin_4
+pixel 0.375 0.75 m_lin_5
+pixel 0.625 0.75 m_lin_6
+pixel 0.875 0.75 m_lin_7
+lut clear
+# --- checks
+expectpixel s_none_0 == 100,100,100 0
+expectpixel m_none_0 == 100,100,100 3
+expectpixel s_inv_0 == 155,155,155 1
+expectpixel m_inv_0 == s_inv_0 4
+expectpixel m_logc_0 == s_logc_0 4
+expectpixel m_slog_0 == s_slog_0 4
+expectpixel m_bmd_0 == s_bmd_0 4
+expectpixel m_lin_0 == s_lin_0 4
+expectpixel s_logc_0 != s_none_0 3
+expectpixel s_slog_0 != s_none_0 3
+expectpixel s_bmd_0 != s_none_0 3
+expectpixel s_none_1 == 128,128,128 0
+expectpixel m_none_1 == 128,128,128 3
+expectpixel s_inv_1 == 127,127,127 1
+expectpixel m_inv_1 == s_inv_1 4
+expectpixel m_logc_1 == s_logc_1 4
+expectpixel m_slog_1 == s_slog_1 4
+expectpixel m_bmd_1 == s_bmd_1 4
+expectpixel m_lin_1 == s_lin_1 4
+expectpixel s_logc_1 != s_none_1 3
+expectpixel s_slog_1 != s_none_1 3
+expectpixel s_bmd_1 != s_none_1 3
+expectpixel s_none_2 == 200,200,200 0
+expectpixel m_none_2 == 200,200,200 3
+expectpixel s_inv_2 == 55,55,55 1
+expectpixel m_inv_2 == s_inv_2 4
+expectpixel m_logc_2 == s_logc_2 4
+expectpixel m_slog_2 == s_slog_2 4
+expectpixel m_bmd_2 == s_bmd_2 4
+expectpixel m_lin_2 == s_lin_2 4
+expectpixel s_logc_2 != s_none_2 3
+expectpixel s_slog_2 != s_none_2 3
+expectpixel s_bmd_2 != s_none_2 3
+expectpixel s_none_3 == 200,150,120 0
+expectpixel m_none_3 == 200,150,120 3
+expectpixel s_inv_3 == 55,105,135 1
+expectpixel m_inv_3 == s_inv_3 4
+expectpixel m_logc_3 == s_logc_3 4
+expectpixel m_slog_3 == s_slog_3 4
+expectpixel m_bmd_3 == s_bmd_3 4
+expectpixel m_lin_3 == s_lin_3 4
+expectpixel s_logc_3 != s_none_3 3
+expectpixel s_slog_3 != s_none_3 3
+expectpixel s_bmd_3 != s_none_3 3
+expectpixel s_none_4 == 180,60,50 0
+expectpixel m_none_4 == 180,60,50 3
+expectpixel s_inv_4 == 75,195,205 1
+expectpixel m_inv_4 == s_inv_4 4
+expectpixel m_logc_4 == s_logc_4 4
+expectpixel m_slog_4 == s_slog_4 4
+expectpixel m_bmd_4 == s_bmd_4 4
+expectpixel m_lin_4 == s_lin_4 4
+expectpixel s_logc_4 != s_none_4 3
+expectpixel s_slog_4 != s_none_4 3
+expectpixel s_bmd_4 != s_none_4 3
+expectpixel s_none_5 == 60,160,80 0
+expectpixel m_none_5 == 60,160,80 3
+expectpixel s_inv_5 == 195,95,175 1
+expectpixel m_inv_5 == s_inv_5 4
+expectpixel m_logc_5 == s_logc_5 4
+expectpixel m_slog_5 == s_slog_5 4
+expectpixel m_bmd_5 == s_bmd_5 4
+expectpixel m_lin_5 == s_lin_5 4
+expectpixel s_logc_5 != s_none_5 3
+expectpixel s_slog_5 != s_none_5 3
+expectpixel s_bmd_5 != s_none_5 3
+expectpixel s_none_6 == 50,80,180 0
+expectpixel m_none_6 == 50,80,180 3
+expectpixel s_inv_6 == 205,175,75 1
+expectpixel m_inv_6 == s_inv_6 4
+expectpixel m_logc_6 == s_logc_6 4
+expectpixel m_slog_6 == s_slog_6 4
+expectpixel m_bmd_6 == s_bmd_6 4
+expectpixel m_lin_6 == s_lin_6 4
+expectpixel s_logc_6 != s_none_6 3
+expectpixel s_slog_6 != s_none_6 3
+expectpixel s_bmd_6 != s_none_6 3
+expectpixel s_none_7 == 235,235,235 0
+expectpixel m_none_7 == 235,235,235 3
+expectpixel s_inv_7 == 20,20,20 1
+expectpixel m_inv_7 == s_inv_7 4
+expectpixel m_logc_7 == s_logc_7 4
+expectpixel m_slog_7 == s_slog_7 4
+expectpixel m_bmd_7 == s_bmd_7 4
+expectpixel m_lin_7 == s_lin_7 4
+expectpixel s_logc_7 != s_none_7 3
+expectpixel s_slog_7 != s_none_7 3
+expectpixel s_bmd_7 != s_none_7 3
+expectpixel s_logc_0 == 125,125,125 2
+expectpixel m_logc_0 == 125,125,125 3
+expectpixel s_lin_1 == 188,188,188 2
+expectpixel m_lin_1 == 188,188,188 3

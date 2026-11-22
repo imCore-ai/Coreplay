@@ -1,0 +1,10 @@
+build/
+third_party/
+vcpkg_installed/
+*.user
+build.log
+coreplay_screenshot.png
+dist/
+installer/filetypes.nsh
+_release/
+__pycache__/

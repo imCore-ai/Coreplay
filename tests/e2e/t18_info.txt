@@ -1,0 +1,26 @@
+# Tab toggles the info overlay: clip properties + the file's own metadata.
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+until media.w == 1920 3000
+expect info.overlay == false
+key Tab
+until info.overlay == true 2000
+until info.text has Video track 1: h264 1920x1080 2000
+expect info.text has Frame rate: 24000/1001
+expect info.text has Metadata (
+expect info.text has major_brand
+expect info.metadata > 0
+key Tab
+until info.overlay == false 2000
+open $MEDIA/exr_seq/shot_v001.1001.exr
+until engine == seq 3000
+until frame >= 1001 3000
+key Tab
+until info.overlay == true 2000
+until info.text has framesPerSecond: 24/1 2000
+expect info.text has channels: R,G,B
+expect info.text has compression: zips
+expect info.text has Folder:
+grab $OUT/t18_info_exr.png
+key Tab
+until info.overlay == false 2000

@@ -1,0 +1,5 @@
+# The second window (started by the first one): it gets the whole selection.
+until playlist.count == 3 15000
+expect listen has Coreplay-
+expect engine == mpv
+state

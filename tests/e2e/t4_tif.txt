@@ -1,0 +1,8 @@
+# 16-bit TIFF sequence.
+open $MEDIA/tif_seq/plate.1024.tif
+expect frame == 1024
+until seq.pixelType == u16 4000
+expect seq.channels == 3
+expect seq.count == 48
+key Space
+grab $OUT/t4_tif16.png

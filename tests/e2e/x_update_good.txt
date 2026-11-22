@@ -1,0 +1,9 @@
+# Signed feed with a newer version: found, verified, downloaded, hash checked.
+update check
+until update.state != checking 20000
+expect update.state == available
+expect update.latest == 9.9.9
+expect update.available == true
+update download
+until update.state != downloading 120000
+expect update.state == ready

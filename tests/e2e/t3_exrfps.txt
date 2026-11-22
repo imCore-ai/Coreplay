@@ -1,0 +1,12 @@
+# Half-float PIZ EXR with framesPerSecond 30000/1001 and a data window inside the display window.
+open $MEDIA/exr_fps/bar.1001.exr
+until seq.pixelType == f16 4000
+until seq.fpsFromFile == true 2000
+expect fps.rational == 30000/1001
+expect seq.count == 24
+expect media.w == 1920
+expect media.h == 1080
+expect duration ~ 0.8008
+key Space
+grab $OUT/t3_exr_display_window.png
+state

@@ -1,0 +1,70 @@
+# Viewer: wheel zoom anchored at the cursor, middle-drag pan, 1:1 / Fit buttons, double-click full screen.
+open $MEDIA/png_seq/comp.0005.png
+until seq.pixelType == u8 3000
+key Space
+expect zoomButtons.visible == false
+# The colour under the cursor must not change when zooming there.
+pixel 0.3 0.62 before
+wheel 0.3 0.62 120
+expect pan.zoom ~ 1.2
+expect pan.x ~ 0.04
+wait 200
+pixel 0.3 0.62 after
+expectpixel after == before 6
+expect zoomButtons.visible == true
+wheel 0.3 0.62 360
+expect pan.zoom ~ 2.0736
+wait 200
+pixel 0.3 0.62 after3
+expectpixel after3 == before 6
+# Middle-drag moves the picture with the mouse: the colour follows the drag.
+pixel 0.4 0.62 src
+mdrag 0.4 0.62 0.6 0.62
+wait 200
+pixel 0.6 0.62 dst
+expectpixel dst == src 6
+clickbutton Fit
+expect pan.zoom == 1
+expect pan.x == 0
+expect zoomButtons.visible == false
+wheel 0.5 0.5 -120
+expect pan.zoom < 1
+expect zoomButtons.visible == true
+clickbutton 1:1
+wait 200
+expect zoomButtons.visible == true
+grab $OUT/t10_1to1.png
+clickbutton Fit
+expect zoomButtons.visible == false
+# Ctrl+wheel keeps MPC-HC's large jump; it must not zoom.
+wheel 0.5 0.5 120 ctrl
+expect pan.zoom == 1
+# Double-click anywhere in the viewer: full screen and back; play state unchanged.
+expect paused == true
+dblclick 0.7 0.3
+wait 400
+expect fullscreen == true
+expect paused == true
+dblclick 0.2 0.8
+wait 400
+expect fullscreen == false
+expect paused == true
+# The same on a movie
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+key Space
+until mpv.pause == yes 2000
+wait 300
+pixel 0.7 0.4 mb
+wheel 0.7 0.4 240
+expect pan.zoom ~ 1.44
+wait 400
+pixel 0.7 0.4 ma
+expectpixel ma == mb 10
+pixel 0.4 0.4 msrc
+mdrag 0.4 0.4 0.5 0.45
+wait 400
+pixel 0.5 0.45 mdst
+expectpixel mdst == msrc 10
+clickbutton Fit
+until mpv.video-zoom == 0.000000 1000

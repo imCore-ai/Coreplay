@@ -1,0 +1,269 @@
+# Colour grading (Alt+G): the grade shows live on both engines (GPU), the clip keeps
+# playing, the title marks the clip modified, and Save As / Save / Export write the
+# same colours (baked .cube) as the player shows.
+open $MEDIA/patches_709.mp4
+until engine == mpv 3000
+until media.w > 0 3000
+wait 400
+pixel 0.125 0.25 m_raw_0
+pixel 0.375 0.25 m_raw_1
+pixel 0.625 0.25 m_raw_2
+pixel 0.875 0.25 m_raw_3
+pixel 0.125 0.75 m_raw_4
+pixel 0.375 0.75 m_raw_5
+pixel 0.625 0.75 m_raw_6
+pixel 0.875 0.75 m_raw_7
+expect grade.modified == false
+expect grade.window == false
+key Alt+G
+until grade.window == true 2000
+grade grab $OUT/t24_grade_window.png
+# the window moves by its title bar, and keeps its place when it opens again
+grade drag -300 80
+grade drag 120 -40
+key Alt+G
+until grade.window == false 2000
+key Alt+G
+until grade.window == true 2000
+grade drag 0 0
+grade set contrast 130
+grade set saturation 70
+grade set hue 40
+grade set gamma 1.2
+grade set shadows -20
+grade set highlights 15
+grade set midtonesTint.angle 200
+grade set midtonesTint.strength 0.6
+grade set shadowsTint.angle 30
+grade set shadowsTint.strength 0.4
+wait 500
+expect grade.modified == true
+expect title has * patches_709.mp4
+expect grade.mpvShader == true
+expect grade.summary has Contrast 130
+pixel 0.125 0.25 m_grd_0
+pixel 0.375 0.25 m_grd_1
+pixel 0.625 0.25 m_grd_2
+pixel 0.875 0.25 m_grd_3
+pixel 0.125 0.75 m_grd_4
+pixel 0.375 0.75 m_grd_5
+pixel 0.625 0.75 m_grd_6
+pixel 0.875 0.75 m_grd_7
+expectpixel m_grd_1 != m_raw_1 6
+expectpixel m_grd_5 != m_raw_5 6
+grade grab $OUT/t24_grade_movie.png
+# the same grade on the same patches as an image sequence (the viewer's own shader)
+open $MEDIA/patch_seq/patch.0001.png
+until engine == seq 3000
+wait 400
+expect grade.summary == none
+expect grade.modified == false
+pixel 0.125 0.25 s_raw_0
+pixel 0.375 0.25 s_raw_1
+pixel 0.625 0.25 s_raw_2
+pixel 0.875 0.25 s_raw_3
+pixel 0.125 0.75 s_raw_4
+pixel 0.375 0.75 s_raw_5
+pixel 0.625 0.75 s_raw_6
+pixel 0.875 0.75 s_raw_7
+expectpixel s_raw_0 == m_raw_0 4
+expectpixel s_raw_1 == m_raw_1 4
+expectpixel s_raw_2 == m_raw_2 4
+expectpixel s_raw_3 == m_raw_3 4
+expectpixel s_raw_4 == m_raw_4 4
+expectpixel s_raw_5 == m_raw_5 4
+expectpixel s_raw_6 == m_raw_6 4
+expectpixel s_raw_7 == m_raw_7 4
+grade set contrast 130
+grade set saturation 70
+grade set hue 40
+grade set gamma 1.2
+grade set shadows -20
+grade set highlights 15
+grade set midtonesTint.angle 200
+grade set midtonesTint.strength 0.6
+grade set shadowsTint.angle 30
+grade set shadowsTint.strength 0.4
+wait 400
+expect grade.modified == true
+pixel 0.125 0.25 s_grd_0
+pixel 0.375 0.25 s_grd_1
+pixel 0.625 0.25 s_grd_2
+pixel 0.875 0.25 s_grd_3
+pixel 0.125 0.75 s_grd_4
+pixel 0.375 0.75 s_grd_5
+pixel 0.625 0.75 s_grd_6
+pixel 0.875 0.75 s_grd_7
+expectpixel s_grd_0 == m_grd_0 5
+expectpixel s_grd_1 == m_grd_1 5
+expectpixel s_grd_2 == m_grd_2 5
+expectpixel s_grd_3 == m_grd_3 5
+expectpixel s_grd_4 == m_grd_4 5
+expectpixel s_grd_5 == m_grd_5 5
+expectpixel s_grd_6 == m_grd_6 5
+expectpixel s_grd_7 == m_grd_7 5
+# grades are kept per clip: back to the movie, its grade is still there
+open $MEDIA/patches_709.mp4
+until engine == mpv 3000
+wait 400
+expect grade.summary has Contrast 130
+expect grade.unsaved == 2
+# Save As: a new file with the grade baked in (CPU .cube), same codec
+grade saveas $OUT/t24_saveas.mp4
+until export.state != running 60000
+expect export.state == done
+expect grade.modified == false
+expect title == patches_709.mp4 - Coreplay
+open $OUT/t24_saveas.mp4
+until engine == mpv 3000
+wait 600
+expect grade.summary == none
+pixel 0.125 0.25 m_saved_0
+pixel 0.375 0.25 m_saved_1
+pixel 0.625 0.25 m_saved_2
+pixel 0.875 0.25 m_saved_3
+pixel 0.125 0.75 m_saved_4
+pixel 0.375 0.75 m_saved_5
+pixel 0.625 0.75 m_saved_6
+pixel 0.875 0.75 m_saved_7
+expectpixel m_saved_0 == m_grd_0 6
+expectpixel m_saved_1 == m_grd_1 6
+expectpixel m_saved_2 == m_grd_2 6
+expectpixel m_saved_3 == m_grd_3 6
+expectpixel m_saved_4 == m_grd_4 6
+expectpixel m_saved_5 == m_grd_5 6
+expectpixel m_saved_6 == m_grd_6 6
+expectpixel m_saved_7 == m_grd_7 6
+# Save (in place): a plain copy of the original, graded, written over itself
+open $MEDIA/patches_709.mp4
+until engine == mpv 3000
+wait 300
+grade reset
+expect grade.unsaved == 1
+grade saveas $OUT/t24_inplace.mp4
+until export.state != running 60000
+open $OUT/t24_inplace.mp4
+until engine == mpv 3000
+wait 400
+grade set contrast 130
+grade set saturation 70
+grade set hue 40
+grade set gamma 1.2
+grade set shadows -20
+grade set highlights 15
+grade set midtonesTint.angle 200
+grade set midtonesTint.strength 0.6
+grade set shadowsTint.angle 30
+grade set shadowsTint.strength 0.4
+wait 300
+expect grade.modified == true
+grade save
+until export.state != running 60000
+expect export.state == done
+until engine == mpv 5000
+wait 800
+expect grade.summary == none
+expect grade.modified == false
+expect grade.mpvShader == false
+pixel 0.125 0.25 m_inplace_0
+pixel 0.375 0.25 m_inplace_1
+pixel 0.625 0.25 m_inplace_2
+pixel 0.875 0.25 m_inplace_3
+pixel 0.125 0.75 m_inplace_4
+pixel 0.375 0.75 m_inplace_5
+pixel 0.625 0.75 m_inplace_6
+pixel 0.875 0.75 m_inplace_7
+expectpixel m_inplace_0 == m_grd_0 6
+expectpixel m_inplace_1 == m_grd_1 6
+expectpixel m_inplace_2 == m_grd_2 6
+expectpixel m_inplace_3 == m_grd_3 6
+expectpixel m_inplace_4 == m_grd_4 6
+expectpixel m_inplace_5 == m_grd_5 6
+expectpixel m_inplace_6 == m_grd_6 6
+expectpixel m_inplace_7 == m_grd_7 6
+# Save Image on a movie: the still has the grade baked in
+open $MEDIA/patches_709.mp4
+until engine == mpv 3000
+wait 400
+expect grade.summary == none
+grade set contrast 130
+grade set saturation 70
+grade set hue 40
+grade set gamma 1.2
+grade set shadows -20
+grade set highlights 15
+grade set midtonesTint.angle 200
+grade set midtonesTint.strength 0.6
+grade set shadowsTint.angle 30
+grade set shadowsTint.strength 0.4
+wait 300
+grade still $OUT/t24_still.png
+open $OUT/t24_still.png
+until engine == seq 3000
+wait 500
+pixel 0.125 0.25 still_0
+pixel 0.375 0.25 still_1
+pixel 0.625 0.25 still_2
+pixel 0.875 0.25 still_3
+pixel 0.125 0.75 still_4
+pixel 0.375 0.75 still_5
+pixel 0.625 0.75 still_6
+pixel 0.875 0.75 still_7
+expectpixel still_0 == m_grd_0 4
+expectpixel still_1 == m_grd_1 4
+expectpixel still_2 == m_grd_2 4
+expectpixel still_3 == m_grd_3 4
+expectpixel still_4 == m_grd_4 4
+expectpixel still_5 == m_grd_5 4
+expectpixel still_6 == m_grd_6 4
+expectpixel still_7 == m_grd_7 4
+# Save As on an image sequence: new frames in another folder, the view and grade baked in
+open $MEDIA/patch_seq/patch.0001.png
+until engine == seq 3000
+wait 400
+expect grade.summary has Contrast 130
+grade saveas $OUT/t24_seq/patch.%04d.png
+until export.state != running 60000
+expect export.state == done
+expect grade.modified == false
+open $OUT/t24_seq/patch.0001.png
+until engine == seq 3000
+wait 500
+expect grade.summary == none
+pixel 0.125 0.25 seq_saved_0
+pixel 0.375 0.25 seq_saved_1
+pixel 0.625 0.25 seq_saved_2
+pixel 0.875 0.25 seq_saved_3
+pixel 0.125 0.75 seq_saved_4
+pixel 0.375 0.75 seq_saved_5
+pixel 0.625 0.75 seq_saved_6
+pixel 0.875 0.75 seq_saved_7
+expectpixel seq_saved_0 == s_grd_0 4
+expectpixel seq_saved_1 == s_grd_1 4
+expectpixel seq_saved_2 == s_grd_2 4
+expectpixel seq_saved_3 == s_grd_3 4
+expectpixel seq_saved_4 == s_grd_4 4
+expectpixel seq_saved_5 == s_grd_5 4
+expectpixel seq_saved_6 == s_grd_6 4
+expectpixel seq_saved_7 == s_grd_7 4
+# grading while playing: the clip keeps playing
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+until media.w == 1920 3000
+wait 300
+mpvset pause no
+wait 300
+expect paused == false
+grade set saturation 0
+grade set contrast 140
+wait 1000
+expect paused == false
+expect position > 0.8
+pixel 0.3 0.5 play_a
+grade grab $OUT/t24_grade_playing.png
+grade reset
+wait 300
+expect grade.modified == false
+expect grade.mpvShader == false
+key Alt+G
+until grade.window == false 2000

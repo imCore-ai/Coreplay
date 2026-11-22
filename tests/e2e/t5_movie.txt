@@ -1,0 +1,91 @@
+# H.264 23.976 fps movie through libmpv, with MPC-HC hotkeys.
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+until fps.rational == 24000/1001 5000
+until paused == false 3000
+until media.w == 1920 3000
+expect duration ~ 10.01
+wait 1000
+expect position > 0.5
+key Space
+until mpv.pause == yes 1000
+grab $OUT/t5_movie.png
+key Home
+until position < 0.05 2000
+key Right
+wait 300
+expect frame == 1
+key Right
+wait 300
+expect frame == 2
+key Left
+wait 400
+expect frame == 1
+key Shift+Right
+wait 500
+expect position ~ 5.0
+key Shift+Left
+wait 500
+expect position < 0.1
+key Down
+expect volume == 95
+until mpv.volume == 95.000000 1000
+key Up
+expect volume == 100
+key Ctrl+M
+until mpv.mute == yes 1000
+key Ctrl+M
+until mpv.mute == no 1000
+key Ctrl+Up
+until mpv.speed == 2.000000 1000
+key Ctrl+Down
+key Ctrl+Down
+until mpv.speed == 0.500000 1000
+key Ctrl+R
+until mpv.speed == 1.000000 1000
+key [
+expect abA >= 0
+key ]
+until mpv.ab-loop-a != no 1000
+expect mpv.ab-loop-b != no
+key Num+9
+expect pan.zoom ~ 1.02
+key Num+5
+expect pan.zoom == 1
+key Alt+Num+1
+until mpv.video-rotate == 90 1000
+key Alt+Num+3
+until mpv.video-rotate == 0 1000
+key Alt+1
+wait 300
+expect video.w == 960
+expect video.h == 540
+key Alt+Return
+wait 400
+expect fullscreen == true
+expect menu.visible == false
+key Alt+Return
+wait 400
+expect fullscreen == false
+expect menu.visible == true
+key Ctrl+7
+expect playlist.visible == true
+key Ctrl+7
+expect playlist.visible == false
+key 1
+expect menu.visible == false
+expect seekbar.visible == false
+key 2
+expect seekbar.visible == true
+expect menu.visible == false
+key 3
+expect menu.visible == true
+expect status.visible == true
+key Ctrl+A
+expect ontop == true
+key Ctrl+A
+expect ontop == false
+key .
+until mpv.pause == yes 1000
+until position < 0.05 2000
+state

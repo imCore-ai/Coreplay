@@ -1,0 +1,93 @@
+# Export / transcode: movie and sequence sources to video, image sequence and audio formats.
+# Every output is checked with ffprobe: codec, exact frame rate (r AND avg), frame count, duration.
+# --- movie source: 10 s H.264 at 24000/1001 with AAC audio (240 frames)
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+export h264 $OUT/exp/m_h264.mp4
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_h264.mp4 codec == h264
+probe $OUT/exp/m_h264.mp4 r_frame_rate == 24000/1001
+probe $OUT/exp/m_h264.mp4 avg_frame_rate == 24000/1001
+probe $OUT/exp/m_h264.mp4 frames == 240
+probe $OUT/exp/m_h264.mp4 audio_codec == aac
+export h264_nvenc $OUT/exp/m_nvenc.mp4
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_nvenc.mp4 codec == h264
+probe $OUT/exp/m_nvenc.mp4 frames == 240
+probe $OUT/exp/m_nvenc.mp4 avg_frame_rate == 24000/1001
+export prores422hq $OUT/exp/m_prores.mov
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_prores.mov codec == prores
+probe $OUT/exp/m_prores.mov pix_fmt == yuv422p10le
+probe $OUT/exp/m_prores.mov frames == 240
+probe $OUT/exp/m_prores.mov duration ~ 10.01
+probe $OUT/exp/m_prores.mov audio_codec == pcm_s24le
+export dnxhr_hqx $OUT/exp/m_dnxhr.mov
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_dnxhr.mov codec == dnxhd
+probe $OUT/exp/m_dnxhr.mov frames == 240
+probe $OUT/exp/m_dnxhr.mov avg_frame_rate == 24000/1001
+export ffv1 $OUT/exp/m_ffv1.mkv
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_ffv1.mkv codec == ffv1
+probe $OUT/exp/m_ffv1.mkv frames == 240
+probe $OUT/exp/m_ffv1.mkv audio_codec == flac
+export h265 $OUT/exp/m_h265.mp4
+until export.state != running 120000
+expect export.state == done
+probe $OUT/exp/m_h265.mp4 codec == hevc
+probe $OUT/exp/m_h265.mp4 frames == 240
+export wav $OUT/exp/m_audio.wav
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_audio.wav audio_codec == pcm_s24le
+probe $OUT/exp/m_audio.wav duration ~ 10.0
+# Range 2 s .. 4 s of a 24000/1001 movie = 48 frames, to a PNG sequence
+export png8 $OUT/exp/m_png/m.%04d.png range=2.002:4.004
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/m_png/m.1001.png exists == yes
+probe $OUT/exp/m_png/m.1048.png exists == yes
+probe $OUT/exp/m_png/m.1049.png exists == no
+export prores422hq $OUT/exp/m_range.mov range=2.002:4.004
+until export.state != running 60000
+probe $OUT/exp/m_range.mov frames == 48
+probe $OUT/exp/m_range.mov duration ~ 2.002
+# --- EXR sequence with framesPerSecond 30000/1001 (24 frames): exact rate kept
+open $MEDIA/exr_fps/bar.1001.exr
+until seq.pixelType == f16 4000
+export prores422hq $OUT/exp/s_prores.mov colour
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/s_prores.mov r_frame_rate == 30000/1001
+probe $OUT/exp/s_prores.mov avg_frame_rate == 30000/1001
+probe $OUT/exp/s_prores.mov frames == 24
+probe $OUT/exp/s_prores.mov duration ~ 0.8008
+probe $OUT/exp/s_prores.mov color_primaries == bt709
+probe $OUT/exp/s_prores.mov audio_codec == none
+export exr_half $OUT/exp/s_exr/bar.%04d.exr
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/s_exr/bar.1001.exr exists == yes
+probe $OUT/exp/s_exr/bar.1024.exr exists == yes
+probe $OUT/exp/s_exr/bar.1025.exr exists == no
+probe $OUT/exp/s_exr/bar.1001.exr codec == exr
+# --- PNG sequence with 2 missing frames (48 frame slots, 24 fps): missing frames held, length kept
+open $MEDIA/png_seq/comp.0001.png
+until seq.pixelType == u8 3000
+export h264 $OUT/exp/s_png.mp4 colour
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/s_png.mp4 frames == 48
+probe $OUT/exp/s_png.mp4 avg_frame_rate == 24/1
+probe $OUT/exp/s_png.mp4 duration ~ 2.0
+export dpx10 $OUT/exp/s_dpx/comp.%04d.dpx
+until export.state != running 60000
+probe $OUT/exp/s_dpx/comp.0001.dpx exists == yes
+probe $OUT/exp/s_dpx/comp.0048.dpx exists == yes
+probe $OUT/exp/s_dpx/comp.0001.dpx codec == dpx

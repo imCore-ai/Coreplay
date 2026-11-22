@@ -1,0 +1,31 @@
+# Playlist: mixed movies and sequences, next/previous, end of file -> next item.
+open $MEDIA/prores_25.mov|$MEDIA/png_seq/comp.0001.png|$MEDIA/h264_23976.mp4
+until engine == mpv 3000
+expect playlist.count == 3
+expect playlist.current == 0
+until fps.rational == 25/1 5000
+key Ctrl+PgDown
+until engine == seq 3000
+expect playlist.current == 1
+key Ctrl+PgDown
+until engine == mpv 3000
+expect playlist.current == 2
+key Ctrl+PgUp
+until engine == seq 3000
+expect playlist.current == 1
+key Ctrl+PgUp
+until playlist.current == 0 3000
+# jump near the end of the 6 s ProRes; playback must move to the next item by itself
+until fps.rational == 25/1 5000
+key Shift+Right
+wait 300
+expect position > 4
+until playlist.current == 1 6000
+until engine == seq 3000
+append $MEDIA/tif_seq/plate.1001.tif
+expect playlist.count == 4
+# next file in the folder: png_seq has only one sequence, so nothing changes
+key PgDown
+wait 300
+expect playlist.current == 1
+state

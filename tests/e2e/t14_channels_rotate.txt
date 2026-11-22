@@ -1,0 +1,116 @@
+# R / G / B channel solo (BunnyLab behaviour) and Ctrl+arrow rotation, on both engines.
+# Patches: 0 grey 100 (top-left), 3 skin 200,150,120 (top-right), 4 red 180,60,50 (bottom-left), 7 white 235.
+keymap
+open $MEDIA/patch_seq/patch.0001.png
+action play.repeat.none
+until seq.pixelType == u8 3000
+wait 300
+key R
+expect channel == 1
+expect channelButton.active == true
+wait 200
+pixel 0.875 0.25 skinR
+expectpixel skinR == 200,200,200 1
+pixel 0.125 0.75 redR
+expectpixel redR == 180,180,180 1
+key G
+expect channel == 2
+wait 200
+pixel 0.875 0.25 skinG
+expectpixel skinG == 150,150,150 1
+clickbutton B
+expect channel == 3
+wait 200
+pixel 0.875 0.25 skinB
+expectpixel skinB == 120,120,120 1
+grab $OUT/t14_seq_blue.png
+key B
+expect channel == 0
+expect channelButton.active == false
+wait 200
+pixel 0.875 0.25 skin
+expectpixel skin == 200,150,120 1
+# The channel is taken AFTER a LUT (as shown): invert LUT + R shows 255 - 200
+lut file $MEDIA/invert.cube
+key R
+wait 300
+pixel 0.875 0.25 skinInvR
+expectpixel skinInvR == 55,55,55 2
+key R
+lut clear
+# Rotation: clockwise moves the top-left patch to the top-right
+key Ctrl+Right
+expect pan.rotate == 90
+wait 300
+pixel 0.53 0.05 cwA
+pixel 0.47 0.05 cwB
+expectpixel cwA == 100,100,100 2
+expectpixel cwB == 180,60,50 2
+grab $OUT/t14_seq_cw.png
+key Ctrl+Left
+key Ctrl+Left
+expect pan.rotate == 270
+wait 300
+pixel 0.53 0.05 ccwA
+pixel 0.47 0.05 ccwB
+expectpixel ccwA == 235,235,235 2
+expectpixel ccwB == 200,150,120 2
+key Ctrl+Right
+expect pan.rotate == 0
+# --- the same on the movie
+open $MEDIA/patches_709.mp4
+until fps.rational == 24/1 5000
+key Space
+until mpv.pause == yes 2000
+wait 500
+key G
+wait 300
+wait 600
+pixel 0.875 0.25 mSkinG
+expectpixel mSkinG == 150,150,150 3
+key R
+wait 600
+pixel 0.125 0.75 mRedR
+expectpixel mRedR == 180,180,180 3
+key R
+wait 600
+expect channel == 0
+pixel 0.875 0.25 mSkin
+expectpixel mSkin == 200,150,120 3
+key Ctrl+Right
+until mpv.video-rotate == 90 2000
+wait 600
+pixel 0.53 0.05 mcwA
+pixel 0.47 0.05 mcwB
+expectpixel mcwA == cwA 4
+expectpixel mcwB == cwB 4
+key Ctrl+Left
+key Ctrl+Left
+until mpv.video-rotate == 270 2000
+wait 600
+pixel 0.53 0.05 mccwA
+pixel 0.47 0.05 mccwB
+expectpixel mccwA == ccwA 4
+expectpixel mccwB == ccwB 4
+key Ctrl+Right
+until mpv.video-rotate == 0 2000
+# The channel shader runs on the GPU output: hardware decoding stays on (4:2:0 movie)
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+key B
+wait 800
+expect channel == 3
+expect mpv.hwdec-current != no
+key B
+# Right-click menu holds export, LUTs, rotation and subtitles before the main menus
+expect contextMenu == Export... | LUT | Rotate Clockwise | Rotate Counter-clockwise | Load Subtitle... | Subtitle Style... | File | View | Play | Navigate | Compare | Image | Help
+expect contextMenu.lut == Load a LUT... | LUT Presets | Clear LUT
+# A LUT on a movie is a GPU shader: hardware decoding stays zero-copy (not "-copy")
+open $MEDIA/h264_23976.mp4
+until fps.rational == 24000/1001 5000
+lut preset ARRI LogC3 (EI800)|Rec.709
+wait 800
+expect lut == ARRI LogC3 (EI800) to Rec.709
+expect mpv.hwdec-current == nvdec
+lut clear
+action play.repeat.all

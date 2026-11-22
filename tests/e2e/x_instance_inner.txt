@@ -1,0 +1,6 @@
+# Driven by t17 (run_instance.sh): other processes hand files to this window.
+until playlist.count == 3 15000
+expect title != Coreplay
+state
+until playlist.count == 1 15000
+expect playlist.current == 0

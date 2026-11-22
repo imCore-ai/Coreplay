@@ -1,0 +1,54 @@
+# PNG 8-bit sequence comp.0001-0048, frames 10 and 11 missing; opened on frame 5.
+keymap
+expect engine == none
+open $MEDIA/png_seq/comp.0005.png
+expect frame == 5
+until seq.pixelType == u8 3000
+expect engine == seq
+expect seq.count == 48
+expect seq.first == 1
+expect seq.last == 48
+expect seq.missing == 2
+expect seq.channels == 3
+expect media.w == 1280
+expect media.h == 720
+expect seq.fpsFromFile == false
+expect seq.inputSpace == sRGB Encoded Rec.709 (sRGB)
+expect title == comp.####.png [1-48] - Coreplay
+until paused == false 2000
+wait 1500
+expect frame > 30
+key Space
+wait 100
+expect paused == true
+key Home
+until frame == 1 2000
+key Shift+Right
+until frame == 48 2000
+key Home
+until frame == 1 2000
+# step onto the missing frames
+key Right
+key Right
+key Right
+key Right
+key Right
+key Right
+key Right
+key Right
+key Right
+until frame == 10 2000
+until seq.frameMissing == true 2000
+grab $OUT/t1_missing_f10.png
+key Right
+key Right
+until frame == 12 2000
+until seq.frameMissing == false 2000
+key Left
+until frame == 11 2000
+grab $OUT/t1_f12.png
+key Right
+until seq.frameMissing == false 2000
+grab $OUT/t1_f12.png
+expect seq.view == Un-tone-mapped
+state

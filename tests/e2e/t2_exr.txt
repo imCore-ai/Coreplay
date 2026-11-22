@@ -1,0 +1,26 @@
+# 32-bit float EXR from ffmpeg (its header carries framesPerSecond 24/1).
+open $MEDIA/exr_seq/shot_v001.1001.exr
+until seq.pixelType == f32 4000
+expect seq.count == 120
+expect seq.fpsFromFile == true
+expect fps.rational == 24/1
+expect seq.inputSpace == ACEScg
+until paused == false 2000
+key Space
+expect paused == true
+until seq.cachedFrames == 120 15000
+key Home
+until frame == 1001 2000
+key Space
+expect paused == false
+wait 1500
+expect seq.measuredFps ~ 24
+key Ctrl+Up
+expect rate == 2
+wait 1300
+expect seq.measuredFps ~ 48
+key Ctrl+R
+expect rate == 1
+key Space
+grab $OUT/t2_exr.png
+state

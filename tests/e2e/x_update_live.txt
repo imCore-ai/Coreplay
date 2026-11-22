@@ -1,0 +1,6 @@
+update check
+until update.state != checking 30000
+# The live feed is signed and readable; which version it holds changes with every push.
+expect update.state != failed
+expect update.feed == https://auth.imcore.ai/coreplay-updates/windows/
+expect update.latest has .
