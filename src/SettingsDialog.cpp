@@ -1,16 +1,24 @@
 #include "SettingsDialog.h"
 
+#include "I18n.h"
+
+#include <QApplication>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QCoreApplication>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QKeySequenceEdit>
 #include <QLabel>
 #include <QLineEdit>
+#include <QProcess>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QTabWidget>
 #include <QTableWidget>
+#include <QTimer>
 #include <QVBoxLayout>
 
 namespace {
@@ -19,26 +27,37 @@ QString keysToText(const QList<QKeySequence>& keys) {
     for (const auto& k : keys) l << k.toString(QKeySequence::NativeText);
     return l.join(",  ");
 }
-QString plainLabel(const char* label) { return QString(label).remove('&').replace("&&", "&"); }
+// "Pan&&Scan" -> "Pan&Scan"; a CJK/Thai/Arabic/Hindi menu key "(&P)" goes as a whole.
+QString plainText(QString s) {
+    s.remove(QRegularExpression(R"(\s*\(&[^&\s]\))"));
+    return s.replace("&&", QChar(1)).remove('&').replace(QChar(1), '&');
+}
+// A command's label as shown: translated (context "Hotkeys"), then without its marks.
+QString plainLabel(const char* label) { return plainText(QCoreApplication::translate("Hotkeys", label)); }
+// The English label, so a search in English still finds the command.
+QString englishLabel(const char* label) { return plainText(QString(label)); }
 }  // namespace
 
 SettingsDialog::SettingsDialog(QWidget* parent) : QDialog(parent), keys_(Hotkeys::load()) {
-    setWindowTitle("Settings");
+    setWindowTitle(tr("Settings"));
+    setObjectName("settingsDialog");
     resize(760, 620);
     tabs_ = new QTabWidget(this);
 
     // ---- General
     auto* general = new QWidget;
     auto* gl = new QVBoxLayout(general);
-    newWindow_ = new QCheckBox("Open each file in a new window when a file is already playing");
-    newWindow_->setToolTip("Double-clicking a second file opens a second Coreplay window instead of\n"
-                           "replacing the file that plays. Files selected together open in one window.");
+    newWindow_ = new QCheckBox(tr("Open each file in a new window when a file is already playing"));
+    //: "Coreplay" is the product name; keep it in English.
+    newWindow_->setToolTip(tr("Double-clicking a second file opens a second Coreplay window instead of\n"
+                              "replacing the file that plays. Files selected together open in one window."));
     newWindow_->setChecked(QSettings().value("player/newWindow", false).toBool());
-    autoUpdate_ = new QCheckBox("Check for updates automatically (once a day)");
+    autoUpdate_ = new QCheckBox(tr("Check for updates automatically (once a day)"));
     autoUpdate_->setChecked(QSettings().value("updates/auto", true).toBool());
-    software_ = new QCheckBox("Software rendering (no GPU; applies at the next start)");
-    software_->setToolTip("Coreplay turns this on by itself when the GPU driver cannot draw its picture.\n"
-                          "Turn it off after installing a GPU driver.");
+    software_ = new QCheckBox(tr("Software rendering (no GPU; applies at the next start)"));
+    //: "Coreplay" is the product name; keep it in English.
+    software_->setToolTip(tr("Coreplay turns this on by itself when the GPU driver cannot draw its picture.\n"
+                             "Turn it off after installing a GPU driver."));
     software_->setChecked(QSettings().value("gl/software", false).toBool());
     gl->addWidget(newWindow_);
     gl->addWidget(autoUpdate_);
@@ -46,18 +65,61 @@ SettingsDialog::SettingsDialog(QWidget* parent) : QDialog(parent), keys_(Hotkeys
     autoUpdate_->hide();  // no update feed on Linux (new versions come as a package)
 #endif
     gl->addWidget(software_);
+
+    // Language: follow the system's display language, or pick one. Applies at the next start.
+    gl->addSpacing(14);
+    auto* langTitle = new QLabel(tr("Language"));
+    QFont tf = langTitle->font();
+    tf.setBold(true);
+    langTitle->setFont(tf);
+    gl->addWidget(langTitle);
+    language_ = new QComboBox;
+    language_->setObjectName("language");
+    {
+        QString sysName = "English";
+        for (const auto& l : I18n::languages())
+            if (l.code == I18n::systemLanguage()) sysName = l.nativeName;
+        language_->addItem(tr("Follow system (%1)").arg(sysName), "system");
+        language_->insertSeparator(1);
+        for (const auto& l : I18n::languages()) language_->addItem(l.nativeName, l.code);
+        const int at = language_->findData(I18n::setting());
+        language_->setCurrentIndex(at >= 0 ? at : 0);
+    }
+    auto* langRow = new QHBoxLayout;
+    langRow->addWidget(language_);
+    restartBtn_ = new QPushButton(tr("Restart Now"));
+    restartBtn_->setObjectName("restartNow");
+    langRow->addWidget(restartBtn_);
+    langRow->addStretch();
+    gl->addLayout(langRow);
+    langNote_ = new QLabel(tr("The new language applies when Coreplay starts again."));
+    langNote_->setObjectName("languageNote");
+    gl->addWidget(langNote_);
+    auto updateLangNote = [this] {
+        const bool changed = I18n::resolve(language_->currentData().toString()) != I18n::current();
+        langNote_->setVisible(changed);
+        restartBtn_->setVisible(changed);
+    };
+    updateLangNote();
+    connect(language_, &QComboBox::currentIndexChanged, this, updateLangNote);
+    connect(restartBtn_, &QPushButton::clicked, this, [this] {
+        if (!apply()) return;
+        // A new Coreplay (its own window, not handed to this one), then this one closes.
+        QProcess::startDetached(QCoreApplication::applicationFilePath(), {"--new"});
+        QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+    });
     gl->addStretch();
-    tabs_->addTab(general, "General");
+    tabs_->addTab(general, tr("General"));
 
     // ---- Hotkeys
     auto* hot = new QWidget;
     auto* hl = new QVBoxLayout(hot);
     filter_ = new QLineEdit;
-    filter_->setPlaceholderText("Search commands or keys");
+    filter_->setPlaceholderText(tr("Search commands or keys"));
     filter_->setClearButtonEnabled(true);
     hl->addWidget(filter_);
     table_ = new QTableWidget(0, 2);
-    table_->setHorizontalHeaderLabels({"Command", "Keys"});
+    table_->setHorizontalHeaderLabels({tr("Command"), tr("Keys")});
     table_->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
     table_->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     table_->verticalHeader()->hide();
@@ -66,33 +128,33 @@ SettingsDialog::SettingsDialog(QWidget* parent) : QDialog(parent), keys_(Hotkeys
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     hl->addWidget(table_, 1);
 
-    current_ = new QLabel("Select a command.");
+    current_ = new QLabel(tr("Select a command."));
     hl->addWidget(current_);
     auto* row = new QHBoxLayout;
     edit_ = new QKeySequenceEdit;
     edit_->setMaximumSequenceLength(1);
-    edit_->setToolTip("Click here, then press the new key");
-    setBtn_ = new QPushButton("Set");
-    setBtn_->setToolTip("Replace this command's keys with the pressed key");
-    addBtn_ = new QPushButton("Add");
-    addBtn_->setToolTip("Keep the current keys and add the pressed key");
-    clearBtn_ = new QPushButton("Clear");
-    clearBtn_->setToolTip("No key for this command");
-    resetBtn_ = new QPushButton("Default");
-    resetBtn_->setToolTip("This command's default keys");
-    row->addWidget(new QLabel("New key:"));
+    edit_->setToolTip(tr("Click here, then press the new key"));
+    setBtn_ = new QPushButton(tr("Set"));
+    setBtn_->setToolTip(tr("Replace this command's keys with the pressed key"));
+    addBtn_ = new QPushButton(tr("Add"));
+    addBtn_->setToolTip(tr("Keep the current keys and add the pressed key"));
+    clearBtn_ = new QPushButton(tr("Clear"));
+    clearBtn_->setToolTip(tr("No key for this command"));
+    resetBtn_ = new QPushButton(tr("Default"));
+    resetBtn_->setToolTip(tr("This command's default keys"));
+    row->addWidget(new QLabel(tr("New key:")));
     row->addWidget(edit_, 1);
     for (auto* b : {setBtn_, addBtn_, clearBtn_, resetBtn_}) row->addWidget(b);
     hl->addLayout(row);
     message_ = new QLabel;
     message_->setWordWrap(true);
     hl->addWidget(message_);
-    auto* resetAllBtn = new QPushButton("Reset All Hotkeys");
+    auto* resetAllBtn = new QPushButton(tr("Reset All Hotkeys"));
     auto* bottom = new QHBoxLayout;
     bottom->addWidget(resetAllBtn);
     bottom->addStretch();
     hl->addLayout(bottom);
-    tabs_->addTab(hot, "Hotkeys");
+    tabs_->addTab(hot, tr("Hotkeys"));
 
     auto* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
     auto* lay = new QVBoxLayout(this);
@@ -134,7 +196,9 @@ void SettingsDialog::fill() {
     table_->setRowCount(0);
     for (const auto& d : keys_) {
         const QString label = plainLabel(d.label), keys = keysToText(d.keys);
-        if (!f.isEmpty() && !label.contains(f, Qt::CaseInsensitive) && !keys.contains(f, Qt::CaseInsensitive)) continue;
+        if (!f.isEmpty() && !label.contains(f, Qt::CaseInsensitive) &&
+            !englishLabel(d.label).contains(f, Qt::CaseInsensitive) && !keys.contains(f, Qt::CaseInsensitive))
+            continue;
         const int r = table_->rowCount();
         table_->insertRow(r);
         auto* name = new QTableWidgetItem(label);
@@ -149,14 +213,15 @@ void SettingsDialog::showSelected() {
     const int i = indexOf(selected_);
     for (auto* w : std::initializer_list<QWidget*>{edit_, setBtn_, addBtn_, clearBtn_, resetBtn_}) w->setEnabled(i >= 0);
     if (i < 0) {
-        current_->setText("Select a command, click in New key and press the key.");
+        current_->setText(tr("Select a command, click in New key and press the key."));
         return;
     }
     const auto& defs = Hotkeys::defaults();
     const QString def = keysToText(defs[i].keys);
-    current_->setText(QString("%1:  %2   (default: %3)")
-                          .arg(plainLabel(keys_[i].label), keys_[i].keys.isEmpty() ? QString("no key") : keysToText(keys_[i].keys),
-                               def.isEmpty() ? QString("no key") : def));
+    //: %1 is a command, %2 its keys, %3 its default keys.
+    current_->setText(tr("%1:  %2   (default: %3)")
+                          .arg(plainLabel(keys_[i].label), keys_[i].keys.isEmpty() ? tr("no key") : keysToText(keys_[i].keys),
+                               def.isEmpty() ? tr("no key") : def));
 }
 
 void SettingsDialog::selectCommand(const QString& id) {
@@ -169,7 +234,7 @@ void SettingsDialog::selectCommand(const QString& id) {
 QString SettingsDialog::assignKey(const QKeySequence& key, bool add) {
     const int i = indexOf(selected_);
     if (i < 0 || key.isEmpty()) {
-        message_->setText("Press a key in New key first.");
+        message_->setText(tr("Press a key in New key first."));
         return message_->text();
     }
     // One key, one command: take it away from any other command that had it.
@@ -183,8 +248,10 @@ QString SettingsDialog::assignKey(const QKeySequence& key, bool add) {
     if (!ks.contains(key)) ks << key;
     const QString k = key.toString(QKeySequence::NativeText);
     message_->setText(movedFrom.isEmpty()
-                          ? QString("%1 is now on %2.").arg(k, plainLabel(keys_[i].label))
-                          : QString("%1 is now on %2. It was removed from: %3.").arg(k, plainLabel(keys_[i].label), movedFrom.join(", ")));
+                          //: %1 is a key, %2 a command.
+                          ? tr("%1 is now on %2.").arg(k, plainLabel(keys_[i].label))
+                          //: %1 is a key, %2 a command, %3 the commands that had the key.
+                          : tr("%1 is now on %2. It was removed from: %3.").arg(k, plainLabel(keys_[i].label), movedFrom.join(", ")));
     edit_->clear();
     fill();
     showSelected();
@@ -195,7 +262,7 @@ void SettingsDialog::clearKeys() {
     const int i = indexOf(selected_);
     if (i < 0) return;
     keys_[i].keys.clear();
-    message_->setText(plainLabel(keys_[i].label) + " has no key now.");
+    message_->setText(tr("%1 has no key now.").arg(plainLabel(keys_[i].label)));
     fill();
     showSelected();
 }
@@ -211,15 +278,15 @@ void SettingsDialog::resetCommand() {
             if (d.keys.removeAll(k)) movedFrom << plainLabel(d.label);
     }
     keys_[i].keys = def;
-    message_->setText(plainLabel(keys_[i].label) + " has its default keys." +
-                      (movedFrom.isEmpty() ? QString() : " Removed from: " + movedFrom.join(", ") + "."));
+    message_->setText(tr("%1 has its default keys.").arg(plainLabel(keys_[i].label)) +
+                      (movedFrom.isEmpty() ? QString() : tr(" Removed from: %1.").arg(movedFrom.join(", "))));
     fill();
     showSelected();
 }
 
 void SettingsDialog::resetAll() {
     keys_ = Hotkeys::defaults();
-    message_->setText("All hotkeys are back to the defaults (saved when you press OK or Apply).");
+    message_->setText(tr("All hotkeys are back to the defaults (saved when you press OK or Apply)."));
     fill();
     showSelected();
 }
@@ -229,8 +296,9 @@ bool SettingsDialog::apply() {
     st.setValue("player/newWindow", newWindow_->isChecked());
     st.setValue("updates/auto", autoUpdate_->isChecked());
     st.setValue("gl/software", software_->isChecked());
+    I18n::setSetting(language_->currentData().toString());
     if (!Hotkeys::saveOverrides(keys_)) {
-        message_->setText("Cannot write " + Hotkeys::configPath());
+        message_->setText(tr("Cannot write %1").arg(Hotkeys::configPath()));
         return false;
     }
     emit applied();
@@ -245,3 +313,8 @@ QString SettingsDialog::message() const { return message_->text(); }
 int SettingsDialog::visibleRows() const { return table_->rowCount(); }
 void SettingsDialog::setFilter(const QString& text) { filter_->setText(text); }
 void SettingsDialog::setNewWindow(bool on) { newWindow_->setChecked(on); }
+void SettingsDialog::setLanguage(const QString& code) {
+    const int at = language_->findData(code);
+    if (at >= 0) language_->setCurrentIndex(at);
+}
+bool SettingsDialog::languageNoteVisible() const { return !langNote_->isHidden(); }

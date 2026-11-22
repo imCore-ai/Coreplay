@@ -124,6 +124,7 @@ private:
     void fillContextMenu(QMenu* m);
     void exportDialog();
     void updatesDialog();
+    void showAbout();
     void autoCheckUpdates();
     class Updater* updater();
     bool startExport(const struct ExportJob& job, bool showProgress);

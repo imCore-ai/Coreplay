@@ -145,7 +145,8 @@ SeqView::SeqView(QWidget* parent) : QOpenGLWidget(parent), ocio_(std::make_uniqu
             configName_ = qEnvironmentVariable("OCIO");
         } else {
             ocio_->config = OCIO::Config::CreateFromFile("ocio://studio-config-latest");
-            configName_ = "OCIO built-in studio config";
+            //: Keep the product name OCIO in English.
+            configName_ = tr("OCIO built-in studio config");
         }
         // Display / view: the user's last choice; else a view WITHOUT tone mapping, so
         // a PNG or JPEG looks exactly like the file (the Nuke and RV default); else the
@@ -162,7 +163,8 @@ SeqView::SeqView(QWidget* parent) : QOpenGLWidget(parent), ocio_(std::make_uniqu
         }
         if (auto cs = ocio_->config->getColorSpace("scene_linear")) input_ = cs->getName();
     } catch (const OCIO::Exception& e) {
-        configName_ = QString("OCIO error: %1").arg(e.what());
+        //: Keep the product name OCIO in English.
+        configName_ = tr("OCIO error: %1").arg(e.what());
     }
 }
 
@@ -301,7 +303,7 @@ void SeqView::buildProgram() {
             out = desc;
             return desc->getShaderText();
         } catch (const std::exception& e) {
-            emit colourError(QString("Colour transform failed: %1").arg(e.what()));
+            emit colourError(tr("Colour transform failed: %1").arg(e.what()));
             return fallback;
         }
     };
@@ -319,7 +321,7 @@ void SeqView::buildProgram() {
         if (!ok) {
             char log[4096];
             glGetShaderInfoLog(s, sizeof log, nullptr, log);
-            emit colourError(QString("Shader error: %1").arg(log));
+            emit colourError(tr("Shader error: %1").arg(log));
         }
         return s;
     };
@@ -568,8 +570,8 @@ void SeqView::paintGL() {
 // label: QPainter text on a core-profile GL surface comes out garbled.
 void SeqView::updateLabel() {
     QString text = overlay_;
-    if (frame_ && frame_->missing) text = "MISSING FRAME";
-    else if (frame_ && !frame_->error.isEmpty()) text = "CANNOT READ FRAME\n" + frame_->error;
+    if (frame_ && frame_->missing) text = tr("MISSING FRAME");
+    else if (frame_ && !frame_->error.isEmpty()) text = tr("CANNOT READ FRAME") + "\n" + frame_->error;
     label_->setText(text);
     label_->setVisible(!text.isEmpty());
     label_->setGeometry(rect());

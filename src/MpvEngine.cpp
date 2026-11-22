@@ -441,7 +441,7 @@ void MpvEngine::drainEvents() {
             case MPV_EVENT_END_FILE: {
                 auto* ef = static_cast<mpv_event_end_file*>(e->data);
                 if (ef->reason == MPV_END_FILE_REASON_ERROR)
-                    emit message(QString("Cannot play: %1").arg(mpv_error_string(ef->error)));
+                    emit message(tr("Cannot play: %1").arg(mpv_error_string(ef->error)));
                 break;
             }
             default:
@@ -675,26 +675,26 @@ bool MpvEngine::saveImage(const QString& path) {
 
 QString MpvEngine::info() const {
     QStringList l;
-    l << "File: " + getString("path");
-    l << "Container: " + getString("file-format");
-    l << QString("Video: %1  %2x%3  %4").arg(getString("video-codec")).arg(size_.width()).arg(size_.height())
+    l << tr("File: %1").arg(getString("path"));
+    l << tr("Container: %1").arg(getString("file-format"));
+    l << tr("Video: %1  %2x%3  %4").arg(getString("video-codec")).arg(size_.width()).arg(size_.height())
              .arg(getString("video-params/pixelformat"));
     const Rational r = fps();
-    l << QString("Frame rate: %1/%2 = %3 fps").arg(r.num).arg(r.den).arg(fps_, 0, 'f', 3);
-    l << "Colour: " + getString("video-params/colormatrix") + " / " + getString("video-params/primaries") +
-             " / " + getString("video-params/gamma");
-    l << "Hardware decoding: " + getString("hwdec-current");
-    l << QString("Audio: %1  %2 Hz  %3").arg(getString("audio-codec-name"), getString("audio-params/samplerate"),
+    l << tr("Frame rate: %1/%2 = %3 fps").arg(r.num).arg(r.den).arg(fps_, 0, 'f', 3);
+    l << tr("Colour: %1 / %2 / %3")
+             .arg(getString("video-params/colormatrix"), getString("video-params/primaries"), getString("video-params/gamma"));
+    l << tr("Hardware decoding: %1").arg(getString("hwdec-current"));
+    l << tr("Audio: %1  %2 Hz  %3").arg(getString("audio-codec-name"), getString("audio-params/samplerate"),
                                              getString("audio-params/hr-channels"));
-    l << QString("Duration: %1 s").arg(dur_, 0, 'f', 3);
+    l << tr("Duration: %1 s").arg(dur_, 0, 'f', 3);
     const QString aspect = getString("video-params/aspect"), rotate = getString("video-params/rotate");
-    if (!aspect.isEmpty()) l << "Display aspect: " + aspect + (rotate.isEmpty() || rotate == "0" ? QString() : "   rotated " + rotate);
+    if (!aspect.isEmpty()) l << tr("Display aspect: %1").arg(aspect) + (rotate.isEmpty() || rotate == "0" ? QString() : tr("   rotated %1").arg(rotate));
     if (const QString peak = getString("video-params/sig-peak"); !peak.isEmpty() && peak.toDouble() > 1.0)
-        l << "HDR peak: " + peak + " x SDR white";
+        l << tr("HDR peak: %1 x SDR white").arg(peak);
     const double vbr = getString("video-bitrate").toDouble(), abr = getString("audio-bitrate").toDouble();
-    if (vbr > 0 || abr > 0) l << QString("Bit rate: video %1 Mb/s   audio %2 kb/s").arg(vbr / 1e6, 0, 'f', 2).arg(abr / 1e3, 0, 'f', 0);
-    if (const QString ch = getString("chapters"); ch.toInt() > 0) l << "Chapters: " + ch;
-    if (const QString drop = getString("frame-drop-count"); drop.toInt() > 0) l << "Dropped frames: " + drop;
+    if (vbr > 0 || abr > 0) l << tr("Bit rate: video %1 Mb/s   audio %2 kb/s").arg(vbr / 1e6, 0, 'f', 2).arg(abr / 1e3, 0, 'f', 0);
+    if (const QString ch = getString("chapters"); ch.toInt() > 0) l << tr("Chapters: %1").arg(ch);
+    if (const QString drop = getString("frame-drop-count"); drop.toInt() > 0) l << tr("Dropped frames: %1").arg(drop);
     // Every track the container has: type, codec, language, title, size or audio layout.
     mpv_node tracks{};
     if (mpv_get_property(mpv_, "track-list", MPV_FORMAT_NODE, &tracks) >= 0 && tracks.format == MPV_FORMAT_NODE_ARRAY) {
@@ -713,13 +713,13 @@ QString MpvEngine::info() const {
             }
             QString type = f.value("type");
             if (!type.isEmpty()) type[0] = type[0].toUpper();
-            QString line = QString("%1 track %2: %3").arg(type, f.value("id"), f.value("codec"));
+            QString line = tr("%1 track %2: %3").arg(type, f.value("id"), f.value("codec"));
             if (f.contains("demux-w")) line += QString(" %1x%2").arg(f.value("demux-w"), f.value("demux-h"));
             if (f.contains("demux-channel-count")) line += QString(" %1 ch").arg(f.value("demux-channel-count"));
             if (f.contains("demux-samplerate")) line += QString(" %1 Hz").arg(f.value("demux-samplerate"));
             if (f.contains("lang")) line += " [" + f.value("lang") + "]";
             if (f.contains("title")) line += " \"" + f.value("title") + "\"";
-            if (f.value("external") == "yes") line += " (external)";
+            if (f.value("external") == "yes") line += tr(" (external)");
             if (f.value("selected") == "yes") line += " *";
             l << line;
         }

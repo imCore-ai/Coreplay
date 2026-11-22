@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets OpenGL OpenGLWidgets Network)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets OpenGL OpenGLWidgets Network LinguistTools)
 find_package(OpenImageIO CONFIG REQUIRED)
 find_package(OpenColorIO CONFIG REQUIRED)
 if(NOT WIN32)
@@ -59,6 +59,7 @@ add_executable(coreplay WIN32
     src/SeekBar.h           src/SeekBar.cpp
     src/Osd.h               src/Osd.cpp
     src/HotkeyOverlay.h     src/HotkeyOverlay.cpp
+    src/I18n.h              src/I18n.cpp
     src/Grade.h             src/Grade.cpp
     src/GradeWindow.h       src/GradeWindow.cpp
     src/MpvEngine.h         src/MpvEngine.cpp
@@ -103,6 +104,17 @@ if(MSVC)
         /DELAYLOAD:OpenColorIO_2_6.dll)
     target_link_libraries(coreplay PRIVATE delayimp bcrypt dwmapi)  # bcrypt: update signature check; dwmapi: title bar
 endif()
+
+# Interface languages (Settings > General > Language). English is the source text; each
+# i18n/coreplay_<code>.ts is compiled to a .qm and built into the program as :/i18n/...
+# Refresh the .ts files after changing strings: cmake --build build --target update_translations
+set(COREPLAY_LANGUAGES zh_TW zh_CN ja ko es fr de pt ru th ar hi id vi ms fil)
+set(COREPLAY_TS "")
+foreach(_l IN LISTS COREPLAY_LANGUAGES)
+    list(APPEND COREPLAY_TS "${CMAKE_SOURCE_DIR}/i18n/coreplay_${_l}.ts")
+endforeach()
+qt_add_translations(coreplay TS_FILES ${COREPLAY_TS} RESOURCE_PREFIX "/i18n"
+    LUPDATE_OPTIONS -no-obsolete -locations none)
 
 option(COREPLAY_TESTS "Build the end-to-end test driver (--test-script)" OFF)
 if(COREPLAY_TESTS)

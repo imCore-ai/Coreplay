@@ -2,6 +2,7 @@
 
 #include <OpenImageIO/imageio.h>
 
+#include <QCoreApplication>
 #include <QFileInfo>
 #include <algorithm>
 #include <cstring>
@@ -123,11 +124,11 @@ FramePtr decode(const QString& path) {
     // The whole header, for the info overlay: channels, windows, then every attribute.
     QStringList names;
     for (const auto& n : spec.channelnames) names << QString::fromStdString(n);
-    f->metadata << "channels: " + names.join(',');
-    f->metadata << QString("data window: %1,%2 %3x%4   display window: %5,%6 %7x%8")
+    f->metadata << QCoreApplication::translate("ImageDecoder", "channels: %1").arg(names.join(','));
+    f->metadata << QCoreApplication::translate("ImageDecoder", "data window: %1,%2 %3x%4   display window: %5,%6 %7x%8")
                        .arg(spec.x).arg(spec.y).arg(spec.width).arg(spec.height)
                        .arg(spec.full_x).arg(spec.full_y).arg(fw).arg(fh);
-    if (spec.tile_width > 0) f->metadata << QString("tiles: %1x%2").arg(spec.tile_width).arg(spec.tile_height);
+    if (spec.tile_width > 0) f->metadata << QCoreApplication::translate("ImageDecoder", "tiles: %1x%2").arg(spec.tile_width).arg(spec.tile_height);
     for (const OIIO::ParamValue& p : spec.extra_attribs) {
         QString v = QString::fromStdString(p.get_string(16)).simplified();
         if (v.size() > 160) v = v.left(157) + "...";

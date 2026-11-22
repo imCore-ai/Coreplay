@@ -1,5 +1,6 @@
 #include "MovFix.h"
 
+#include <QCoreApplication>
 #include <QFile>
 #include <cstdint>
 #include <vector>
@@ -45,7 +46,7 @@ namespace MovFix {
 
 QString fixLastVideoSampleDuration(const QString& path) {
     QFile f(path);
-    if (!f.open(QIODevice::ReadWrite)) return "cannot open " + path;
+    if (!f.open(QIODevice::ReadWrite)) return QCoreApplication::translate("MovFix", "cannot open %1").arg(path);
     // Only the moov box is read and rewritten (it is small); mdat is never touched.
     const qint64 fileSize = f.size();
     std::vector<uint8_t> head(16);
@@ -61,17 +62,28 @@ QString fixLastVideoSampleDuration(const QString& path) {
         if (size < 8) break;
         off += qint64(size);
     }
-    if (moovAt < 0) return "no moov box";
+    if (moovAt < 0) {
+        //: Keep the MP4 box names (moov) in English.
+        return QCoreApplication::translate("MovFix", "no moov box");
+    }
     f.seek(moovAt);
     std::vector<uint8_t> d(static_cast<size_t>(moovSize));
-    if (f.read(reinterpret_cast<char*>(d.data()), moovSize) != moovSize) return "short moov";
+    if (f.read(reinterpret_cast<char*>(d.data()), moovSize) != moovSize)
+        //: Keep the MP4 box names (moov) in English.
+        return QCoreApplication::translate("MovFix", "short moov");
 
     const auto top = children(d, 0, d.size());
-    if (top.empty()) return "bad moov";
+    if (top.empty()) {
+        //: Keep the MP4 box names (moov) in English.
+        return QCoreApplication::translate("MovFix", "bad moov");
+    }
     const Box& moov = top[0];
     const auto mv = children(d, moov.body, moov.start + moov.size);
     const Box* mvhd = find(mv, "mvhd");
-    if (!mvhd) return "no mvhd";
+    if (!mvhd) {
+        //: Keep the MP4 box names (mvhd) in English.
+        return QCoreApplication::translate("MovFix", "no mvhd");
+    }
     const bool mv1 = d[mvhd->body] == 1;
     const uint32_t movieTs = be32(&d[mvhd->body + (mv1 ? 20 : 12)]);
     const uint64_t mvhdDurAt = mvhd->body + (mv1 ? 24 : 16);
@@ -128,7 +140,7 @@ QString fixLastVideoSampleDuration(const QString& path) {
     if (!changed) return {};
     if (longest > readDur(d, mvhdDurAt, mv1)) writeDur(d, mvhdDurAt, mv1, longest);
     f.seek(moovAt);
-    if (f.write(reinterpret_cast<const char*>(d.data()), moovSize) != moovSize) return "write failed";
+    if (f.write(reinterpret_cast<const char*>(d.data()), moovSize) != moovSize) return QCoreApplication::translate("MovFix", "write failed");
     return {};
 }
 

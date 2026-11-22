@@ -150,6 +150,15 @@ default keys are in `hotkeys.defaults.json` next to it. The file reloads on save
 Not carried over from MPC-HC (no meaning here): DVD/BD menus, capture/tuner, shader toggles,
 subresync, favourites, VSync controls. Their keys are free.
 
+## Language
+
+Coreplay speaks 17 languages: English, 繁體中文, 简体中文, 日本語, 한국어, Español, Français,
+Deutsch, Português, Русский, ไทย, العربية (right to left), हिन्दी, Bahasa Indonesia, Tiếng Việt,
+Bahasa Melayu and Filipino. Settings (O) > General > **Language**: **Follow system** uses the
+display language of the operating system (English when it is not one of these), or pick one
+from the list. The new language applies when Coreplay starts again; **Restart Now** does
+that for you. Product, format, codec, colour-space and key names stay in English.
+
 ## Opening files
 
 `coreplay <files>` opens them; a second launch sends its files to the running window; `--new`

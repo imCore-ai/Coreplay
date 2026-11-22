@@ -104,6 +104,27 @@ NVIDIA GPU (hardware decoding, NVENC export) fail on machines without one.
 
 `COREPLAY_MPV_LOG=<file>` writes the player's full libmpv log, and the export's to `<file>.export`.
 
+Tests run in English. `COREPLAY_TEST_LANG=<code>` (for example `zh_TW`, `ar`) runs a test build in
+another language, for screenshots of a translation.
+
+## Translations
+
+The source text is English, in `tr()` / `QCoreApplication::translate()` / `QT_TRANSLATE_NOOP()`.
+The 16 other languages are `i18n/coreplay_<code>.ts`; the build compiles them (lrelease) and puts
+them into the program as `:/i18n/coreplay_<code>.qm`. `src/I18n.cpp` picks one at start
+(Settings > General > Language: "system" or a code).
+
+- After changing or adding UI text, refresh the `.ts` files:
+  `cmake --build build --target update_translations` (lupdate, `-no-obsolete`), then translate
+  the new entries (Qt Linguist, or edit the XML) and remove their `type="unfinished"`.
+- Keep `%1`-style placeholders, line breaks, edge spaces and HTML. A menu key `&` stays one
+  key: Latin and Cyrillic scripts put `&` before a letter; Chinese, Japanese, Korean, Thai,
+  Arabic and Hindi append `(&X)`. Product, format, codec, colour-space and key names stay English.
+- Qt's own texts (dialog buttons, text-field menus) are translated in the same files: they are
+  listed in `I18n.cpp` so lupdate keeps them.
+- Text that code compares or uses as a key (Settings keys, mpv names, compare-mode names for
+  tests, grading control names) stays English in the logic; only the shown copy is translated.
+
 ## Icon
 
 `res/coreplay.ico` / `res/coreplay.png`: made by `python -I tools/make_icon.py`; embedded in the

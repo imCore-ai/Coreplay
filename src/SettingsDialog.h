@@ -11,6 +11,7 @@
 #include "Hotkeys.h"
 
 class QCheckBox;
+class QComboBox;
 class QKeySequenceEdit;
 class QLabel;
 class QLineEdit;
@@ -36,6 +37,8 @@ public:
     int visibleRows() const;
     void setFilter(const QString& text);
     void setNewWindow(bool on);
+    void setLanguage(const QString& code);  // "system" or a language code
+    bool languageNoteVisible() const;
 
 signals:
     void applied();                             // the window reloads its keys
@@ -51,6 +54,9 @@ private:
     QCheckBox* newWindow_;
     QCheckBox* autoUpdate_;
     QCheckBox* software_;
+    QComboBox* language_;
+    QPushButton* restartBtn_;
+    QLabel* langNote_;
     QLineEdit* filter_;
     QTableWidget* table_;
     QLabel* current_;

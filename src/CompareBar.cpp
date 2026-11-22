@@ -13,7 +13,7 @@ CompareSlot::CompareSlot(const QString& letter, QWidget* parent) : QFrame(parent
     setAcceptDrops(true);
     setCursor(Qt::PointingHandCursor);
     setMinimumHeight(30);
-    setToolTip(QString("Slot %1: drop a clip here, or click to choose a file. The same clip may go in both slots.").arg(letter));
+    setToolTip(tr("Slot %1: drop a clip here, or click to choose a file. The same clip may go in both slots.").arg(letter));
     auto* l = new QHBoxLayout(this);
     l->setContentsMargins(8, 2, 4, 2);
     l->setSpacing(8);
@@ -32,23 +32,23 @@ CompareSlot::CompareSlot(const QString& letter, QWidget* parent) : QFrame(parent
     lut_->setAutoRaise(true);
     lut_->setFocusPolicy(Qt::NoFocus);
     lut_->setCursor(Qt::ArrowCursor);
-    lut_->setToolTip(QString("LUT for slot %1").arg(letter));
+    lut_->setToolTip(tr("LUT for slot %1").arg(letter));
     l->addWidget(tag);
     l->addWidget(name_, 1);
     l->addWidget(lut_);
     setFile({});
-    setLutLabel("None");
+    setLutLabel(tr("None"));
 }
 
 void CompareSlot::setFile(const QString& name) {
     empty_ = name.isEmpty();
-    name_->setText(empty_ ? "Drop a clip here, or click to open" : name);
+    name_->setText(empty_ ? tr("Drop a clip here, or click to open") : name);
     update();
 }
 
 QString CompareSlot::fileText() const { return empty_ ? QString() : name_->text(); }
 
-void CompareSlot::setLutLabel(const QString& label) { lut_->setText("LUT: " + label); }
+void CompareSlot::setLutLabel(const QString& label) { lut_->setText(tr("LUT: %1").arg(label)); }
 
 void CompareSlot::dragEnterEvent(QDragEnterEvent* e) {
     if (!e->mimeData()->hasUrls()) return;

@@ -5,6 +5,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QDialogButtonBox>
 #include <QDir>
 #include <QFile>
@@ -36,44 +37,44 @@ const std::vector<ExportPreset>& all() {
     // Encoders all ship inside libmpv-2.dll (checked by name in the DLL).
     static const std::vector<ExportPreset> p = {
         // id, group, label, ext, of, ovc, ovcopts, pixfmt, oac, oacopts
-        {"h264", "Video", "H.264 MP4 (x264, high quality)", "mp4", "mp4", "libx264", "crf=16,preset=medium", "yuv420p", "aac", "b=320k"},
-        {"h264_nvenc", "Video", "H.264 MP4 (NVIDIA GPU, fast)", "mp4", "mp4", "h264_nvenc", "preset=p6,rc=vbr,cq=18,b=0", "yuv420p", "aac", "b=320k"},
-        {"h265", "Video", "H.265 / HEVC MP4 (x265)", "mp4", "mp4", "libx265", "crf=18,preset=medium,x265-params=log-level=error", "yuv420p10le", "aac", "b=320k"},
-        {"h265_nvenc", "Video", "H.265 / HEVC MP4 (NVIDIA GPU, fast)", "mp4", "mp4", "hevc_nvenc", "preset=p6,rc=vbr,cq=20,b=0", "p010le", "aac", "b=320k"},
-        {"av1", "Video", "AV1 MP4 (SVT-AV1)", "mp4", "mp4", "libsvtav1", "crf=28,preset=8", "yuv420p10le", "aac", "b=320k"},
-        {"av1_nvenc", "Video", "AV1 MP4 (NVIDIA RTX 40+ GPU)", "mp4", "mp4", "av1_nvenc", "preset=p6,rc=vbr,cq=24,b=0", "p010le", "aac", "b=320k"},
-        {"vp9", "Video", "VP9 WebM", "webm", "webm", "libvpx-vp9", "crf=30,b=0,row-mt=1", "yuv420p", "libopus", "b=192k"},
-        {"prores422hq", "Video", "ProRes 422 HQ MOV", "mov", "mov", "prores_ks", "profile=3,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
-        {"prores422", "Video", "ProRes 422 MOV", "mov", "mov", "prores_ks", "profile=2,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
-        {"prores422lt", "Video", "ProRes 422 LT MOV", "mov", "mov", "prores_ks", "profile=1,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
-        {"prores422proxy", "Video", "ProRes 422 Proxy MOV", "mov", "mov", "prores_ks", "profile=0,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
-        {"prores4444", "Video", "ProRes 4444 MOV", "mov", "mov", "prores_ks", "profile=4,vendor=apl0", "yuva444p10le", "pcm_s24le", ""},
-        {"dnxhr_hq", "Video", "DNxHR HQ MOV (8-bit)", "mov", "mov", "dnxhd", "profile=dnxhr_hq", "yuv422p", "pcm_s24le", ""},
-        {"dnxhr_hqx", "Video", "DNxHR HQX MOV (10-bit)", "mov", "mov", "dnxhd", "profile=dnxhr_hqx", "yuv422p10le", "pcm_s24le", ""},
-        {"dnxhr_444", "Video", "DNxHR 444 MOV (10-bit)", "mov", "mov", "dnxhd", "profile=dnxhr_444", "yuv444p10le", "pcm_s24le", ""},
-        {"cineform", "Video", "CineForm MOV", "mov", "mov", "cfhd", "quality=film1", "yuv422p10le", "pcm_s24le", ""},
-        {"ffv1", "Video", "FFV1 MKV (lossless)", "mkv", "matroska", "ffv1", "level=3,slices=16,slicecrc=1", "yuv444p10le", "flac", ""},
-        {"utvideo", "Video", "Ut Video AVI (lossless)", "avi", "avi", "utvideo", "", "gbrp", "pcm_s16le", ""},
-        {"qtrle", "Video", "QuickTime Animation MOV (lossless RGB)", "mov", "mov", "qtrle", "", "rgb24", "pcm_s16le", ""},
-        {"hap", "Video", "HAP MOV", "mov", "mov", "hap", "format=hap", "rgba", "pcm_s16le", ""},
-        {"mjpeg", "Video", "Motion JPEG AVI", "avi", "avi", "mjpeg", "q=2", "yuvj422p", "pcm_s16le", ""},
-        {"gif", "Video", "Animated GIF", "gif", "gif", "gif", "", "pal8", "", ""},
-        {"exr_half", "Image sequence", "OpenEXR half float (ZIP)", "exr", "image2", "exr", "compression=zip16,format=half", "gbrpf32le", "", ""},
-        {"exr_float", "Image sequence", "OpenEXR 32-bit float (ZIP)", "exr", "image2", "exr", "compression=zip16,format=float", "gbrpf32le", "", ""},
-        {"dpx10", "Image sequence", "DPX 10-bit", "dpx", "image2", "dpx", "", "gbrp10le", "", ""},
-        {"dpx16", "Image sequence", "DPX 16-bit", "dpx", "image2", "dpx", "", "rgb48le", "", ""},
-        {"tiff16", "Image sequence", "TIFF 16-bit", "tif", "image2", "tiff", "compression_algo=deflate", "rgb48le", "", ""},
-        {"tiff8", "Image sequence", "TIFF 8-bit", "tif", "image2", "tiff", "compression_algo=deflate", "rgb24", "", ""},
-        {"png16", "Image sequence", "PNG 16-bit", "png", "image2", "png", "", "rgb48be", "", ""},
-        {"png8", "Image sequence", "PNG 8-bit", "png", "image2", "png", "", "rgb24", "", ""},
-        {"jpeg", "Image sequence", "JPEG", "jpg", "image2", "mjpeg", "q=2", "yuvj444p", "", ""},
-        {"webp", "Image sequence", "WebP (lossless)", "webp", "image2", "libwebp", "lossless=1", "bgra", "", ""},
-        {"jxl", "Image sequence", "JPEG XL (lossless)", "jxl", "image2", "libjxl", "distance=0", "rgb48le", "", ""},
-        {"wav", "Audio only", "WAV 24-bit", "wav", "wav", "", "", "", "pcm_s24le", ""},
-        {"flac", "Audio only", "FLAC", "flac", "flac", "", "", "", "flac", ""},
-        {"mp3", "Audio only", "MP3 320 kb/s", "mp3", "mp3", "", "", "", "libmp3lame", "b=320k"},
-        {"m4a", "Audio only", "AAC M4A 320 kb/s", "m4a", "ipod", "", "", "", "aac", "b=320k"},
-        {"opus", "Audio only", "Opus", "opus", "ogg", "", "", "", "libopus", "b=192k"},
+        {"h264", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "H.264 MP4 (x264, high quality)"), "mp4", "mp4", "libx264", "crf=16,preset=medium", "yuv420p", "aac", "b=320k"},
+        {"h264_nvenc", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "H.264 MP4 (NVIDIA GPU, fast)"), "mp4", "mp4", "h264_nvenc", "preset=p6,rc=vbr,cq=18,b=0", "yuv420p", "aac", "b=320k"},
+        {"h265", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "H.265 / HEVC MP4 (x265)"), "mp4", "mp4", "libx265", "crf=18,preset=medium,x265-params=log-level=error", "yuv420p10le", "aac", "b=320k"},
+        {"h265_nvenc", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "H.265 / HEVC MP4 (NVIDIA GPU, fast)"), "mp4", "mp4", "hevc_nvenc", "preset=p6,rc=vbr,cq=20,b=0", "p010le", "aac", "b=320k"},
+        {"av1", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "AV1 MP4 (SVT-AV1)"), "mp4", "mp4", "libsvtav1", "crf=28,preset=8", "yuv420p10le", "aac", "b=320k"},
+        {"av1_nvenc", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "AV1 MP4 (NVIDIA RTX 40+ GPU)"), "mp4", "mp4", "av1_nvenc", "preset=p6,rc=vbr,cq=24,b=0", "p010le", "aac", "b=320k"},
+        {"vp9", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "VP9 WebM"), "webm", "webm", "libvpx-vp9", "crf=30,b=0,row-mt=1", "yuv420p", "libopus", "b=192k"},
+        {"prores422hq", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "ProRes 422 HQ MOV"), "mov", "mov", "prores_ks", "profile=3,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
+        {"prores422", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "ProRes 422 MOV"), "mov", "mov", "prores_ks", "profile=2,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
+        {"prores422lt", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "ProRes 422 LT MOV"), "mov", "mov", "prores_ks", "profile=1,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
+        {"prores422proxy", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "ProRes 422 Proxy MOV"), "mov", "mov", "prores_ks", "profile=0,vendor=apl0", "yuv422p10le", "pcm_s24le", ""},
+        {"prores4444", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "ProRes 4444 MOV"), "mov", "mov", "prores_ks", "profile=4,vendor=apl0", "yuva444p10le", "pcm_s24le", ""},
+        {"dnxhr_hq", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "DNxHR HQ MOV (8-bit)"), "mov", "mov", "dnxhd", "profile=dnxhr_hq", "yuv422p", "pcm_s24le", ""},
+        {"dnxhr_hqx", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "DNxHR HQX MOV (10-bit)"), "mov", "mov", "dnxhd", "profile=dnxhr_hqx", "yuv422p10le", "pcm_s24le", ""},
+        {"dnxhr_444", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "DNxHR 444 MOV (10-bit)"), "mov", "mov", "dnxhd", "profile=dnxhr_444", "yuv444p10le", "pcm_s24le", ""},
+        {"cineform", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "CineForm MOV"), "mov", "mov", "cfhd", "quality=film1", "yuv422p10le", "pcm_s24le", ""},
+        {"ffv1", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "FFV1 MKV (lossless)"), "mkv", "matroska", "ffv1", "level=3,slices=16,slicecrc=1", "yuv444p10le", "flac", ""},
+        {"utvideo", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "Ut Video AVI (lossless)"), "avi", "avi", "utvideo", "", "gbrp", "pcm_s16le", ""},
+        {"qtrle", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "QuickTime Animation MOV (lossless RGB)"), "mov", "mov", "qtrle", "", "rgb24", "pcm_s16le", ""},
+        {"hap", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "HAP MOV"), "mov", "mov", "hap", "format=hap", "rgba", "pcm_s16le", ""},
+        {"mjpeg", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "Motion JPEG AVI"), "avi", "avi", "mjpeg", "q=2", "yuvj422p", "pcm_s16le", ""},
+        {"gif", QT_TRANSLATE_NOOP("ExportPresets", "Video"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "Animated GIF"), "gif", "gif", "gif", "", "pal8", "", ""},
+        {"exr_half", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "OpenEXR half float (ZIP)"), "exr", "image2", "exr", "compression=zip16,format=half", "gbrpf32le", "", ""},
+        {"exr_float", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "OpenEXR 32-bit float (ZIP)"), "exr", "image2", "exr", "compression=zip16,format=float", "gbrpf32le", "", ""},
+        {"dpx10", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "DPX 10-bit"), "dpx", "image2", "dpx", "", "gbrp10le", "", ""},
+        {"dpx16", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "DPX 16-bit"), "dpx", "image2", "dpx", "", "rgb48le", "", ""},
+        {"tiff16", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "TIFF 16-bit"), "tif", "image2", "tiff", "compression_algo=deflate", "rgb48le", "", ""},
+        {"tiff8", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "TIFF 8-bit"), "tif", "image2", "tiff", "compression_algo=deflate", "rgb24", "", ""},
+        {"png16", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "PNG 16-bit"), "png", "image2", "png", "", "rgb48be", "", ""},
+        {"png8", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "PNG 8-bit"), "png", "image2", "png", "", "rgb24", "", ""},
+        {"jpeg", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "JPEG"), "jpg", "image2", "mjpeg", "q=2", "yuvj444p", "", ""},
+        {"webp", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "WebP (lossless)"), "webp", "image2", "libwebp", "lossless=1", "bgra", "", ""},
+        {"jxl", QT_TRANSLATE_NOOP("ExportPresets", "Image sequence"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "JPEG XL (lossless)"), "jxl", "image2", "libjxl", "distance=0", "rgb48le", "", ""},
+        {"wav", QT_TRANSLATE_NOOP("ExportPresets", "Audio only"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "WAV 24-bit"), "wav", "wav", "", "", "", "pcm_s24le", ""},
+        {"flac", QT_TRANSLATE_NOOP("ExportPresets", "Audio only"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "FLAC"), "flac", "flac", "", "", "", "flac", ""},
+        {"mp3", QT_TRANSLATE_NOOP("ExportPresets", "Audio only"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "MP3 320 kb/s"), "mp3", "mp3", "", "", "", "libmp3lame", "b=320k"},
+        {"m4a", QT_TRANSLATE_NOOP("ExportPresets", "Audio only"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "AAC M4A 320 kb/s"), "m4a", "ipod", "", "", "", "aac", "b=320k"},
+        {"opus", QT_TRANSLATE_NOOP("ExportPresets", "Audio only"), /*: Keep format and codec names in English. */ QT_TRANSLATE_NOOP("ExportPresets", "Opus"), "opus", "ogg", "", "", "", "libopus", "b=192k"},
     };
     return p;
 }
@@ -101,7 +102,7 @@ Exporter::~Exporter() {
 
 bool Exporter::start(const ExportJob& job, QString* error) {
     const ExportPreset* p = ExportPresets::find(job.presetId);
-    if (!p) { *error = "Unknown export format"; return false; }
+    if (!p) { *error = tr("Unknown export format"); return false; }
     job_ = job;
     cancelled_ = false;
     options_.clear();
@@ -117,7 +118,7 @@ bool Exporter::start(const ExportJob& job, QString* error) {
         if (job.end >= 0) i1 = std::clamp(int(std::llround(job.end * job.fps.value())) - 1, i0, s.count() - 1);
         QTemporaryFile tf(QDir::tempPath() + "/coreplay_export_XXXXXX.txt");
         tf.setAutoRemove(false);
-        if (!tf.open()) { *error = "Cannot write the frame list"; return false; }
+        if (!tf.open()) { *error = tr("Cannot write the frame list"); return false; }
         QString last;
         for (int i = i0; i <= i1; ++i) {
             if (s.present[size_t(i)]) last = s.pathFor(s.first + i);
@@ -174,7 +175,7 @@ bool Exporter::start(const ExportJob& job, QString* error) {
     if (*p->ovc && job.colour.kind != LutChoice::None) {
         QString err;
         QString cube = Lut::bakeCube(job.colour, &err);
-        if (cube.isEmpty()) { *error = "Cannot bake the colour transform: " + err; discard(); return false; }
+        if (cube.isEmpty()) { *error = tr("Cannot bake the colour transform: %1").arg(err); discard(); return false; }
         cube = QDir::fromNativeSeparators(cube);
         cube.replace(":", "\\:");
         graph << QString("lut3d=file='%1':interp=tetrahedral").arg(cube);
@@ -185,7 +186,7 @@ bool Exporter::start(const ExportJob& job, QString* error) {
     if (*p->ovc && !job.grade.isIdentity()) {
         QString err;
         QString cube = job.grade.bakeCube(&err);
-        if (cube.isEmpty()) { *error = "Cannot bake the grade: " + err; discard(); return false; }
+        if (cube.isEmpty()) { *error = tr("Cannot bake the grade: %1").arg(err); discard(); return false; }
         cube = QDir::fromNativeSeparators(cube);
         cube.replace(":", "\\:");
         graph << QString("lut3d=file='%1':interp=tetrahedral").arg(cube);
@@ -248,7 +249,7 @@ bool Exporter::start(const ExportJob& job, QString* error) {
     }
 
     if (mpv_initialize(mpv_) < 0) {
-        *error = "The encoder did not start: " + options_.join(' ');
+        *error = tr("The encoder did not start: %1").arg(options_.join(' '));
         discard();
         return false;
     }
@@ -300,7 +301,7 @@ void Exporter::drain() {
             // An encoder that cannot start (e.g. NVENC without an NVIDIA driver). libmpv 0.41
             // then ends the file, but 0.39 drops the video and waits for ever: fail it here.
             if (m->log_level == MPV_LOG_LEVEL_FATAL && !cancelled_) {
-                finish(false, "Export failed: " + lastError_);
+                finish(false, tr("Export failed: %1").arg(lastError_));
                 return;
             }
         } else if (e->event_id == MPV_EVENT_FILE_LOADED && pickSubtitle_) {
@@ -326,9 +327,9 @@ void Exporter::drain() {
             mpv_set_property_string(mpv_, "pause", "no");
         } else if (e->event_id == MPV_EVENT_END_FILE) {
             auto* ef = static_cast<mpv_event_end_file*>(e->data);
-            if (cancelled_) finish(false, "Export cancelled");
-            else if (ef->reason == MPV_END_FILE_REASON_EOF) finish(true, "Exported " + QDir::toNativeSeparators(job_.output));
-            else finish(false, "Export failed: " + (lastError_.isEmpty() ? QString(mpv_error_string(ef->error)) : lastError_));
+            if (cancelled_) finish(false, tr("Export cancelled"));
+            else if (ef->reason == MPV_END_FILE_REASON_EOF) finish(true, tr("Exported %1").arg(QDir::toNativeSeparators(job_.output)));
+            else finish(false, tr("Export failed: %1").arg(lastError_.isEmpty() ? QString(mpv_error_string(ef->error)) : lastError_));
             return;
         }
     }
@@ -367,7 +368,7 @@ void Exporter::finish(bool ok, const QString& msg) {
             if (!err.isEmpty()) {
                 ok = false;
                 emit progress(1.0);
-                emit finished(false, "Exported, but the last frame's duration could not be set: " + err);
+                emit finished(false, tr("Exported, but the last frame's duration could not be set: %1").arg(err));
                 return;
             }
         }
@@ -379,7 +380,7 @@ void Exporter::finish(bool ok, const QString& msg) {
 // ------------------------------------------------------------------ dialog
 
 ExportDialog::ExportDialog(const Source& src, QWidget* parent) : QDialog(parent), src_(src) {
-    setWindowTitle("Export");
+    setWindowTitle(tr("Export"));
     setMinimumWidth(620);
     auto* form = new QFormLayout;
 
@@ -390,51 +391,51 @@ ExportDialog::ExportDialog(const Source& src, QWidget* parent) : QDialog(parent)
         if (src.isSequence && p.audioOnly()) continue;  // a sequence has no sound
         if (group != p.group) {
             group = p.group;
-            format_->addItem("— " + group + " —");
+            format_->addItem(tr("— %1 —").arg(QCoreApplication::translate("ExportPresets", p.group)));
             model->item(format_->count() - 1)->setEnabled(false);
         }
-        format_->addItem(p.label, QString(p.id));
+        format_->addItem(QCoreApplication::translate("ExportPresets", p.label), QString(p.id));
     }
     const QString last = QSettings().value("export/preset", "h264").toString();
     const int li = format_->findData(last);
     format_->setCurrentIndex(li >= 0 ? li : 1);
-    form->addRow("Format", format_);
+    form->addRow(tr("Format"), format_);
 
     auto* pathRow = new QHBoxLayout;
     path_ = new QLineEdit(this);
-    auto* browse = new QPushButton("Browse...", this);
+    auto* browse = new QPushButton(tr("Browse..."), this);
     pathRow->addWidget(path_, 1);
     pathRow->addWidget(browse);
-    form->addRow("Save to", pathRow);
+    form->addRow(tr("Save to"), pathRow);
 
     auto* rangeRow = new QHBoxLayout;
-    whole_ = new QRadioButton("Whole clip", this);
-    ab_ = new QRadioButton("A-B marks", this);
+    whole_ = new QRadioButton(tr("Whole clip"), this);
+    ab_ = new QRadioButton(tr("A-B marks"), this);
     whole_->setChecked(true);
     ab_->setEnabled(src.abA >= 0 || src.abB >= 0);
     if (ab_->isEnabled()) ab_->setChecked(true);
     rangeRow->addWidget(whole_);
     rangeRow->addWidget(ab_);
     rangeRow->addStretch(1);
-    form->addRow("Range", rangeRow);
+    form->addRow(tr("Range"), rangeRow);
 
     startNum_ = new QSpinBox(this);
     startNum_->setRange(0, 9999999);
     startNum_->setValue(src.isSequence ? src.seq.first : 1001);
-    form->addRow("First frame number", startNum_);
+    form->addRow(tr("First frame number"), startNum_);
 
-    QString colourText = "Apply the colour view";
-    if (src.lut.kind != LutChoice::None) colourText = "Apply the LUT: " + src.lut.label();
-    else if (src.isSequence) colourText = "Apply the colour view: " + src.view.label();
+    QString colourText = tr("Apply the colour view");
+    if (src.lut.kind != LutChoice::None) colourText = tr("Apply the LUT: %1").arg(src.lut.label());
+    else if (src.isSequence) colourText = tr("Apply the colour view: %1").arg(src.view.label());
     colour_ = new QCheckBox(colourText, this);
     colour_->setEnabled(src.lut.kind != LutChoice::None || src.isSequence);
     colour_->setChecked(colour_->isEnabled());
-    form->addRow("Colour", colour_);
+    form->addRow(tr("Colour"), colour_);
 
-    grade_ = new QCheckBox(src.grade.isIdentity() ? QString("No grade") : "Bake the grade: " + src.grade.summary(), this);
+    grade_ = new QCheckBox(src.grade.isIdentity() ? tr("No grade") : tr("Bake the grade: %1").arg(src.grade.summary()), this);
     grade_->setEnabled(!src.grade.isIdentity());
     grade_->setChecked(grade_->isEnabled());
-    form->addRow("Grade", grade_);
+    form->addRow(tr("Grade"), grade_);
     // A sequence's grade sits on the colour view: baking it needs the view baked too.
     auto lockColour = [this] {
         if (!src_.isSequence) return;
@@ -445,22 +446,22 @@ ExportDialog::ExportDialog(const Source& src, QWidget* parent) : QDialog(parent)
     connect(grade_, &QCheckBox::toggled, this, lockColour);
     lockColour();
 
-    audio_ = new QCheckBox("Include audio", this);
+    audio_ = new QCheckBox(tr("Include audio"), this);
     audio_->setEnabled(!src.isSequence && src.hasAudio);
     audio_->setChecked(audio_->isEnabled());
-    form->addRow("Audio", audio_);
+    form->addRow(tr("Audio"), audio_);
 
-    subs_ = new QCheckBox("Burn in subtitles (with the current subtitle style)", this);
+    subs_ = new QCheckBox(tr("Burn in subtitles (with the current subtitle style)"), this);
     subs_->setEnabled(!src.isSequence && (!src.subtitleFiles.isEmpty() || !src.subtitleTrack.isEmpty()));
     subs_->setChecked(false);
-    form->addRow("Subtitles", subs_);
+    form->addRow(tr("Subtitles"), subs_);
 
     note_ = new QLabel(this);
     note_->setWordWrap(true);
     form->addRow("", note_);
 
     auto* buttons = new QDialogButtonBox(this);
-    buttons->addButton("Export", QDialogButtonBox::AcceptRole);
+    buttons->addButton(tr("Export"), QDialogButtonBox::AcceptRole);
     buttons->addButton(QDialogButtonBox::Cancel);
     connect(buttons, &QDialogButtonBox::accepted, this, [this] {
         QSettings().setValue("export/preset", format_->currentData().toString());
@@ -472,10 +473,10 @@ ExportDialog::ExportDialog(const Source& src, QWidget* parent) : QDialog(parent)
         const ExportPreset* p = ExportPresets::find(format_->currentData().toString());
         if (!p) return;
         if (p->sequence()) {
-            const QString d = QFileDialog::getExistingDirectory(this, "Folder for the frames", QFileInfo(path_->text()).absolutePath());
+            const QString d = QFileDialog::getExistingDirectory(this, tr("Folder for the frames"), QFileInfo(path_->text()).absolutePath());
             if (!d.isEmpty()) path_->setText(QDir::toNativeSeparators(d + "/" + QFileInfo(path_->text()).fileName()));
         } else {
-            const QString f = QFileDialog::getSaveFileName(this, "Export", path_->text(), QString("*.%1").arg(p->ext));
+            const QString f = QFileDialog::getSaveFileName(this, tr("Export"), path_->text(), QString("*.%1").arg(p->ext));
             if (!f.isEmpty()) path_->setText(QDir::toNativeSeparators(f));
         }
     });
@@ -494,7 +495,7 @@ void ExportDialog::presetChanged() {
     if (src_.isSequence && grade_->isChecked()) colour_->setChecked(true);
     subs_->setEnabled(!src_.isSequence && !p->audioOnly() && (!src_.subtitleFiles.isEmpty() || !src_.subtitleTrack.isEmpty()));
     audio_->setEnabled(!src_.isSequence && src_.hasAudio && *p->oac && !p->sequence());
-    note_->setText(p->sequence() ? "Frames are written as name.####.ext, starting at the first frame number."
+    note_->setText(p->sequence() ? tr("Frames are written as name.####.ext, starting at the first frame number.")
                                  : QString());
     updateOutput();
 }

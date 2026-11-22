@@ -97,7 +97,7 @@ bool isSubtitleFile(const QString& path) { return extensions().contains(QFileInf
 }  // namespace Subtitles
 
 SubtitleDialog::SubtitleDialog(const SubStyle& start, QWidget* parent) : QDialog(parent), s_(start) {
-    setWindowTitle("Subtitle Style");
+    setWindowTitle(tr("Subtitle Style"));
     auto* form = new QFormLayout;
     auto emitChange = [this] {
         s_.save();
@@ -115,7 +115,7 @@ SubtitleDialog::SubtitleDialog(const SubStyle& start, QWidget* parent) : QDialog
         };
         paint();
         connect(b, &QPushButton::clicked, this, [this, b, target, alpha, paint, emitChange] {
-            const QColor c = QColorDialog::getColor(*target, this, "Colour",
+            const QColor c = QColorDialog::getColor(*target, this, tr("Colour"),
                                                     alpha ? QColorDialog::ShowAlphaChannel : QColorDialog::ColorDialogOptions());
             if (!c.isValid()) return;
             *target = c;
@@ -145,27 +145,27 @@ SubtitleDialog::SubtitleDialog(const SubStyle& start, QWidget* parent) : QDialog
         s_.font = f.family();
         emitChange();
     });
-    form->addRow("Font", font);
+    form->addRow(tr("Font"), font);
     auto* sizeRow = new QHBoxLayout;
     sizeRow->addWidget(spin(&s_.size, 8, 200));
-    sizeRow->addWidget(check(&s_.bold, "Bold"));
-    sizeRow->addWidget(check(&s_.italic, "Italic"));
+    sizeRow->addWidget(check(&s_.bold, tr("Bold")));
+    sizeRow->addWidget(check(&s_.italic, tr("Italic")));
     sizeRow->addStretch(1);
-    form->addRow("Size", sizeRow);
-    form->addRow("Text colour", colourButton(&s_.text, true));
+    form->addRow(tr("Size"), sizeRow);
+    form->addRow(tr("Text colour"), colourButton(&s_.text, true));
     auto* outlineRow = new QHBoxLayout;
     outlineRow->addWidget(spin(&s_.outline, 0, 20));
     outlineRow->addWidget(colourButton(&s_.outlineColor, false));
     outlineRow->addStretch(1);
-    form->addRow("Outline", outlineRow);
+    form->addRow(tr("Outline"), outlineRow);
     auto* shadowRow = new QHBoxLayout;
     shadowRow->addWidget(spin(&s_.shadow, 0, 20));
     shadowRow->addWidget(colourButton(&s_.shadowColor, true));
     shadowRow->addStretch(1);
-    form->addRow("Shadow", shadowRow);
+    form->addRow(tr("Shadow"), shadowRow);
 
-    form->addRow("Background", check(&s_.box, "Draw a box behind the text"));
-    form->addRow("Background colour", colourButton(&s_.boxColor, false));
+    form->addRow(tr("Background"), check(&s_.box, tr("Draw a box behind the text")));
+    form->addRow(tr("Background colour"), colourButton(&s_.boxColor, false));
     auto* opRow = new QHBoxLayout;
     auto* op = new QSlider(Qt::Horizontal, this);
     op->setRange(0, 100);
@@ -175,15 +175,15 @@ SubtitleDialog::SubtitleDialog(const SubStyle& start, QWidget* parent) : QDialog
     connect(opNum, &QSpinBox::valueChanged, op, &QSlider::setValue);
     opRow->addWidget(op, 1);
     opRow->addWidget(opNum);
-    form->addRow("Background opacity", opRow);
+    form->addRow(tr("Background opacity"), opRow);
 
-    form->addRow("Vertical position", spin(&s_.position, 0, 150, "  (100 = bottom)"));
-    form->addRow("Margin", spin(&s_.margin, 0, 300));
-    form->addRow("", check(&s_.overrideAss, "Also restyle .ass / .ssa subtitles"));
+    form->addRow(tr("Vertical position"), spin(&s_.position, 0, 150, tr("  (100 = bottom)")));
+    form->addRow(tr("Margin"), spin(&s_.margin, 0, 300));
+    form->addRow("", check(&s_.overrideAss, tr("Also restyle .ass / .ssa subtitles")));
 
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Close, this);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::accept);
-    auto* reset = buttons->addButton("Defaults", QDialogButtonBox::ResetRole);
+    auto* reset = buttons->addButton(tr("Defaults"), QDialogButtonBox::ResetRole);
     connect(reset, &QPushButton::clicked, this, [this] {
         s_ = SubStyle();
         s_.save();

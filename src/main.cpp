@@ -51,6 +51,7 @@ public:
 #include <QTimer>
 #include <memory>
 
+#include "I18n.h"
 #include "MainWindow.h"
 #ifdef COREPLAY_TESTS
 #include "TestDriver.h"
@@ -256,6 +257,7 @@ int main(int argc, char* argv[]) {
     const int scriptAt = args.indexOf("--test-script");
     const bool testing = scriptAt > 0 && scriptAt + 1 < args.size();
     if (testing) QApplication::setOrganizationName("CoreplayTest");  // keep the user's settings untouched
+    I18n::install(app, testing);  // the interface language (Settings > General > Language)
     // --test-instance: a test run that still acts as the single instance (it receives
     // hand-overs), so the hand-over can be tested end to end.
     const bool testInstance = args.contains("--test-instance");

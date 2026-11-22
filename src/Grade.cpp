@@ -1,5 +1,6 @@
 #include "Grade.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QStandardPaths>
@@ -117,25 +118,26 @@ void Grade::uniformValues(float v[18]) const {
 }
 
 QString Grade::summary() const {
-    if (isIdentity()) return "none";
+    if (isIdentity()) return QCoreApplication::translate("Grade", "none");
     QStringList l;
     auto num = [&](const char* n, double v, double def) {
-        if (v != def) l << QString("%1 %2").arg(n).arg(v);
+        if (v != def) l << QString("%1 %2").arg(QCoreApplication::translate("Grade", n)).arg(v);
     };
-    num("Brightness", brightness, 100);
-    num("Contrast", contrast, 100);
-    num("Gamma", gamma, 1);
-    num("Saturation", saturation, 100);
-    num("Hue", hue, 0);
-    num("Shadows", shadows, 0);
-    num("Midtones", midtones, 0);
-    num("Highlights", highlights, 0);
+    num(QT_TRANSLATE_NOOP("Grade", "Brightness"), brightness, 100);
+    num(QT_TRANSLATE_NOOP("Grade", "Contrast"), contrast, 100);
+    num(QT_TRANSLATE_NOOP("Grade", "Gamma"), gamma, 1);
+    num(QT_TRANSLATE_NOOP("Grade", "Saturation"), saturation, 100);
+    num(QT_TRANSLATE_NOOP("Grade", "Hue"), hue, 0);
+    num(QT_TRANSLATE_NOOP("Grade", "Shadows"), shadows, 0);
+    num(QT_TRANSLATE_NOOP("Grade", "Midtones"), midtones, 0);
+    num(QT_TRANSLATE_NOOP("Grade", "Highlights"), highlights, 0);
     auto tint = [&](const char* n, const GradeTint& t) {
-        if (t.strength > 0) l << QString("%1 tint %2/%3").arg(n).arg(t.angle).arg(t.strength);
+        if (t.strength > 0)
+            l << QCoreApplication::translate("Grade", "%1 tint %2/%3").arg(QCoreApplication::translate("Grade", n)).arg(t.angle).arg(t.strength);
     };
-    tint("Shadows", shadowsTint);
-    tint("Midtones", midtonesTint);
-    tint("Highlights", highlightsTint);
+    tint(QT_TRANSLATE_NOOP("Grade", "Shadows"), shadowsTint);
+    tint(QT_TRANSLATE_NOOP("Grade", "Midtones"), midtonesTint);
+    tint(QT_TRANSLATE_NOOP("Grade", "Highlights"), highlightsTint);
     return l.join(", ");
 }
 
@@ -196,7 +198,7 @@ QString Grade::bakeCube(QString* error, int n) const {
     QTemporaryFile f(dir + "/grade_XXXXXX.cube");
     f.setAutoRemove(false);
     if (!f.open()) {
-        if (error) *error = "Cannot write " + dir;
+        if (error) *error = QCoreApplication::translate("Grade", "Cannot write %1").arg(dir);
         return {};
     }
     QByteArray out;

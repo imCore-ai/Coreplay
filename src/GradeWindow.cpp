@@ -50,7 +50,7 @@ GradeWheel::GradeWheel(QWidget* parent) : QWidget(parent) {
     setFocusPolicy(Qt::NoFocus);
     setCursor(Qt::CrossCursor);
     setFixedSize(sizeHint());
-    setToolTip("Drag to tint this tone range. Double-click to reset.");
+    setToolTip(tr("Drag to tint this tone range. Double-click to reset."));
 }
 
 void GradeWheel::setTint(const GradeTint& t) {
@@ -128,7 +128,7 @@ void GradeWheel::mouseDoubleClickEvent(QMouseEvent*) {
 
 GradeWindow::GradeWindow(QWidget* player) : QWidget(player, Qt::Tool | Qt::FramelessWindowHint) {
     setAttribute(Qt::WA_TranslucentBackground);
-    setWindowTitle("Color Grading");
+    setWindowTitle(tr("Color Grading"));
     setStyleSheet(kStyle);
     setFocusPolicy(Qt::StrongFocus);
 
@@ -139,19 +139,19 @@ GradeWindow::GradeWindow(QWidget* player) : QWidget(player, Qt::Tool | Qt::Frame
     // Title bar: the handle that moves the window (the empty panel moves it too).
     bar_ = new QWidget;
     bar_->setCursor(Qt::SizeAllCursor);
-    bar_->setToolTip("Drag to move");
+    bar_->setToolTip(tr("Drag to move"));
     auto* top = new QHBoxLayout(bar_);
     top->setContentsMargins(0, 0, 0, 0);
     auto* grip = new QLabel(QString::fromUtf8("⠿"));  // a drag grip (six dots)
     grip->setObjectName("grip");
     top->addWidget(grip);
-    auto* title = new QLabel("Color Grading");
+    auto* title = new QLabel(tr("Color Grading"));
     title->setObjectName("title");
     clip_ = new QLabel;
     clip_->setObjectName("clip");
     auto* close = new QToolButton;
     close->setText("✕");
-    close->setToolTip("Close (Alt+G)");
+    close->setToolTip(tr("Close (Alt+G)"));
     connect(close, &QToolButton::clicked, this, &QWidget::hide);
     top->addWidget(title);
     top->addSpacing(8);
@@ -164,34 +164,34 @@ GradeWindow::GradeWindow(QWidget* player) : QWidget(player, Qt::Tool | Qt::Frame
         l->setObjectName("section");
         v->addWidget(l);
     };
-    section("Primary");
+    section(tr("Primary"));
     auto* grid = new QGridLayout;
     grid->setHorizontalSpacing(6);
     grid->setVerticalSpacing(6);
     grid->setColumnStretch(2, 1);
-    bright_ = addRow(grid, 0, "Brightness", 0, 200, 1, 100, 0, "");
-    contrast_ = addRow(grid, 1, "Contrast", 0, 200, 1, 100, 0, "");
-    gamma_ = addRow(grid, 2, "Gamma", 0.1, 3, 0.05, 1, 2, "");
-    sat_ = addRow(grid, 3, "Saturation", 0, 200, 1, 100, 0, "");
-    hue_ = addRow(grid, 4, "Hue", 0, 360, 1, 0, 0, "°");
+    bright_ = addRow(grid, 0, QT_TR_NOOP("Brightness"), 0, 200, 1, 100, 0, "");
+    contrast_ = addRow(grid, 1, QT_TR_NOOP("Contrast"), 0, 200, 1, 100, 0, "");
+    gamma_ = addRow(grid, 2, QT_TR_NOOP("Gamma"), 0.1, 3, 0.05, 1, 2, "");
+    sat_ = addRow(grid, 3, QT_TR_NOOP("Saturation"), 0, 200, 1, 100, 0, "");
+    hue_ = addRow(grid, 4, QT_TR_NOOP("Hue"), 0, 360, 1, 0, 0, "°");
     v->addLayout(grid);
 
     v->addSpacing(4);
-    section("Tone & Tint");
+    section(tr("Tone & Tint"));
     auto* wheels = new QHBoxLayout;
     wheels->setSpacing(10);
-    const char* names[] = {"Shadows", "Midtones", "Highlights"};
+    const char* names[] = {QT_TR_NOOP("Shadows"), QT_TR_NOOP("Midtones"), QT_TR_NOOP("Highlights")};
     for (int i = 0; i < 3; ++i) {
         auto* col = new QVBoxLayout;
         col->setSpacing(4);
         auto* head = new QHBoxLayout;
         head->addStretch(1);
-        auto* label = new QLabel(names[i]);
+        auto* label = new QLabel(tr(names[i]));
         head->addWidget(label);
         Tone& t = tones_[i];
         t.wheelReset = new QToolButton;
         t.wheelReset->setText("↺");
-        t.wheelReset->setToolTip(QString("Reset the %1 tint").arg(QString(names[i]).toLower()));
+        t.wheelReset->setToolTip(tr("Reset the %1 tint").arg(tr(names[i]).toLower()));
         t.wheelReset->setFocusPolicy(Qt::NoFocus);
         head->addWidget(t.wheelReset);
         head->addStretch(1);
@@ -225,11 +225,11 @@ GradeWindow::GradeWindow(QWidget* player) : QWidget(player, Qt::Tool | Qt::Frame
         buttons->addWidget(b);
         return b;
     };
-    QPushButton* reset = button("↺ Reset", "Remove this clip's grade");
+    QPushButton* reset = button(tr("↺ Reset"), tr("Remove this clip's grade"));
     buttons->addStretch(1);
-    QPushButton* save = button("Save", "Write the graded clip over the file (Ctrl+S).\nThe original goes to the Recycle Bin.");
-    QPushButton* saveAs = button("Save As...", "Write the graded clip to a new file (Ctrl+Shift+S)");
-    QPushButton* exp = button("Export...", "Export with every option, the grade baked in");
+    QPushButton* save = button(tr("Save"), tr("Write the graded clip over the file (Ctrl+S).\nThe original goes to the Recycle Bin."));
+    QPushButton* saveAs = button(tr("Save As..."), tr("Write the graded clip to a new file (Ctrl+Shift+S)"));
+    QPushButton* exp = button(tr("Export..."), tr("Export with every option, the grade baked in"));
     connect(reset, &QPushButton::clicked, this, [this] {
         g_ = Grade();
         emitChange();
@@ -252,7 +252,7 @@ GradeWindow::Row GradeWindow::addRow(QGridLayout* grid, int r, const QString& la
     row.suffix = suffix;
     row.reset = new QToolButton;
     row.reset->setText("↺");
-    row.reset->setToolTip("Reset");
+    row.reset->setToolTip(tr("Reset"));
     row.reset->setFocusPolicy(Qt::NoFocus);
     row.slider = new QSlider(Qt::Horizontal);
     row.slider->setFocusPolicy(Qt::NoFocus);
@@ -265,7 +265,7 @@ GradeWindow::Row GradeWindow::addRow(QGridLayout* grid, int r, const QString& la
     int c = 0;
     grid->addWidget(row.reset, r, c++);
     if (!label.isEmpty()) {
-        auto* l = new QLabel(label);
+        auto* l = new QLabel(tr(label.toUtf8().constData()));  // label: a QT_TR_NOOP English name, also the field key below
         l->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         l->setMinimumWidth(72);
         grid->addWidget(l, r, c++);
@@ -340,7 +340,7 @@ void GradeWindow::setGrade(const Grade& g) {
 void GradeWindow::setClipName(const QString& name, bool modified) {
     const QString text = (modified ? "* " : "") + name;
     clip_->setText(clip_->fontMetrics().elidedText(text, Qt::ElideMiddle, 260));
-    clip_->setToolTip(modified ? name + "\nGraded, not saved" : name);
+    clip_->setToolTip(modified ? name + "\n" + tr("Graded, not saved") : name);
 }
 
 // The first time: where the user left it last time, else the right side of the player.

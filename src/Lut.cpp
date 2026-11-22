@@ -2,6 +2,7 @@
 
 #include <OpenColorIO/OpenColorIO.h>
 
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
@@ -47,7 +48,7 @@ OCIO::ConstConfigRcPtr studio() {
 const char* spaceFor(const QString& menu) {
     for (const auto& s : kSources)
         if (menu == s.menu) return s.space;
-    throw std::runtime_error(("Unknown LUT preset source: " + menu).toStdString());
+    throw std::runtime_error(QCoreApplication::translate("Lut", "Unknown LUT preset source: %1").arg(menu).toStdString());
 }
 }  // namespace
 
@@ -71,7 +72,7 @@ QStringList presetSources() {
 QStringList presetTargets() { return {"sRGB", "Rec.709", "Rec.2020"}; }
 
 QString fileFilter() {
-    return "LUT files (*.cube *.3dl *.csp *.spi1d *.spi3d *.spimtx *.cc *.ccc *.cdl *.clf *.ctf *.lut *.mga *.m3d *.icc *.icm *.vf *.itx *.look *.cub *.1dl *.hdl *.cms);;All files (*)";
+    return QCoreApplication::translate("Lut", "LUT files") + " (*.cube *.3dl *.csp *.spi1d *.spi3d *.spimtx *.cc *.ccc *.cdl *.clf *.ctf *.lut *.mga *.m3d *.icc *.icm *.vf *.itx *.look *.cub *.1dl *.hdl *.cms);;" + QCoreApplication::translate("Lut", "All files") + " (*)";
 }
 
 std::shared_ptr<const OCIO::Processor> processor(const LutChoice& c) {
@@ -112,7 +113,7 @@ std::shared_ptr<const OCIO::Processor> processor(const LutChoice& c) {
                 g->appendTransform(ex);
                 return cfg->getProcessor(g);
             }
-            throw std::runtime_error(("Unknown LUT target: " + c.target).toStdString());
+            throw std::runtime_error(QCoreApplication::translate("Lut", "Unknown LUT target: %1").arg(c.target).toStdString());
         }
         return {};
     } catch (const OCIO::Exception& e) {
@@ -161,7 +162,7 @@ uint16_t toUnorm16(float f) {
 bool writeAtomically(const QString& path, const QByteArray& bytes, QString* error) {
     QFile f(path + ".tmp");
     if (!f.open(QIODevice::WriteOnly)) {
-        *error = "Cannot write " + f.fileName();
+        *error = QCoreApplication::translate("Lut", "Cannot write %1").arg(f.fileName());
         return false;
     }
     f.write(bytes);

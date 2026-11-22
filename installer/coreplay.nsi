@@ -34,12 +34,20 @@ BrandingText "${APP} ${VERSION}"
 !define MUI_ABORTWARNING
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
+; The first page: what Coreplay is, and the invitation to Core Studio (as in Help > About).
+!define MUI_WELCOMEPAGE_TITLE "Welcome to Coreplay ${VERSION}"
+!define MUI_WELCOMEPAGE_TEXT "A fast, free player for movies and image sequences.$\r$\n$\r$\nCoreplay is made by imCore Corp. as a companion to Core Studio, our professional AI film studio: from the first line of the script to the final frame, in one workspace.$\r$\n$\r$\nIf you enjoy working with Coreplay, you will feel at home in Core Studio. Explore it and go Pro at imcore.ai/core-studio.html$\r$\n$\r$\nClick Next to continue."
+; The last page keeps a clickable link to Core Studio.
+!define MUI_FINISHPAGE_LINK "Explore Core Studio and go Pro"
+!define MUI_FINISHPAGE_LINK_LOCATION "https://imcore.ai/core-studio.html"
+
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${EXE}"
 !define MUI_FINISHPAGE_RUN_TEXT "Start Coreplay"
 !define MUI_FINISHPAGE_SHOWREADME ""
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Choose Coreplay as default in Windows Settings"
 !define MUI_FINISHPAGE_SHOWREADME_FUNCTION OpenDefaultApps
 
+!insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES

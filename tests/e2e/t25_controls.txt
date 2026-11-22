@@ -32,6 +32,15 @@ hover B $OUT/t25_hover_b.png
 hover Mute $OUT/t25_hover_mute.png
 # the menu bar's top-right link (not clicked here: a click opens the web page)
 hover Explore_Core_Studio $OUT/t25_hover_explore.png
+# Help > About: the version and the Core Studio invitation with its link
+action help.about
+until about.visible == true 2000
+expect about.text has imCore Corp.
+expect about.text has href='https://imcore.ai/core-studio.html'
+expect about.text has Explore Core Studio and go Pro
+grabwidget aboutBox $OUT/t25_about.png
+clickbutton Close
+until about.visible == false 2000
 grabwindow $OUT/t25_controls.png
 # one clip with loop on: it plays past its end and starts again, without stopping
 open $MEDIA/gap_a.mp4

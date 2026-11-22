@@ -213,33 +213,33 @@ void Playlist::keyPressEvent(QKeyEvent* e) {
 void Playlist::contextMenuEvent(QContextMenuEvent* e) {
     QMenu m(this);
     QListWidgetItem* it = itemAt(e->pos());
-    if (it) m.addAction("&Play", this, [this, it] { emit play(row(it)); });
+    if (it) m.addAction(tr("&Play"), this, [this, it] { emit play(row(it)); });
     if (it && current_ >= 0 && row(it) != current_)
-        m.addAction("&Compare with Playing Clip (A/B)", this, [this, it] { emit compare(row(it)); });
-    m.addAction("&Add Files...", this, [this] {
-        const QStringList f = QFileDialog::getOpenFileNames(this, "Add Files");
+        m.addAction(tr("&Compare with Playing Clip (A/B)"), this, [this, it] { emit compare(row(it)); });
+    m.addAction(tr("&Add Files..."), this, [this] {
+        const QStringList f = QFileDialog::getOpenFileNames(this, tr("Add Files"));
         if (!f.isEmpty()) addPaths(f);
     });
-    m.addAction("Add &Folder...", this, [this] {
-        const QString d = QFileDialog::getExistingDirectory(this, "Add Folder");
+    m.addAction(tr("Add &Folder..."), this, [this] {
+        const QString d = QFileDialog::getExistingDirectory(this, tr("Add Folder"));
         if (!d.isEmpty()) addPaths({d});
     });
     m.addSeparator();
-    m.addAction("&Remove", this, [this] {
+    m.addAction(tr("&Remove"), this, [this] {
         QKeyEvent del(QEvent::KeyPress, Qt::Key_Delete, Qt::NoModifier);
         keyPressEvent(&del);
     })->setEnabled(!selectedItems().isEmpty());
-    m.addAction("&Clear", this, [this] { clear(); current_ = -1; });
+    m.addAction(tr("&Clear"), this, [this] { clear(); current_ = -1; });
     m.addSeparator();
-    m.addAction("&Sort by Name", this, &Playlist::sortByName);
-    m.addAction("Shu&ffle", this, &Playlist::shuffle);
+    m.addAction(tr("&Sort by Name"), this, &Playlist::sortByName);
+    m.addAction(tr("Shu&ffle"), this, &Playlist::shuffle);
     m.addSeparator();
-    m.addAction("&Open Playlist...", this, [this] {
-        const QString f = QFileDialog::getOpenFileName(this, "Open Playlist", {}, "Playlists (*.m3u8 *.m3u)");
+    m.addAction(tr("&Open Playlist..."), this, [this] {
+        const QString f = QFileDialog::getOpenFileName(this, tr("Open Playlist"), {}, tr("Playlists") + " (*.m3u8 *.m3u)");
         if (!f.isEmpty()) load(f);
     });
-    m.addAction("Sa&ve Playlist...", this, [this] {
-        const QString f = QFileDialog::getSaveFileName(this, "Save Playlist", "playlist.m3u8", "Playlist (*.m3u8)");
+    m.addAction(tr("Sa&ve Playlist..."), this, [this] {
+        const QString f = QFileDialog::getSaveFileName(this, tr("Save Playlist"), "playlist.m3u8", tr("Playlist") + " (*.m3u8)");
         if (!f.isEmpty()) save(f);
     });
     m.exec(e->globalPos());

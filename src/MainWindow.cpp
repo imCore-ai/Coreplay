@@ -4,6 +4,7 @@
 #include <QActionGroup>
 #include <QApplication>
 #include <QCloseEvent>
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QDialog>
@@ -204,7 +205,7 @@ MainWindow::MainWindow() {
     connect(&hotkeyWatcher_, &QFileSystemWatcher::fileChanged, this, [this](const QString& p) {
         applyHotkeys();
         if (!hotkeyWatcher_.files().contains(p)) hotkeyWatcher_.addPath(p);  // editors replace the file
-        osd_->showMessage("Hotkeys reloaded");
+        osd_->showMessage(tr("Hotkeys reloaded"));
     });
 
     statusTimer_.setInterval(250);
@@ -260,7 +261,7 @@ void MainWindow::buildUi() {
         logo_ = new QLabel(placeholder_);
         logo_->setAlignment(Qt::AlignCenter);
         logo_->setAttribute(Qt::WA_TransparentForMouseEvents);
-        auto* hint = new QLabel("Drop files here, or press Ctrl+O", placeholder_);
+        auto* hint = new QLabel(tr("Drop files here, or press Ctrl+O"), placeholder_);
         hint->setAlignment(Qt::AlignCenter);
         hint->setTextFormat(Qt::PlainText);  // rich text costs start-up time
         hint->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -294,16 +295,16 @@ void MainWindow::buildUi() {
         cl->addWidget(b);
         return b;
     };
-    playBtn_ = button(QStyle::SP_MediaPlay, "Play/Pause", [this] { act("play.playpause")->trigger(); });
-    button(QStyle::SP_MediaStop, "Stop", [this] { act("play.stop")->trigger(); });
-    button(QStyle::SP_MediaSkipBackward, "Previous", [this] { act("nav.prev")->trigger(); });
-    button(QStyle::SP_MediaSkipForward, "Next", [this] { act("nav.next")->trigger(); });
-    button(QStyle::SP_ArrowLeft, "Frame Step Back (Left)", [this] { act("play.framestepback")->trigger(); })
+    playBtn_ = button(QStyle::SP_MediaPlay, tr("Play/Pause"), [this] { act("play.playpause")->trigger(); });
+    button(QStyle::SP_MediaStop, tr("Stop"), [this] { act("play.stop")->trigger(); });
+    button(QStyle::SP_MediaSkipBackward, tr("Previous"), [this] { act("nav.prev")->trigger(); });
+    button(QStyle::SP_MediaSkipForward, tr("Next"), [this] { act("nav.next")->trigger(); });
+    button(QStyle::SP_ArrowLeft, tr("Frame Step Back (Left)"), [this] { act("play.framestepback")->trigger(); })
         ->setIcon(frameStepIcon(false));
-    button(QStyle::SP_ArrowRight, "Frame Step (Right)", [this] { act("play.framestep")->trigger(); })
+    button(QStyle::SP_ArrowRight, tr("Frame Step (Right)"), [this] { act("play.framestep")->trigger(); })
         ->setIcon(frameStepIcon(true));
     // Loop on / off (Play menu). Right-click: loop this file or the playlist.
-    loopBtn_ = button(QStyle::SP_BrowserReload, "Loop", [this] {
+    loopBtn_ = button(QStyle::SP_BrowserReload, tr("Loop"), [this] {
         act(repeat_ == Repeat::None ? (lastLoop_ == Repeat::One ? "play.repeat.one" : "play.repeat.all") : "play.repeat.none")
             ->trigger();
     });
@@ -316,11 +317,13 @@ void MainWindow::buildUi() {
     cl->addSpacing(12);
     // R / G / B channel solo, as in BunnyLab: one at a time, click again for full colour.
     static const char* chanName[] = {"R", "G", "B"};
-    static const char* chanTip[] = {"Red channel (R)", "Green channel (G)", "Blue channel (B)"};
+    static const char* chanTip[] = {QT_TRANSLATE_NOOP("MainWindow", "Red channel (R)"),
+                                    QT_TRANSLATE_NOOP("MainWindow", "Green channel (G)"),
+                                    QT_TRANSLATE_NOOP("MainWindow", "Blue channel (B)")};
     for (int i = 0; i < 3; ++i) {
         auto* b = new QToolButton(controls_);
         b->setText(chanName[i]);
-        b->setToolTip(chanTip[i]);
+        b->setToolTip(tr(chanTip[i]));
         b->setAutoRaise(true);
         b->setFocusPolicy(Qt::NoFocus);
         QFont f = b->font();
@@ -341,7 +344,7 @@ void MainWindow::buildUi() {
     timeLabel_->setFont(mono);
     cl->addWidget(timeLabel_);
     cl->addSpacing(10);
-    auto* mute = button(QStyle::SP_MediaVolume, "Mute", [this] { act("vol.mute")->trigger(); });
+    auto* mute = button(QStyle::SP_MediaVolume, tr("Mute"), [this] { act("vol.mute")->trigger(); });
     (void)mute;
     volSlider_ = new QSlider(Qt::Horizontal, controls_);
     volSlider_->setRange(0, 100);
@@ -358,9 +361,9 @@ void MainWindow::buildUi() {
     bl->addWidget(compareBar_);
     bl->addWidget(seekBar_);
     connect(compareBar_->slotB(), &CompareSlot::dropped, this, [this](const QString& p) { startCompare(p); });
-    connect(compareBar_->slotB(), &CompareSlot::clicked, this, [this] { startCompare(chooseClip("Open a Clip for Slot B")); });
+    connect(compareBar_->slotB(), &CompareSlot::clicked, this, [this] { startCompare(chooseClip(tr("Open a Clip for Slot B"))); });
     connect(compareBar_->slotA(), &CompareSlot::dropped, this, [this](const QString& p) { setSlotA(p); });
-    connect(compareBar_->slotA(), &CompareSlot::clicked, this, [this] { setSlotA(chooseClip("Open a Clip for Slot A")); });
+    connect(compareBar_->slotA(), &CompareSlot::clicked, this, [this] { setSlotA(chooseClip(tr("Open a Clip for Slot A"))); });
     for (int i = 0; i < 2; ++i) {
         CompareSlot* slot = i == 0 ? compareBar_->slotA() : compareBar_->slotB();
         auto* menu = new QMenu(slot->lutButton());
@@ -398,8 +401,8 @@ void MainWindow::buildUi() {
         b->hide();
         return b;
     };
-    oneBtn_ = overlayButton("1:1", "Actual pixels: one image pixel per screen pixel");
-    fitBtn_ = overlayButton("Fit", "Fit the whole picture in the window");
+    oneBtn_ = overlayButton("1:1", tr("Actual pixels: one image pixel per screen pixel"));
+    fitBtn_ = overlayButton(tr("Fit"), tr("Fit the whole picture in the window"));
     connect(oneBtn_, &QToolButton::clicked, this, &MainWindow::zoom1to1);
     connect(fitBtn_, &QToolButton::clicked, this, &MainWindow::zoomFit);
     videoArea_->installEventFilter(this);
@@ -408,7 +411,7 @@ void MainWindow::buildUi() {
     statusBar()->addWidget(statusLeft_, 1);
 
     playlist_ = new Playlist(this);
-    playlistDock_ = new QDockWidget("Playlist", this);
+    playlistDock_ = new QDockWidget(tr("Playlist"), this);
     playlistDock_->setObjectName("playlistDock");
     playlistDock_->setWidget(playlist_);
     addDockWidget(Qt::RightDockWidgetArea, playlistDock_);
@@ -429,7 +432,7 @@ void MainWindow::buildUi() {
     infoText_ = new QTextEdit(this);
     infoText_->setReadOnly(true);
     infoText_->setFont(mono);
-    infoDock_ = new QDockWidget("Information", this);
+    infoDock_ = new QDockWidget(tr("Information"), this);
     infoDock_->setObjectName("infoDock");
     infoDock_->setWidget(infoText_);
     addDockWidget(Qt::RightDockWidgetArea, infoDock_);
@@ -462,26 +465,26 @@ void MainWindow::applyHotkeys() {
     for (const auto& d : Hotkeys::load()) {
         QAction* a = actions_.value(d.id);
         if (!a) continue;
-        a->setText(d.label);
+        a->setText(QCoreApplication::translate("Hotkeys", d.label));
         a->setShortcuts(d.keys);
     }
 }
 
 void MainWindow::buildActions() {
     for (const auto& d : Hotkeys::defaults()) {
-        auto* a = new QAction(d.label, this);
+        auto* a = new QAction(QCoreApplication::translate("Hotkeys", d.label), this);
         actions_.insert(d.id, a);
     }
     auto withEngine = [this](auto fn) { return [this, fn] { if (cur_) fn(cur_); }; };
 
     // File
     on("file.quickopen", [this] {
-        const QStringList f = QFileDialog::getOpenFileNames(this, "Open");
+        const QStringList f = QFileDialog::getOpenFileNames(this, tr("Open"));
         if (!f.isEmpty()) openPaths(f);
     });
     on("file.open", [this] { openDialog(); });
     on("file.openfolder", [this] {
-        const QString d = QFileDialog::getExistingDirectory(this, "Open Folder");
+        const QString d = QFileDialog::getExistingDirectory(this, tr("Open Folder"));
         if (!d.isEmpty()) openPaths({d});
     });
     on("file.reopen", [this] { if (!currentPath_.isEmpty()) playRow(playlist_->currentRow()); });
@@ -492,14 +495,14 @@ void MainWindow::buildActions() {
     on("view.grading", [this] { toggleGradeWindow(); });
     on("file.loadsub", [this] {
         if (cur_ != mpv_ || currentPath_.isEmpty()) {
-            osd_->showMessage("Open a movie first: subtitles show on movies", 2500);
+            osd_->showMessage(tr("Open a movie first: subtitles show on movies"), 2500);
             return;
         }
         const QStringList exts = Subtitles::extensions();
-        QString filter = "Subtitles (";
+        QString filter = tr("Subtitles") + " (";
         for (const QString& e : exts) filter += "*." + e + " ";
-        filter = filter.trimmed() + ");;All files (*)";
-        const QString f = QFileDialog::getOpenFileName(this, "Load Subtitle", QFileInfo(currentPath_).absolutePath(), filter);
+        filter = filter.trimmed() + ");;" + tr("All files") + " (*)";
+        const QString f = QFileDialog::getOpenFileName(this, tr("Load Subtitle"), QFileInfo(currentPath_).absolutePath(), filter);
         if (!f.isEmpty()) loadSubtitle(f);
     });
     on("sub.style", [this] { subtitleStyleDialog(); });
@@ -519,8 +522,8 @@ void MainWindow::buildActions() {
     on("play.incrate", [this] { setRate(rate_ * 2.0); });
     on("play.decrate", [this] { setRate(rate_ / 2.0); });
     on("play.resetrate", [this] { setRate(1.0); });
-    on("play.incauddelay", withEngine([this](Engine* e) { e->adjustAudioDelay(0.010); osd_->showMessage("Audio delay +10 ms"); }));
-    on("play.decauddelay", withEngine([this](Engine* e) { e->adjustAudioDelay(-0.010); osd_->showMessage("Audio delay -10 ms"); }));
+    on("play.incauddelay", withEngine([this](Engine* e) { e->adjustAudioDelay(0.010); osd_->showMessage(tr("Audio delay +10 ms")); }));
+    on("play.decauddelay", withEngine([this](Engine* e) { e->adjustAudioDelay(-0.010); osd_->showMessage(tr("Audio delay -10 ms")); }));
     on("play.seekfwdsmall", [this] { seekBy(kJumpSmall); });
     on("play.seekbacksmall", [this] { seekBy(-kJumpSmall); });
     on("play.seekfwdmed", [this] { seekBy(kJumpMedium); });
@@ -540,7 +543,7 @@ void MainWindow::buildActions() {
     on("zoom.fit", [this] { zoomFit(); });
     on("zoom.1to1", [this] { zoom1to1(); });
     on("lut.load", [this] {
-        const QString f = QFileDialog::getOpenFileName(this, "Load a LUT", QSettings().value("lut/lastDir").toString(),
+        const QString f = QFileDialog::getOpenFileName(this, tr("Load a LUT"), QSettings().value("lut/lastDir").toString(),
                                                        Lut::fileFilter());
         if (f.isEmpty()) return;
         QSettings().setValue("lut/lastDir", QFileInfo(f).absolutePath());
@@ -552,9 +555,9 @@ void MainWindow::buildActions() {
     on("lut.clear", [this] { setLut(LutChoice()); });
 
     auto* repeatGroup = new QActionGroup(this);
-    for (auto [id, label, mode] : {std::tuple{"play.repeat.none", "Loop: Off", Repeat::None},
-                                   std::tuple{"play.repeat.one", "Loop This File", Repeat::One},
-                                   std::tuple{"play.repeat.all", "Loop Playlist", Repeat::All}}) {
+    for (auto [id, label, mode] : {std::tuple{"play.repeat.none", QT_TRANSLATE_NOOP("MainWindow", "Loop: Off"), Repeat::None},
+                                   std::tuple{"play.repeat.one", QT_TRANSLATE_NOOP("MainWindow", "Loop This File"), Repeat::One},
+                                   std::tuple{"play.repeat.all", QT_TRANSLATE_NOOP("MainWindow", "Loop Playlist"), Repeat::All}}) {
         on(id, [this, m = mode] {
             repeat_ = m;
             if (m != Repeat::None) lastLoop_ = m;
@@ -563,7 +566,7 @@ void MainWindow::buildActions() {
             if (cur_) cur_->setLoopFile(m == Repeat::One);
             queueNext();
         }, true);
-        actions_[id]->setText(label);
+        actions_[id]->setText(tr(label));
         repeatGroup->addAction(actions_[id]);
     }
 
@@ -577,6 +580,7 @@ void MainWindow::buildActions() {
     on("view.status", [this] { statusBar()->setVisible(act("view.status")->isChecked()); }, true);
     on("view.infooverlay", [this] { setInfoOverlay(act("view.infooverlay")->isChecked()); }, true);
     on("help.hotkeys", [this] { hotkeyList_->toggle(); });
+    on("help.about", [this] { showAbout(); });
     // A/B compare. Turning it on compares the playing clip (A) with the selected playlist
     // item, else the next one (B).
     on("compare.toggle", [this] {
@@ -650,8 +654,8 @@ void MainWindow::buildActions() {
     on("pns.downleft", [this] { pan(-0.01, 0.01); });
     on("pns.downright", [this] { pan(0.01, 0.01); });
     // +90 = clockwise on both engines (mpv video-rotate and the sequence shader).
-    on("pns.rotatezp", [this] { xf_.rotate = (xf_.rotate + 90) % 360; applyTransform(); osd_->showMessage(QString("Rotate %1").arg(xf_.rotate), 900); });
-    on("pns.rotatezm", [this] { xf_.rotate = (xf_.rotate + 270) % 360; applyTransform(); osd_->showMessage(QString("Rotate %1").arg(xf_.rotate), 900); });
+    on("pns.rotatezp", [this] { xf_.rotate = (xf_.rotate + 90) % 360; applyTransform(); osd_->showMessage(tr("Rotate %1").arg(xf_.rotate), 900); });
+    on("pns.rotatezm", [this] { xf_.rotate = (xf_.rotate + 270) % 360; applyTransform(); osd_->showMessage(tr("Rotate %1").arg(xf_.rotate), 900); });
 
     // Audio / subtitles
     on("vol.up", [this] { setVolume(volume_ + kVolumeStep); });
@@ -660,7 +664,7 @@ void MainWindow::buildActions() {
         muted_ = !muted_;
         QSettings().setValue("audio/muted", muted_);
         if (cur_) cur_->setMuted(muted_);
-        osd_->showMessage(muted_ ? "Mute: On" : "Mute: Off");
+        osd_->showMessage(muted_ ? tr("Mute: On") : tr("Mute: Off"));
     });
     on("stream.audionext", withEngine([](Engine* e) { e->cycleAudio(1); }));
     on("stream.audioprev", withEngine([](Engine* e) { e->cycleAudio(-1); }));
@@ -669,8 +673,8 @@ void MainWindow::buildActions() {
     on("stream.subonoff", withEngine([](Engine* e) { e->toggleSubtitles(); }));
     on("sub.prev", withEngine([](Engine* e) { e->gotoSub(-1); }));
     on("sub.next", withEngine([](Engine* e) { e->gotoSub(1); }));
-    on("sub.delaydown", withEngine([this](Engine* e) { e->adjustSubDelay(-0.5); osd_->showMessage("Subtitle delay -500 ms"); }));
-    on("sub.delayup", withEngine([this](Engine* e) { e->adjustSubDelay(0.5); osd_->showMessage("Subtitle delay +500 ms"); }));
+    on("sub.delaydown", withEngine([this](Engine* e) { e->adjustSubDelay(-0.5); osd_->showMessage(tr("Subtitle delay -500 ms")); }));
+    on("sub.delayup", withEngine([this](Engine* e) { e->adjustSubDelay(0.5); osd_->showMessage(tr("Subtitle delay +500 ms")); }));
     on("sub.posdown", withEngine([](Engine* e) { e->adjustSubPos(1); }));
     on("sub.posup", withEngine([](Engine* e) { e->adjustSubPos(-1); }));
     on("sub.fontdec", withEngine([](Engine* e) { e->adjustSubScale(-0.1); }));
@@ -690,7 +694,7 @@ void MainWindow::buildActions() {
     // Image sequences
     on("seq.fps", [this] { seqFpsDialog(); });
     on("seq.cache", [this] { cacheDialog(); });
-    actions_["seq.cache"]->setText("Sequence &Cache Size...");
+    actions_["seq.cache"]->setText(tr("Sequence &Cache Size..."));
     on("channel.rgb", [this] { setChannel(0, false); });
     on("channel.r", [this] { setChannel(1, true); });
     on("channel.g", [this] { setChannel(2, true); });
@@ -701,7 +705,7 @@ void MainWindow::buildActions() {
             if (!seq_) return;
             const double v = reset ? 0.0 : seq_->seqView()->exposure() + d;
             seq_->seqView()->setExposure(v);
-            osd_->showMessage(QString("Exposure: %1%2 stops").arg(v >= 0 ? "+" : "").arg(v, 0, 'f', 1));
+            osd_->showMessage(tr("Exposure: %1%2 stops").arg(v >= 0 ? "+" : "").arg(v, 0, 'f', 1));
         };
     };
     on("seq.exposureup", exposure(0.5, false));
@@ -728,7 +732,8 @@ void MainWindow::buildMenus() {
         // Top right of the menu bar. Opens the page only when clicked (nothing loads before).
         explore = new QToolButton(menuBar());
         explore->setObjectName("exploreCoreStudio");
-        explore->setText("Explore Core Studio");
+        //: Keep "Core Studio", "Coreplay", format and colour-space names in English.
+        explore->setText(tr("Explore Core Studio"));
         explore->setToolTip("https://imcore.ai/core-studio.html");
         explore->setCursor(Qt::PointingHandCursor);
         explore->setFocusPolicy(Qt::NoFocus);
@@ -739,34 +744,34 @@ void MainWindow::buildMenus() {
                 [] { QDesktopServices::openUrl(QUrl("https://imcore.ai/core-studio.html")); });
         menuBar()->setCornerWidget(explore, Qt::TopRightCorner);
     }
-    QMenu* file = menuBar()->addMenu("&File");
+    QMenu* file = menuBar()->addMenu(tr("&File"));
     add(file, {"file.quickopen", "file.open", "file.openfolder", "file.reopen", ""});
-    recentMenu_ = file->addMenu("Recent &Files");
+    recentMenu_ = file->addMenu(tr("Recent &Files"));
     rebuildRecent();
     add(file, {"", "file.save", "file.saveas", "file.export", "file.loadsub", "", "file.saveimage", "file.saveimageauto", "", "file.properties", "file.openlocation",
                "file.recycle", "", "file.close", "file.exit"});
 
-    QMenu* view = menuBar()->addMenu("&View");
+    QMenu* view = menuBar()->addMenu(tr("&View"));
     add(view, {"view.caption", "view.seeker", "view.controls", "view.information", "view.statistics",
                "view.infooverlay", "view.status", "view.playlist", ""});
-    QMenu* presets = view->addMenu("Presets");
+    QMenu* presets = view->addMenu(tr("Presets"));
     add(presets, {"view.minimal", "view.compact", "view.normal"});
     add(view, {"", "view.fullscreen", "view.exitfullscreen", ""});
-    QMenu* zoom = view->addMenu("&Zoom");
+    QMenu* zoom = view->addMenu(tr("&Zoom"));
     add(zoom, {"view.zoom25", "view.zoom50", "view.zoom100", "view.zoom200", "view.zoomfit", "view.zoomfitlarger"});
-    QMenu* pns = view->addMenu("&Pan && Scan");
+    QMenu* pns = view->addMenu(tr("&Pan && Scan"));
     add(pns, {"pns.reset", "", "pns.incsize", "pns.decsize", "pns.incwidth", "pns.decwidth", "pns.incheight",
               "pns.decheight", "", "pns.center", "pns.left", "pns.right", "pns.up", "pns.down", "pns.upleft",
               "pns.upright", "pns.downleft", "pns.downright", "", "pns.rotatezp", "pns.rotatezm"});
     add(view, {"zoom.fit", "zoom.1to1", ""});
-    QMenu* lutMenu = view->addMenu("&LUT");
+    QMenu* lutMenu = view->addMenu(tr("&LUT"));
     connect(lutMenu, &QMenu::aboutToShow, this, [this, lutMenu] {
         lutMenu->clear();
         addLutActions(lutMenu);
     });
     add(view, {"", "view.ontop", "player.newwindow", "", "options"});
 
-    QMenu* play = menuBar()->addMenu("&Play");
+    QMenu* play = menuBar()->addMenu(tr("&Play"));
     add(play, {"play.playpause", "play.stop", "", "play.framestep", "play.framestepback", "", "play.goto", "",
                "play.incrate", "play.decrate", "play.resetrate", "", "play.seekfwdsmall", "play.seekbacksmall",
                "play.seekfwdmed", "play.seekbackmed", "play.seekfwdlarge", "play.seekbacklarge", "play.seekkeyfwd",
@@ -776,33 +781,28 @@ void MainWindow::buildMenus() {
                "stream.subnext", "stream.subprev", "stream.subonoff", "sub.prev", "sub.next", "sub.delaydown",
                "sub.delayup", "sub.posup", "sub.posdown", "sub.fontinc", "sub.fontdec", "sub.style"});
 
-    QMenu* nav = menuBar()->addMenu("&Navigate");
+    QMenu* nav = menuBar()->addMenu(tr("&Navigate"));
     add(nav, {"nav.prev", "nav.next", "nav.prevfile", "nav.nextfile"});
 
-    QMenu* cmp = menuBar()->addMenu("&Compare");
+    QMenu* cmp = menuBar()->addMenu(tr("&Compare"));
     add(cmp, {"compare.toggle", "", "compare.flipmode", "compare.wipe", "compare.sidebyside", "compare.difference", "",
               "compare.swap", "", "compare.offsetinc", "compare.offsetdec", "compare.offsetreset"});
 
-    QMenu* seqMenu = menuBar()->addMenu("&Image");
+    QMenu* seqMenu = menuBar()->addMenu(tr("&Image"));
     add(seqMenu, {"view.grading", "", "seq.fps", "seq.cache", ""});
-    QMenu* colour = seqMenu->addMenu("&Colour");
+    QMenu* colour = seqMenu->addMenu(tr("&Colour"));
     connect(colour, &QMenu::aboutToShow, this, [this, colour] { fillColourMenu(colour); });
     add(seqMenu, {"", "channel.rgb", "channel.r", "channel.g", "channel.b", "channel.a", "",
                   "seq.exposureup", "seq.exposuredown", "seq.exposurereset"});
 
-    QMenu* help = menuBar()->addMenu("&Help");
+    QMenu* help = menuBar()->addMenu(tr("&Help"));
     help->addAction(act("help.hotkeys"));
-    help->addAction("&Edit Hotkeys...", this, [this] { openSettings(1); });
+    help->addAction(tr("&Edit Hotkeys..."), this, [this] { openSettings(1); });
 #ifdef Q_OS_WIN
     // The update feed carries the Windows installer. Linux gets new versions as a new package.
-    updateAction_ = help->addAction("Check for &Updates...", this, [this] { updatesDialog(); });
+    updateAction_ = help->addAction(tr("Check for &Updates..."), this, [this] { updatesDialog(); });
 #endif
-    help->addAction("&About Coreplay", this, [this] {
-        QMessageBox::about(this, "About Coreplay",
-                           QString("Coreplay %1\n\nMovies through libmpv (FFmpeg).\nImage sequences through "
-                                   "OpenImageIO, colour through OpenColorIO.\nHotkeys follow MPC-HC.")
-                               .arg(COREPLAY_VERSION));
-    });
+    help->addAction(act("help.about"));
     // Same font and full bar height as the menu titles, so the link's text sits on their line.
     explore->setFont(menuBar()->font());
     explore->setFixedHeight(menuBar()->sizeHint().height());
@@ -811,20 +811,20 @@ void MainWindow::buildMenus() {
 void MainWindow::fillColourMenu(QMenu* m) {
     m->clear();
     if (!seq_) {
-        m->addAction("Open an image sequence first")->setEnabled(false);
+        m->addAction(tr("Open an image sequence first"))->setEnabled(false);
         return;
     }
     SeqView* v = seq_->seqView();
-    QMenu* in = m->addMenu("&Input Colour Space");
+    QMenu* in = m->addMenu(tr("&Input Colour Space"));
     auto* ig = new QActionGroup(in);
     for (const QString& cs : v->colorSpaces()) {
-        QAction* a = in->addAction(cs, this, [this, v, cs] { v->setInputSpace(cs); osd_->showMessage("Input: " + cs); });
+        QAction* a = in->addAction(cs, this, [this, v, cs] { v->setInputSpace(cs); osd_->showMessage(tr("Input: %1").arg(cs)); });
         a->setCheckable(true);
         a->setChecked(cs == v->inputSpace());
         ig->addAction(a);
     }
     for (const QString& d : v->displays()) {
-        QMenu* dm = m->addMenu("Display: " + d);
+        QMenu* dm = m->addMenu(tr("Display: %1").arg(d));
         auto* vg = new QActionGroup(dm);
         for (const QString& view : v->views(d)) {
             QAction* a = dm->addAction(view, this, [this, v, d, view] {
@@ -837,7 +837,7 @@ void MainWindow::fillColourMenu(QMenu* m) {
         }
     }
     m->addSeparator();
-    m->addAction("Config: " + v->configName())->setEnabled(false);
+    m->addAction(tr("Config: %1").arg(v->configName()))->setEnabled(false);
 }
 
 // ------------------------------------------------------------------ engines
@@ -888,7 +888,9 @@ SequenceEngine* MainWindow::seq() {
             seekBar_->setCacheMask(seq_->cache()->cachedMask(), missing);
             // The info overlay was built before the first frame was decoded (a slow disk
             // or PC): it has no image header yet. Build it again now that a frame is in.
-            if (infoOverlay_->isVisible() && !infoStatic_.contains("\nImage: ") && seq_->seqView()->frame())
+            // ("Image: " in the interface language, as SequenceEngine::info() writes it)
+            if (infoOverlay_->isVisible() && seq_->seqView()->frame()
+                && !infoStatic_.contains("\n" + QCoreApplication::translate("SequenceEngine", "Image: %1").section("%1", 0, 0)))
                 refreshInfoOverlay(true);
         });
         connect(seq_, &Engine::cacheChanged, this, [this] { if (!cacheBandTimer_.isActive()) cacheBandTimer_.start(); });
@@ -936,7 +938,7 @@ void MainWindow::connectEngine(Engine* e) {
         QTimer::singleShot(300, this, [this] { refreshInfoOverlay(true); });
         queueNext();
         if (e == seq_ && !seq_->fpsFromFile())
-            osd_->showMessage(QString("No frame rate in the file header: playing at %1 fps (Image > Sequence Frame Rate)")
+            osd_->showMessage(tr("No frame rate in the file header: playing at %1 fps (Image > Sequence Frame Rate)")
                                   .arg(seq_->fps().value(), 0, 'f', 3), 5000);
     });
 }
@@ -952,7 +954,7 @@ void MainWindow::openSettings(int page) {
         connect(settings_, &SettingsDialog::applied, this, [this] {
             applyHotkeys();
             act("player.newwindow")->setChecked(newWindowPerFile());
-            osd_->showMessage("Settings saved");
+            osd_->showMessage(tr("Settings saved"));
         });
     }
     settings_->showPage(page);
@@ -973,6 +975,7 @@ QString MainWindow::testSettings(const QStringList& a) {
     if (c == "resetall") { settings_->resetAll(); return settings_->message(); }
     if (c == "filter") { settings_->setFilter(a.mid(1).join(' ')); return QString::number(settings_->visibleRows()); }
     if (c == "newwindow") { settings_->setNewWindow(a.value(1) == "on"); return a.value(1); }
+    if (c == "language") { settings_->setLanguage(a.value(1)); return settings_->languageNoteVisible() ? "note shown" : "no note"; }
     if (c == "software") { QSettings().setValue("gl/software", a.value(1) == "on"); return a.value(1); }
     if (c == "apply") return settings_->apply() ? "applied" : "failed";
     if (c == "close") { settings_->close(); return "closed"; }
@@ -1051,7 +1054,7 @@ void MainWindow::startCompare(const QString& b) {
     }
     const bool seqA = cur_ == seq_, seqB = SequenceScanner::isImageFile(b);
     if (seqA != seqB) {
-        osd_->showMessage("Compare needs two movies or two image sequences", 4000);
+        osd_->showMessage(tr("Compare needs two movies or two image sequences"), 4000);
         return;
     }
     if (comparing_) stopCompare(false);
@@ -1060,7 +1063,7 @@ void MainWindow::startCompare(const QString& b) {
     if (seqA) ok = seq_->setCompare(b);
     else ok = mpv_->setCompare(b, 0);
     if (!ok) {
-        osd_->showMessage("Compare: cannot open " + QFileInfo(b).fileName(), 4000);
+        osd_->showMessage(tr("Compare: cannot open %1").arg(QFileInfo(b).fileName()), 4000);
         return;
     }
     comparing_ = true;
@@ -1093,7 +1096,7 @@ void MainWindow::stopCompare(bool closeBar) {
         pendingB_.clear();
         showCompareBar(false);
         act("compare.toggle")->setChecked(false);
-        osd_->showMessage("Compare off", 1500);
+        osd_->showMessage(tr("Compare off"), 1500);
     }
     updateCompareBar();
 }
@@ -1111,11 +1114,11 @@ void MainWindow::updateCompareBar() {
     QString b;
     if (!cmpPath_.isEmpty()) {
         b = SequenceScanner::isImageFile(cmpPath_) ? SequenceScanner::scan(cmpPath_).displayName() : QFileInfo(cmpPath_).fileName();
-        if (cmpOffset_) b += QString("   (offset %1%2)").arg(cmpOffset_ > 0 ? "+" : "").arg(cmpOffset_);
+        if (cmpOffset_) b += tr("   (offset %1%2)").arg(cmpOffset_ > 0 ? "+" : "").arg(cmpOffset_);
     }
     compareBar_->slotB()->setFile(b);
-    compareBar_->slotA()->setLutLabel(lut_.kind == LutChoice::None ? "None" : lut_.label());
-    compareBar_->slotB()->setLutLabel(cmpLutB_.kind == LutChoice::None ? "None" : cmpLutB_.label());
+    compareBar_->slotA()->setLutLabel(lut_.kind == LutChoice::None ? tr("None") : lut_.label());
+    compareBar_->slotB()->setLutLabel(cmpLutB_.kind == LutChoice::None ? tr("None") : cmpLutB_.label());
 }
 
 QString MainWindow::chooseClip(const QString& title) {
@@ -1144,8 +1147,8 @@ void MainWindow::setSlotA(const QString& path) {
 
 // LUT menu for one slot: load a file, presets, clear.
 void MainWindow::fillLutMenu(QMenu* m, const LutChoice& current, std::function<void(const LutChoice&)> apply) {
-    m->addAction("Load a &LUT...", this, [this, apply] {
-        const QString f = QFileDialog::getOpenFileName(this, "Load a LUT", QSettings().value("lut/lastDir").toString(),
+    m->addAction(tr("Load a &LUT..."), this, [this, apply] {
+        const QString f = QFileDialog::getOpenFileName(this, tr("Load a LUT"), QSettings().value("lut/lastDir").toString(),
                                                        Lut::fileFilter());
         if (f.isEmpty()) return;
         QSettings().setValue("lut/lastDir", QFileInfo(f).absolutePath());
@@ -1154,11 +1157,11 @@ void MainWindow::fillLutMenu(QMenu* m, const LutChoice& current, std::function<v
         c.file = f;
         apply(c);
     });
-    QMenu* presets = m->addMenu("LUT &Presets");
+    QMenu* presets = m->addMenu(tr("LUT &Presets"));
     for (const QString& src : Lut::presetSources()) {
         QMenu* sm = presets->addMenu(src);
         for (const QString& dst : Lut::presetTargets()) {
-            QAction* a = sm->addAction("to " + dst, this, [apply, src, dst] {
+            QAction* a = sm->addAction(tr("to %1").arg(dst), this, [apply, src, dst] {
                 LutChoice c;
                 c.kind = LutChoice::Preset;
                 c.source = src;
@@ -1169,7 +1172,7 @@ void MainWindow::fillLutMenu(QMenu* m, const LutChoice& current, std::function<v
             a->setChecked(current.kind == LutChoice::Preset && current.source == src && current.target == dst);
         }
     }
-    QAction* clear = m->addAction("&No LUT", this, [apply] { apply(LutChoice()); });
+    QAction* clear = m->addAction(tr("&No LUT"), this, [apply] { apply(LutChoice()); });
     clear->setEnabled(current.kind != LutChoice::None);
 }
 
@@ -1177,14 +1180,14 @@ void MainWindow::setLutB(const LutChoice& c) {
     if (c.kind != LutChoice::None) {
         QString err;
         if (Lut::bakeMpvShader(c, &err).isEmpty()) {  // the same check as for A: can it be used at all
-            osd_->showMessage("Cannot use this LUT: " + err, 6000);
+            osd_->showMessage(tr("Cannot use this LUT: %1").arg(err), 6000);
             return;
         }
     }
     cmpLutB_ = c;
     seq()->seqView()->setLutB(c);
     applyMpvLut();
-    osd_->showMessage(c.kind == LutChoice::None ? "B: LUT off" : "B LUT: " + c.label(), 2500);
+    osd_->showMessage(c.kind == LutChoice::None ? tr("B: LUT off") : tr("B LUT: %1").arg(c.label()), 2500);
     updateCompareBar();
 }
 
@@ -1197,7 +1200,7 @@ void MainWindow::applyMpvLut() {
         shader = Lut::bakeMpvCompareShader(lut_, cmpLutB_, &err);
     else if (lut_.kind != LutChoice::None)
         shader = Lut::bakeMpvShader(lut_, &err);
-    if (!err.isEmpty()) osd_->showMessage("Cannot use this LUT: " + err, 6000);
+    if (!err.isEmpty()) osd_->showMessage(tr("Cannot use this LUT: %1").arg(err), 6000);
     mpv_->setLut(shader);
 }
 
@@ -1229,9 +1232,9 @@ void MainWindow::applyCompareView() {
 void MainWindow::compareMessage() {
     if (!comparing_) return;
     const QString a = QFileInfo(currentPath_).fileName(), b = QFileInfo(cmpPath_).fileName();
-    QString t = QString("Compare: %1   A: %2   B: %3").arg(compareModeName(cmpView_.mode), a, b);
-    if (cmpView_.swap) t += "   (swapped)";
-    if (cmpOffset_) t += QString("   B offset %1%2").arg(cmpOffset_ > 0 ? "+" : "").arg(cmpOffset_);
+    QString t = tr("Compare: %1   A: %2   B: %3").arg(compareModeLabel(cmpView_.mode), a, b);
+    if (cmpView_.swap) t += tr("   (swapped)");
+    if (cmpOffset_) t += tr("   B offset %1%2").arg(cmpOffset_ > 0 ? "+" : "").arg(cmpOffset_);
     osd_->showMessage(t, 3000);
 }
 
@@ -1429,13 +1432,13 @@ void MainWindow::closeMedia() {
 void MainWindow::seekBy(double s) {
     if (!cur_) return;
     cur_->seekRelative(s);
-    osd_->showMessage(QString("%1%2 s").arg(s > 0 ? "+" : "").arg(s));
+    osd_->showMessage(tr("%1%2 s").arg(s > 0 ? "+" : "").arg(s));
 }
 
 void MainWindow::setRate(double r) {
     rate_ = std::clamp(r, 1.0 / 16.0, 16.0);
     if (cur_) cur_->setSpeed(rate_);
-    osd_->showMessage(QString("Speed: %1x").arg(rate_, 0, 'f', rate_ < 1 ? 3 : 2));
+    osd_->showMessage(tr("Speed: %1x").arg(rate_, 0, 'f', rate_ < 1 ? 3 : 2));
 }
 
 void MainWindow::setVolume(int v) {
@@ -1446,7 +1449,7 @@ void MainWindow::setVolume(int v) {
     }
     if (cur_) cur_->setVolume(volume_);
     QSettings().setValue("audio/volume", volume_);
-    osd_->showMessage(QString("Volume: %1%").arg(volume_));
+    osd_->showMessage(tr("Volume: %1%").arg(volume_));
 }
 
 void MainWindow::setAb(int which) {
@@ -1456,8 +1459,8 @@ void MainWindow::setAb(int which) {
     else abA_ = abB_ = -1;
     cur_->setAbLoop(abA_, abB_);
     seekBar_->setAb(abA_, abB_);
-    osd_->showMessage(which < 0 ? "A-B loop cleared"
-                                : QString("A-B mark %1: %2").arg(which == 0 ? "A" : "B").arg(timeText(cur_->position())));
+    osd_->showMessage(which < 0 ? tr("A-B loop cleared")
+                                : tr("A-B mark %1: %2").arg(which == 0 ? "A" : "B").arg(timeText(cur_->position())));
 }
 
 void MainWindow::applyTransform() {
@@ -1486,7 +1489,7 @@ void MainWindow::zoomAt(QPointF pos, double factor) {
     xf_.panY = cy - (cy - xf_.panY) * f;
     xf_.zoom = z;
     applyTransform();
-    osd_->showMessage(QString("Zoom %1%").arg(std::lround(xf_.zoom * 100)), 800);
+    osd_->showMessage(tr("Zoom %1%").arg(std::lround(xf_.zoom * 100)), 800);
 }
 
 void MainWindow::zoomFit() {
@@ -1506,7 +1509,7 @@ void MainWindow::zoom1to1() {
     xf_.scaleX = xf_.scaleY = 1.0;
     xf_.panX = xf_.panY = 0.0;
     applyTransform();
-    osd_->showMessage("Zoom 1:1", 800);
+    osd_->showMessage(tr("Zoom 1:1"), 800);
 }
 
 void MainWindow::layoutOverlays() {
@@ -1549,12 +1552,12 @@ void MainWindow::setFullscreenControls(bool overlay) {
 
 void MainWindow::loadSubtitle(const QString& path) {
     if (cur_ != mpv_ || !mpv_) {
-        osd_->showMessage("Subtitles show on movies; open a movie first", 2500);
+        osd_->showMessage(tr("Subtitles show on movies; open a movie first"), 2500);
         return;
     }
     mpv_->addSubtitle(path);
     if (!subFiles_.contains(path)) subFiles_ << path;
-    osd_->showMessage("Subtitle: " + QFileInfo(path).fileName(), 2000);
+    osd_->showMessage(tr("Subtitle: %1").arg(QFileInfo(path).fileName()), 2000);
 }
 
 void MainWindow::subtitleStyleDialog() {
@@ -1578,11 +1581,11 @@ void MainWindow::testSubStyle(const QString& key, const QString& value) {
 
 void MainWindow::exportDialog() {
     if (!cur_ || currentPath_.isEmpty()) {
-        osd_->showMessage("Open a clip first", 2000);
+        osd_->showMessage(tr("Open a clip first"), 2000);
         return;
     }
     if (exporter_ && exporter_->running()) {
-        osd_->showMessage("An export is already running", 2000);
+        osd_->showMessage(tr("An export is already running"), 2000);
         return;
     }
     ExportDialog::Source s;
@@ -1619,8 +1622,8 @@ bool MainWindow::startExport(const ExportJob& job, bool showProgress) {
     if (!exporter_) exporter_ = new Exporter(this);
     QProgressDialog* pd = nullptr;
     if (showProgress) {
-        pd = new QProgressDialog("Exporting " + QFileInfo(job.output).fileName() + "...", "Cancel", 0, 1000, this);
-        pd->setWindowTitle("Export");
+        pd = new QProgressDialog(tr("Exporting %1...").arg(QFileInfo(job.output).fileName()), tr("Cancel"), 0, 1000, this);
+        pd->setWindowTitle(tr("Export"));
         pd->setMinimumDuration(0);
         pd->setAttribute(Qt::WA_DeleteOnClose);
         connect(pd, &QProgressDialog::canceled, exporter_, &Exporter::cancel);
@@ -1640,7 +1643,7 @@ bool MainWindow::startExport(const ExportJob& job, bool showProgress) {
         }
         if (pd) pd->close();
         osd_->showMessage(msg, 5000);
-        if (!ok && pd && !msg.contains("cancelled")) QMessageBox::warning(this, "Export", msg);
+        if (!ok && pd && !exporter_->wasCancelled()) QMessageBox::warning(this, tr("Export"), msg);
     });
     QString err;
     exportState_ = "running";
@@ -1650,7 +1653,7 @@ bool MainWindow::startExport(const ExportJob& job, bool showProgress) {
         exportState_ = "failed";
         exportMessage_ = err;
         if (pd) pd->close();
-        if (showProgress) QMessageBox::warning(this, "Export", err);
+        if (showProgress) QMessageBox::warning(this, tr("Export"), err);
         return false;
     }
     return true;
@@ -1714,28 +1717,64 @@ void MainWindow::autoCheckUpdates() {
     Updater* u = updater();
     connect(u, &Updater::checked, this, [this, u](bool ok) {
         if (!ok || !u->updateAvailable()) return;
-        updateAction_->setText(QString("&Update to Coreplay %1...").arg(u->latest().version));
-        osd_->showMessage(QString("Coreplay %1 is available: Help > Update").arg(u->latest().version), 8000);
+        //: Keep "Core Studio", "Coreplay", format and colour-space names in English.
+        updateAction_->setText(tr("&Update to Coreplay %1...").arg(u->latest().version));
+        //: Keep "Core Studio", "Coreplay", format and colour-space names in English.
+        osd_->showMessage(tr("Coreplay %1 is available: Help > Update").arg(u->latest().version), 8000);
     }, Qt::SingleShotConnection);
     u->check();
+}
+
+// Help > About: what Coreplay is, and an invitation to Core Studio (the link opens the
+// browser only when clicked). Non-blocking, so playback goes on behind it.
+void MainWindow::showAbout() {
+    auto* box = new QMessageBox(this);
+    box->setAttribute(Qt::WA_DeleteOnClose);
+    box->setObjectName("aboutBox");
+    //: Keep "Core Studio", "Coreplay", format and colour-space names in English.
+    box->setWindowTitle(tr("About Coreplay"));
+    box->setIconPixmap(QPixmap(":/coreplay.png").scaled(72, 72, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    box->setTextFormat(Qt::RichText);
+    box->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    //: Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.
+    const QString made = tr("Coreplay is made by %1 as a companion to %2, "
+                            "our professional AI film studio: from the first line of the script to the final frame, "
+                            "in one workspace.")
+                             .arg(QString("<b>imCore Corp.</b>"), QString("<b>Core Studio</b>"));
+    box->setText(QString("<h3 style='margin-bottom:2px'>%1</h3>"
+                         "<p style='margin-top:0'>%2</p>"
+                         "<p>%3</p>"
+                         "<p>%4<br>"
+                         "<a href='https://imcore.ai/core-studio.html' style='color:#d7ee87'><b>%5 &rarr;</b></a></p>"
+                         "<p style='color:#8a8a8a'><small>%6</small></p>")
+                     .arg(tr("Coreplay %1").arg(COREPLAY_VERSION),
+                          tr("A fast, free player for movies and image sequences."), made,
+                          tr("If you enjoy working with Coreplay, you will feel at home in Core Studio."),
+                          tr("Explore Core Studio and go Pro"),
+                          tr("Movies through libmpv (FFmpeg). Image sequences through "
+                             "OpenImageIO, colour through OpenColorIO. Hotkeys follow MPC-HC.")));
+    // The link's arrow points along the reading direction (left in Arabic).
+    if (isRightToLeft()) box->setText(box->text().replace("&rarr;", "&larr;"));
+    box->setStandardButtons(QMessageBox::Close);
+    box->open();
 }
 
 void MainWindow::updatesDialog() {
     Updater* u = updater();
     QDialog d(this);
-    d.setWindowTitle("Check for Updates");
+    d.setWindowTitle(tr("Check for Updates"));
     d.setMinimumWidth(460);
     auto* v = new QVBoxLayout(&d);
-    auto* text = new QLabel("Checking " + Updater::feedUrl() + " ...", &d);
+    auto* text = new QLabel(tr("Checking %1 ...").arg(Updater::feedUrl()), &d);
     text->setWordWrap(true);
     text->setTextInteractionFlags(Qt::TextSelectableByMouse);
     v->addWidget(text);
-    auto* autoBox = new QCheckBox("Check for updates automatically (once a day)", &d);
+    auto* autoBox = new QCheckBox(tr("Check for updates automatically (once a day)"), &d);
     autoBox->setChecked(QSettings().value("updates/auto", true).toBool());
     connect(autoBox, &QCheckBox::toggled, this, [](bool on) { QSettings().setValue("updates/auto", on); });
     v->addWidget(autoBox);
     auto* bb = new QDialogButtonBox(&d);
-    QPushButton* install = bb->addButton(Updater::installedCopy() ? "Download and Install" : "Download Installer",
+    QPushButton* install = bb->addButton(Updater::installedCopy() ? tr("Download and Install") : tr("Download Installer"),
                                          QDialogButtonBox::AcceptRole);
     install->setEnabled(false);
     bb->addButton(QDialogButtonBox::Close);
@@ -1750,18 +1789,20 @@ void MainWindow::updatesDialog() {
             return;
         }
         if (!u->updateAvailable()) {
-            text->setText(QString("Coreplay %1 is the newest version.").arg(cur));
+            //: Keep "Core Studio", "Coreplay", format and colour-space names in English.
+            text->setText(tr("Coreplay %1 is the newest version.").arg(cur));
             return;
         }
-        text->setText(QString("Coreplay %1 is available. You have %2.\n\n%3")
+        //: Keep "Core Studio", "Coreplay", format and colour-space names in English.
+        text->setText(tr("Coreplay %1 is available. You have %2.\n\n%3")
                           .arg(u->latest().version, cur, u->latest().notes.isEmpty() ? QString() : u->latest().notes));
         install->setEnabled(true);
     }, Qt::SingleShotConnection);
     u->check();
     if (d.exec() != QDialog::Accepted || !u->updateAvailable()) return;
 
-    auto* pd = new QProgressDialog(QString("Downloading Coreplay %1...").arg(u->latest().version), "Cancel", 0, 1000, this);
-    pd->setWindowTitle("Update");
+    auto* pd = new QProgressDialog(tr("Downloading Coreplay %1...").arg(u->latest().version), tr("Cancel"), 0, 1000, this);
+    pd->setWindowTitle(tr("Update"));
     pd->setMinimumDuration(0);
     pd->setAttribute(Qt::WA_DeleteOnClose);
     connect(pd, &QProgressDialog::canceled, u, &Updater::cancel);
@@ -1770,7 +1811,7 @@ void MainWindow::updatesDialog() {
     });
     connect(u, &Updater::failed, pd, [this, pd](const QString& msg) {
         pd->close();
-        QMessageBox::warning(this, "Update", msg);
+        QMessageBox::warning(this, tr("Update"), msg);
     }, Qt::SingleShotConnection);
     connect(u, &Updater::ready, this, [this, pd](const QString& installer) {
         pd->close();
@@ -1783,7 +1824,7 @@ void MainWindow::updatesDialog() {
         }
         // Silent per-user upgrade; the installer waits for Coreplay to close, then starts it again.
         if (QProcess::startDetached(installer, {"/S", "/RUN"})) close();
-        else QMessageBox::warning(this, "Update", "The installer could not start: " + installer);
+        else QMessageBox::warning(this, tr("Update"), tr("The installer could not start: %1").arg(installer));
     }, Qt::SingleShotConnection);
     u->download();
 }
@@ -1800,8 +1841,10 @@ void MainWindow::setChannel(int c, bool toggle) {
     seq()->setChannel(c);
     mpv()->setChannel(c);
     styleChannelButtons();
-    static const char* names[] = {"All (RGB)", "Red", "Green", "Blue", "Alpha"};
-    osd_->showMessage(QString("Channel: %1").arg(names[c]), 1200);
+    static const char* names[] = {QT_TRANSLATE_NOOP("MainWindow", "All (RGB)"), QT_TRANSLATE_NOOP("MainWindow", "Red"),
+                                  QT_TRANSLATE_NOOP("MainWindow", "Green"), QT_TRANSLATE_NOOP("MainWindow", "Blue"),
+                                  QT_TRANSLATE_NOOP("MainWindow", "Alpha")};
+    osd_->showMessage(tr("Channel: %1").arg(tr(names[c])), 1200);
     updateStatus();
 }
 
@@ -1810,9 +1853,9 @@ void MainWindow::setChannel(int c, bool toggle) {
 void MainWindow::updateLoopButton() {
     if (!loopBtn_) return;
     loopBtn_->setIcon(loopIcon(repeat_ != Repeat::None));
-    loopBtn_->setToolTip(repeat_ == Repeat::One   ? "Loop: on, this file (click: off; right-click: options)"
-                         : repeat_ == Repeat::All ? "Loop: on, the playlist (click: off; right-click: options)"
-                                                  : "Loop: off (click: on; right-click: options)");
+    loopBtn_->setToolTip(repeat_ == Repeat::One   ? tr("Loop: on, this file (click: off; right-click: options)")
+                         : repeat_ == Repeat::All ? tr("Loop: on, the playlist (click: off; right-click: options)")
+                                                  : tr("Loop: off (click: on; right-click: options)"));
 }
 
 void MainWindow::styleChannelButtons() {
@@ -1826,7 +1869,9 @@ void MainWindow::styleChannelButtons() {
         p.setColor(QPalette::Button, QColor(150, 150, 150));
         b->setPalette(p);
         b->setAutoFillBackground(on);
-        b->setToolTip(QString("%1 channel%2 (%1)").arg(b->text(), on ? " (active)" : ""));
+        //: Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key);
+        //: %2 = " (active)" when that channel is shown, else empty.
+        b->setToolTip(tr("%1 channel%2 (%1)").arg(b->text(), on ? tr(" (active)") : QString()));
     }
 }
 
@@ -1834,7 +1879,7 @@ void MainWindow::styleChannelButtons() {
 void MainWindow::fillContextMenu(QMenu* m) {
     m->addAction(act("file.export"));
     m->addSeparator();
-    QMenu* lut = m->addMenu("&LUT");
+    QMenu* lut = m->addMenu(tr("&LUT"));
     addLutActions(lut);
     m->addAction(act("pns.rotatezp"));
     m->addAction(act("pns.rotatezm"));
@@ -1847,11 +1892,11 @@ void MainWindow::fillContextMenu(QMenu* m) {
 
 void MainWindow::addLutActions(QMenu* m) {
     m->addAction(act("lut.load"));
-    QMenu* presets = m->addMenu("LUT &Presets");
+    QMenu* presets = m->addMenu(tr("LUT &Presets"));
     for (const QString& src : Lut::presetSources()) {
         QMenu* sm = presets->addMenu(src);
         for (const QString& dst : Lut::presetTargets()) {
-            QAction* a = sm->addAction("to " + dst, this, [this, src, dst] {
+            QAction* a = sm->addAction(tr("to %1").arg(dst), this, [this, src, dst] {
                 LutChoice c;
                 c.kind = LutChoice::Preset;
                 c.source = src;
@@ -1864,7 +1909,7 @@ void MainWindow::addLutActions(QMenu* m) {
     }
     QAction* clear = m->addAction(act("lut.clear")->text(), this, [this] { setLut(LutChoice()); });
     clear->setEnabled(lut_.kind != LutChoice::None);
-    if (lut_.kind != LutChoice::None) m->addAction("Active: " + lut_.label())->setEnabled(false);
+    if (lut_.kind != LutChoice::None) m->addAction(tr("Active: %1").arg(lut_.label()))->setEnabled(false);
 }
 
 // One LUT for both engines, both on the GPU: sequences in the OCIO shader, movies as
@@ -1875,7 +1920,7 @@ void MainWindow::setLut(const LutChoice& c) {
         QString err;
         shader = Lut::bakeMpvShader(c, &err);
         if (shader.isEmpty()) {
-            osd_->showMessage("Cannot use this LUT: " + err, 6000);
+            osd_->showMessage(tr("Cannot use this LUT: %1").arg(err), 6000);
             return;
         }
     }
@@ -1884,7 +1929,7 @@ void MainWindow::setLut(const LutChoice& c) {
     mpv();
     applyMpvLut();
     updateCompareBar();
-    osd_->showMessage(c.kind == LutChoice::None ? "LUT off" : "LUT: " + c.label(), 2500);
+    osd_->showMessage(c.kind == LutChoice::None ? tr("LUT off") : tr("LUT: %1").arg(c.label()), 2500);
     updateStatus();
 }
 
@@ -1944,15 +1989,15 @@ void MainWindow::setViewPreset(int p) {
 
 void MainWindow::openDialog() {
     QDialog d(this);
-    d.setWindowTitle("Open");
+    d.setWindowTitle(tr("Open"));
     auto* l = new QVBoxLayout(&d);
-    l->addWidget(new QLabel("File, folder or URL:"));
+    l->addWidget(new QLabel(tr("File, folder or URL:")));
     auto* row = new QHBoxLayout;
     auto* edit = new QLineEdit(&d);
     edit->setMinimumWidth(460);
     edit->setText(QSettings().value("open/last").toString());
     edit->selectAll();
-    auto* browse = new QPushButton("Browse...", &d);
+    auto* browse = new QPushButton(tr("Browse..."), &d);
     row->addWidget(edit, 1);
     row->addWidget(browse);
     l->addLayout(row);
@@ -1961,7 +2006,7 @@ void MainWindow::openDialog() {
     connect(bb, &QDialogButtonBox::accepted, &d, &QDialog::accept);
     connect(bb, &QDialogButtonBox::rejected, &d, &QDialog::reject);
     connect(browse, &QPushButton::clicked, &d, [&] {
-        const QString f = QFileDialog::getOpenFileName(&d, "Open");
+        const QString f = QFileDialog::getOpenFileName(&d, tr("Open"));
         if (!f.isEmpty()) edit->setText(QDir::toNativeSeparators(f));
     });
     if (d.exec() != QDialog::Accepted || edit->text().trimmed().isEmpty()) return;
@@ -1974,8 +2019,8 @@ void MainWindow::gotoDialog() {
     if (!cur_) return;
     const Rational r = cur_->fps();
     bool ok = false;
-    const QString t = QInputDialog::getText(this, "Go To",
-                                            "Time (hh:mm:ss.ms) or frame number:", QLineEdit::Normal,
+    const QString t = QInputDialog::getText(this, tr("Go To"),
+                                            tr("Time (hh:mm:ss.ms) or frame number:"), QLineEdit::Normal,
                                             timeText(cur_->position()), &ok).trimmed();
     if (!ok || t.isEmpty()) return;
     if (t.contains(':')) {
@@ -1996,10 +2041,10 @@ void MainWindow::seqFpsDialog() {
                                "48", "50", "59.94 (60000/1001)", "60", "120"};
     const Rational cur = seq_->fps();
     bool ok = false;
-    QString t = QInputDialog::getItem(this, "Sequence Frame Rate",
-                                      QString("Frame rate for this sequence (now %1/%2%3).\n"
+    QString t = QInputDialog::getItem(this, tr("Sequence Frame Rate"),
+                                      tr("Frame rate for this sequence (now %1/%2%3).\n"
                                               "Type a fraction such as 30000/1001 for an exact rate.")
-                                          .arg(cur.num).arg(cur.den).arg(seq_->fpsFromFile() ? ", from the file" : ""),
+                                          .arg(cur.num).arg(cur.den).arg(seq_->fpsFromFile() ? tr(", from the file") : QString()),
                                       items, 1, true, &ok);
     if (!ok) return;
     Rational r;
@@ -2013,13 +2058,13 @@ void MainWindow::seqFpsDialog() {
     QSettings st;
     st.setValue("seq/defaultFpsNum", r.num);
     st.setValue("seq/defaultFpsDen", r.den);
-    osd_->showMessage(QString("Sequence frame rate: %1/%2").arg(r.num).arg(r.den));
+    osd_->showMessage(tr("Sequence frame rate: %1/%2").arg(r.num).arg(r.den));
 }
 
 void MainWindow::cacheDialog() {
     QSettings st;
     bool ok = false;
-    const double gb = QInputDialog::getDouble(this, "Sequence Cache Size", "RAM for decoded frames (GB):",
+    const double gb = QInputDialog::getDouble(this, tr("Sequence Cache Size"), tr("RAM for decoded frames (GB):"),
                                               st.value("seq/cacheGB", 8.0).toDouble(), 0.5, 1024, 1, &ok);
     if (!ok) return;
     st.setValue("seq/cacheGB", gb);
@@ -2038,11 +2083,11 @@ void MainWindow::saveImage(bool autoName) {
         QDir().mkpath(dir);
         path = dir + "/" + base;
     } else {
-        path = QFileDialog::getSaveFileName(this, "Save Image", fi.absolutePath() + "/" + base,
+        path = QFileDialog::getSaveFileName(this, tr("Save Image"), fi.absolutePath() + "/" + base,
                                             "PNG (*.png);;JPEG (*.jpg);;TIFF (*.tif)");
         if (path.isEmpty()) return;
     }
-    osd_->showMessage(saveImageTo(path) ? "Saved " + QDir::toNativeSeparators(path) : "Could not save the image");
+    osd_->showMessage(saveImageTo(path) ? tr("Saved %1").arg(QDir::toNativeSeparators(path)) : tr("Could not save the image"));
 }
 
 bool MainWindow::saveImageTo(const QString& path) {
@@ -2078,12 +2123,12 @@ void MainWindow::recycleCurrent() {
         const Sequence& s = seq_->sequence();
         for (int f = s.first; f <= s.last; ++f)
             if (s.present[size_t(f - s.first)]) files << s.pathFor(f);
-        what = QString("all %1 frames of\n%2").arg(files.size()).arg(QDir::toNativeSeparators(s.pattern()));
+        what = tr("all %1 frames of\n%2").arg(files.size()).arg(QDir::toNativeSeparators(s.pattern()));
     } else {
         files << currentPath_;
         what = QDir::toNativeSeparators(currentPath_);
     }
-    if (QMessageBox::question(this, "Move to Recycle Bin", "Move " + what + "\nto the Recycle Bin?") != QMessageBox::Yes)
+    if (QMessageBox::question(this, tr("Move to Recycle Bin"), tr("Move %1\nto the Recycle Bin?").arg(what)) != QMessageBox::Yes)
         return;
     const int row = playlist_->currentRow();
     cur_->close();
@@ -2092,7 +2137,7 @@ void MainWindow::recycleCurrent() {
         if (!moveToRecycleBin(f)) ++failed;
     delete playlist_->takeItem(row);
     playlist_->setCurrent(-1);
-    if (failed) osd_->showMessage(QString("%1 file(s) could not be moved").arg(failed), 4000);
+    if (failed) osd_->showMessage(tr("%1 file(s) could not be moved").arg(failed), 4000);
     if (row < playlist_->count()) playRow(row);
     else closeMedia();
 }
@@ -2100,7 +2145,7 @@ void MainWindow::recycleCurrent() {
 void MainWindow::showProperties() {
     if (!cur_) return;
     QMessageBox box(this);
-    box.setWindowTitle("Properties");
+    box.setWindowTitle(tr("Properties"));
     box.setText(cur_->info());
     box.setTextInteractionFlags(Qt::TextSelectableByMouse);
     box.exec();
@@ -2133,7 +2178,7 @@ void MainWindow::rebuildRecent() {
     for (const QString& p : r)
         recentMenu_->addAction(QDir::toNativeSeparators(p), this, [this, p] { openPaths({p}); });
     recentMenu_->addSeparator();
-    recentMenu_->addAction("Clear", this, [this] { QSettings().remove("recent"); rebuildRecent(); });
+    recentMenu_->addAction(tr("Clear"), this, [this] { QSettings().remove("recent"); rebuildRecent(); });
 }
 
 // ------------------------------------------------------------------ status
@@ -2157,36 +2202,37 @@ void MainWindow::updateTitle() {
 void MainWindow::updateStatus() {
     if (!cur_) {
         timeLabel_->clear();
-        statusLeft_->setText("Ready");
+        statusLeft_->setText(tr("Ready"));
         return;
     }
     const Rational r = cur_->fps();
     const qint64 frame = cur_->frameNumber();
     QString t = timeText(cur_->position()) + " / " + timeText(cur_->duration());
     if (frame >= 0) {
-        if (cur_ == seq_) t += QString("   frame %1 [%2-%3]").arg(frame).arg(seq_->sequence().first).arg(seq_->sequence().last);
-        else t += QString("   frame %1").arg(frame);
+        //: Keep the three leading spaces: they separate the fields (the statistics overlay splits on them).
+        if (cur_ == seq_) t += tr("   frame %1 [%2-%3]").arg(frame).arg(seq_->sequence().first).arg(seq_->sequence().last);
+        else t += tr("   frame %1").arg(frame);
     }
     timeLabel_->setText(t);
-    QString s = cur_->paused() ? "Paused" : "Playing";
-    if (r.valid()) s += QString("   %1 fps").arg(r.value(), 0, 'f', 3);
+    QString s = cur_->paused() ? tr("Paused") : tr("Playing");
+    if (r.valid()) s += tr("   %1 fps").arg(r.value(), 0, 'f', 3);
     if (cur_ == seq_) {
-        if (!seq_->fpsFromFile()) s += " (set, not from the file)";
-        if (!seq_->paused()) s += QString("   playing at %1 fps").arg(seq_->measuredFps(), 0, 'f', 2);
-        s += QString("   cache %1 / %2 GB").arg(seq_->cache()->usedBytes() / double(1 << 30), 0, 'f', 1)
+        if (!seq_->fpsFromFile()) s += tr(" (set, not from the file)");
+        if (!seq_->paused()) s += tr("   playing at %1 fps").arg(seq_->measuredFps(), 0, 'f', 2);
+        s += tr("   cache %1 / %2 GB").arg(seq_->cache()->usedBytes() / double(1 << 30), 0, 'f', 1)
                  .arg(seq_->cache()->budget() / double(1 << 30), 0, 'f', 0);
-        if (int miss = seq_->sequence().missingCount()) s += QString("   %1 missing frames").arg(miss);
+        if (int miss = seq_->sequence().missingCount()) s += tr("   %1 missing frames").arg(miss);
     }
-    if (rate_ != 1.0) s += QString("   speed %1x").arg(rate_);
+    if (rate_ != 1.0) s += tr("   speed %1x").arg(rate_);
     // B waiting for a new A: start as soon as A shows a picture.
     if (!pendingB_.isEmpty() && cur_ && !cur_->mediaSize().isEmpty() && !comparing_) {
         const QString b = pendingB_;
         pendingB_.clear();
         startCompare(b);
     }
-    if (lut_.kind != LutChoice::None) s += "   LUT: " + lut_.label();
-    if (channel_) s += QString("   channel %1").arg(QString("RGBA").at(channel_ - 1));
-    if (comparing_) s += QString("   compare %1 with %2").arg(compareModeName(cmpView_.mode), QFileInfo(cmpPath_).fileName());
+    if (lut_.kind != LutChoice::None) s += tr("   LUT: %1").arg(lut_.label());
+    if (channel_) s += tr("   channel %1").arg(QString("RGBA").at(channel_ - 1));
+    if (comparing_) s += tr("   compare %1 with %2").arg(compareModeLabel(cmpView_.mode), QFileInfo(cmpPath_).fileName());
     statusLeft_->setText(s);
     if (stats_->isVisible()) {
         stats_->setText(s.replace("   ", "\n") + "\n" + t.replace("   ", "\n"));
@@ -2209,27 +2255,27 @@ void MainWindow::setInfoOverlay(bool on) {
 void MainWindow::refreshInfoOverlay(bool clipChanged) {
     if (!infoOverlay_ || !infoOverlay_->isVisible()) return;
     if (!cur_ || currentPath_.isEmpty()) {
-        infoOverlay_->setText("No file");
+        infoOverlay_->setText(tr("No file"));
     } else {
         if (clipChanged || infoStatic_.isEmpty()) {
             QStringList l;
             const QFileInfo fi(currentPath_);
             if (cur_ == seq_) {
-                l << "Folder: " + QDir::toNativeSeparators(fi.absolutePath());
+                l << tr("Folder: %1").arg(QDir::toNativeSeparators(fi.absolutePath()));
             } else {
-                l << QString("Size: %1 MB   modified %2").arg(fi.size() / 1048576.0, 0, 'f', 1)
+                l << tr("Size: %1 MB   modified %2").arg(fi.size() / 1048576.0, 0, 'f', 1)
                          .arg(fi.lastModified().toString("yyyy-MM-dd HH:mm"));
             }
             l << cur_->info();
             const QStringList meta = cur_->metadata();
-            l << "" << (meta.isEmpty() ? QString("Metadata: none") : QString("Metadata (%1)").arg(meta.size()));
+            l << "" << (meta.isEmpty() ? tr("Metadata: none") : tr("Metadata (%1)").arg(meta.size()));
             const int maxLines = std::max(4, (videoArea_->height() - 160) / 15);
             for (int i = 0; i < meta.size() && i < maxLines; ++i) l << "  " + meta[i];
-            if (meta.size() > maxLines) l << QString("  ... %1 more (File > Properties)").arg(meta.size() - maxLines);
+            if (meta.size() > maxLines) l << tr("  ... %1 more (File > Properties)").arg(meta.size() - maxLines);
             infoStatic_ = l.join('\n');
         }
         QString live = timeLabel_->text();
-        if (rate_ != 1.0) live += QString("   speed %1x").arg(rate_);
+        if (rate_ != 1.0) live += tr("   speed %1x").arg(rate_);
         infoOverlay_->setText(QString("%1\n%2\n%3").arg(windowTitle().chopped(11), live, infoStatic_));
     }
     infoOverlay_->adjustSize();
@@ -2335,6 +2381,12 @@ QVariantMap MainWindow::testState() const {
     m["compare.offset"] = cmpOffset_;
     m["compare.b"] = QFileInfo(cmpPath_).fileName();
     if (comparing_ && cur_ == seq_) m["compare.bFrame"] = seq_->compareSequence().first + std::clamp(seq_->index() + cmpOffset_, 0, std::max(0, seq_->compareSequence().count() - 1));
+    if (auto* about = findChild<QMessageBox*>("aboutBox")) {
+        m["about.visible"] = about->isVisible();
+        m["about.text"] = about->text();
+    } else {
+        m["about.visible"] = false;
+    }
     m["settings.visible"] = settings_ && settings_->isVisible();
     m["settings.rows"] = settings_ ? settings_->visibleRows() : 0;
     m["settings.message"] = settings_ ? settings_->message() : QString();   // "gapless <ms>" or "reopen <ms>": gap at the last clip change
@@ -2349,7 +2401,7 @@ QVariantMap MainWindow::testState() const {
         m["contextMenu"] = items.join(" | ");
         QStringList lutItems;
         for (QAction* a : cm.actions())
-            if (a->menu() && a->text().remove('&') == "LUT")
+            if (a->menu() && a->text().remove('&') == tr("&LUT").remove('&'))
                 for (QAction* b : a->menu()->actions()) if (!b->isSeparator()) lutItems << b->text().remove('&');
         m["contextMenu.lut"] = lutItems.join(" | ");
     }
@@ -2459,7 +2511,7 @@ void MainWindow::toggleGradeWindow() {
 
 void MainWindow::setCurrentGrade(const Grade& g) {
     if (currentPath_.isEmpty()) {
-        osd_->showMessage("Open a clip first", 2000);
+        osd_->showMessage(tr("Open a clip first"), 2000);
         if (gradeWin_) gradeWin_->setGrade(Grade());
         return;
     }
@@ -2531,30 +2583,30 @@ QString MainWindow::savePresetFor(const QString& ext) const {
 
 void MainWindow::saveGraded(bool asNew) {
     if (!cur_ || currentPath_.isEmpty()) {
-        osd_->showMessage("Open a clip first", 2000);
+        osd_->showMessage(tr("Open a clip first"), 2000);
         return;
     }
     if (exporter_ && exporter_->running()) {
-        osd_->showMessage("A save or export is already running", 2500);
+        osd_->showMessage(tr("A save or export is already running"), 2500);
         return;
     }
     const bool sequence = cur_ == seq_;
     if (!asNew && currentGrade().isIdentity()) {
-        osd_->showMessage("Nothing to save: this clip has no grade (Alt+G)", 3000);
+        osd_->showMessage(tr("Nothing to save: this clip has no grade (Alt+G)"), 3000);
         return;
     }
     const QFileInfo fi(currentPath_);
     if (!asNew && sequence) {
         // Writing every frame of a sequence over itself would replace the scene-linear
         // originals with display values: a sequence is always saved as new frames.
-        osd_->showMessage("Image sequences are saved as new frames: choose a folder", 3500);
+        osd_->showMessage(tr("Image sequences are saved as new frames: choose a folder"), 3500);
         asNew = true;
     }
     if (!asNew) {
         if (qApp->organizationName() != "CoreplayTest" &&
-            QMessageBox::question(this, "Save",
-                                  "Write the grade into\n" + QDir::toNativeSeparators(currentPath_) +
-                                      "?\n\nThe clip is encoded again with its own codec. The original goes to the Recycle Bin.") !=
+            QMessageBox::question(this, tr("Save"),
+                                  tr("Write the grade into\n%1?\n\nThe clip is encoded again with its own codec. The original goes to the Recycle Bin.")
+                                      .arg(QDir::toNativeSeparators(currentPath_))) !=
                 QMessageBox::Yes)
             return;
         saveGradedTo(QString(), true, true);
@@ -2563,17 +2615,17 @@ void MainWindow::saveGraded(bool asNew) {
     QString output;
     if (sequence) {
         const Sequence& s = seq_->sequence();
-        const QString dir = QFileDialog::getExistingDirectory(this, "Folder for the graded frames", s.dir);
+        const QString dir = QFileDialog::getExistingDirectory(this, tr("Folder for the graded frames"), s.dir);
         if (dir.isEmpty()) return;
         if (QDir(dir) == QDir(s.dir)) {
-            QMessageBox::warning(this, "Save As", "Choose another folder: the graded frames would replace the originals.");
+            QMessageBox::warning(this, tr("Save As"), tr("Choose another folder: the graded frames would replace the originals."));
             return;
         }
         output = QString("%1/%2%%0%3d%4").arg(dir, s.prefix).arg(std::max(4, s.padding)).arg(s.suffix);
     } else {
         const QString ext = fi.suffix().toLower();
-        output = QFileDialog::getSaveFileName(this, "Save As", fi.absolutePath() + "/" + fi.completeBaseName() + "_graded." + ext,
-                                              QString("Same format (*.%1);;All files (*)").arg(ext));
+        output = QFileDialog::getSaveFileName(this, tr("Save As"), fi.absolutePath() + "/" + fi.completeBaseName() + "_graded." + ext,
+                                              QString("%1 (*.%2);;%3 (*)").arg(tr("Same format"), ext, tr("All files")));
         if (output.isEmpty()) return;
         if (QFileInfo(output).absoluteFilePath() == fi.absoluteFilePath()) {
             saveGraded(false);  // the same file: that is Save
@@ -2636,7 +2688,7 @@ bool MainWindow::saveGradedTo(const QString& outputIn, bool inPlace, bool showPr
         if (!inPlace) {
             unsavedGrades_.remove(path);  // the graded picture is in a file now
             updateTitle();
-            osd_->showMessage("Saved " + QDir::toNativeSeparators(output), 4000);
+            osd_->showMessage(tr("Saved %1").arg(QDir::toNativeSeparators(output)), 4000);
             return;
         }
         // Release the file, keep the original in the Recycle Bin, put the new one in its place.
@@ -2645,8 +2697,8 @@ bool MainWindow::saveGradedTo(const QString& outputIn, bool inPlace, bool showPr
         if (cur_) cur_->close();
         if (!moveToRecycleBin(path)) {
             exportState_ = "failed";
-            exportMessage_ = "Could not move the original to the Recycle Bin. The graded clip is " + QDir::toNativeSeparators(output);
-            QMessageBox::warning(this, "Save", exportMessage_);
+            exportMessage_ = tr("Could not move the original to the Recycle Bin. The graded clip is %1").arg(QDir::toNativeSeparators(output));
+            QMessageBox::warning(this, tr("Save"), exportMessage_);
             if (row >= 0) playRow(row);
             return;
         }
@@ -2661,8 +2713,8 @@ bool MainWindow::saveGradedTo(const QString& outputIn, bool inPlace, bool showPr
                 connect(e, &Engine::loaded, this, [e, pos] { e->seekAbsolute(pos); }, Qt::SingleShotConnection);
             }
         }
-        exportMessage_ = "Saved " + QDir::toNativeSeparators(path);
-        osd_->showMessage(exportMessage_ + " (the original is in the Recycle Bin)", 5000);
+        exportMessage_ = tr("Saved %1").arg(QDir::toNativeSeparators(path));
+        osd_->showMessage(exportMessage_ + tr(" (the original is in the Recycle Bin)"), 5000);
         updateTitle();
     };
     if (!startExport(j, showProgress)) {
@@ -2721,10 +2773,10 @@ void MainWindow::closeEvent(QCloseEvent* e) {
         for (const QString& p : unsavedGrades_) names << QFileInfo(p).fileName();
         names.sort();
         QMessageBox box(QMessageBox::Warning, "Coreplay",
-                        QString("%1 graded clip(s) are not saved:\n\n%2\n\nClose and lose the grades?")
+                        tr("%1 graded clip(s) are not saved:\n\n%2\n\nClose and lose the grades?")
                             .arg(names.size()).arg(names.mid(0, 8).join('\n') + (names.size() > 8 ? "\n..." : "")),
                         QMessageBox::NoButton, this);
-        QPushButton* discard = box.addButton("Close Without Saving", QMessageBox::DestructiveRole);
+        QPushButton* discard = box.addButton(tr("Close Without Saving"), QMessageBox::DestructiveRole);
         box.addButton(QMessageBox::Cancel);
         box.exec();
         if (box.clickedButton() != discard) {

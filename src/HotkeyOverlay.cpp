@@ -2,10 +2,12 @@
 
 #include <algorithm>
 #include <QApplication>
+#include <QCoreApplication>
 #include <QEvent>
 #include <QFontMetrics>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QRegularExpression>
 
 #include "Hotkeys.h"
 
@@ -22,11 +24,23 @@ QString groupOf(const QString& id) {
     if (id.startsWith("channel.") || id.startsWith("seq.") || id.startsWith("lut.")) return "Image";
     return "Other";
 }
-const QStringList kOrder = {"Playback", "File", "View", "A/B Compare", "Image", "Audio & Subtitles", "Pan & Scan", "Other"};
+// Group titles: English here (they are the keys of groupOf), translated when shown.
+const QStringList kOrder = {QT_TRANSLATE_NOOP("Hotkeys", "Playback"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "File"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "View"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "A/B Compare"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "Image"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "Audio & Subtitles"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "Pan & Scan"),
+                            QT_TRANSLATE_NOOP("Hotkeys", "Other")};
 
 // Menu text without its accelerator marks: "Pan&&Scan Reset" -> "Pan&Scan Reset".
+// The label is translated first (context "Hotkeys"), then its marks are removed.
+// A CJK/Thai/Arabic/Hindi label carries its menu key as "(&P)": that whole part goes.
 QString plain(const char* label) {
-    QString s = QString(label).replace("&&", QChar(0x1)).remove('&').replace(QChar(0x1), '&');
+    QString s = QCoreApplication::translate("Hotkeys", label);
+    s.remove(QRegularExpression(R"(\s*\(&[^&\s]\))"));
+    s = s.replace("&&", QChar(0x1)).remove('&').replace(QChar(0x1), '&');
     if (s.endsWith("...")) s.chop(3);
     return s;
 }
@@ -82,7 +96,7 @@ HotkeyOverlay::HotkeyOverlay(QWidget* window) : QWidget(window) {
 
 void HotkeyOverlay::fill() {
     groups_.clear();
-    for (const QString& t : kOrder) groups_.push_back({t, {}});
+    for (const QString& t : kOrder) groups_.push_back({QCoreApplication::translate("Hotkeys", t.toUtf8().constData()), {}});
     for (const auto& d : Hotkeys::load()) {
         if (d.keys.isEmpty()) continue;           // a command with no key: nothing to learn here
         QStringList keys;
@@ -164,11 +178,12 @@ void HotkeyOverlay::paintEvent(QPaintEvent*) {
 
     p.setFont(h);
     p.setPen(QColor(235, 235, 235));
-    p.drawText(QRect(0, px, width(), px * 3), Qt::AlignHCenter | Qt::AlignVCenter, "Hotkeys");
+    p.drawText(QRect(0, px, width(), px * 3), Qt::AlignHCenter | Qt::AlignVCenter, tr("Hotkeys"));
     p.setFont(f);
     p.setPen(QColor(140, 140, 140));
     p.drawText(QRect(0, height() - px * 3, width(), px * 2), Qt::AlignHCenter | Qt::AlignVCenter,
-               "F1, Esc or a click closes this.  Change keys in Help > Edit Hotkeys.");
+               //: "F1" and "Esc" are key names; keep them in English. "Help > Edit Hotkeys" is a menu path.
+               tr("F1, Esc or a click closes this.  Change keys in Help > Edit Hotkeys."));
 
     int col = 0, line = 0;
     auto at = [&](int ln) { return QPoint(x0 + col * l.colW, l.top + ln * l.lineH); };

@@ -2,6 +2,7 @@
 // A/B compare, as in RV: two clips on one timeline, frame-locked, shown by the viewer's
 // own shader. Flip shows A or B whole; Wipe splits the picture at a line you drag;
 // Side by Side puts them next to each other; Difference shows only what changed.
+#include <QCoreApplication>
 #include <QString>
 
 enum class CompareMode { Off = 0, Flip = 1, Wipe = 2, SideBySide = 3, Difference = 4 };
@@ -13,15 +14,18 @@ struct CompareView {
     bool operator==(const CompareView&) const = default;
 };
 
-inline QString compareModeName(CompareMode m) {
+// English name (settings, tests); compareModeLabel() is the same name for the screen.
+inline const char* compareModeKey(CompareMode m) {
     switch (m) {
-        case CompareMode::Flip: return "A/B Flip";
-        case CompareMode::Wipe: return "Wipe";
-        case CompareMode::SideBySide: return "Side by Side";
-        case CompareMode::Difference: return "Difference";
-        default: return "Off";
+        case CompareMode::Flip: return QT_TRANSLATE_NOOP("Compare", "A/B Flip");
+        case CompareMode::Wipe: return QT_TRANSLATE_NOOP("Compare", "Wipe");
+        case CompareMode::SideBySide: return QT_TRANSLATE_NOOP("Compare", "Side by Side");
+        case CompareMode::Difference: return QT_TRANSLATE_NOOP("Compare", "Difference");
+        default: return QT_TRANSLATE_NOOP("Compare", "Off");
     }
 }
+inline QString compareModeName(CompareMode m) { return compareModeKey(m); }
+inline QString compareModeLabel(CompareMode m) { return QCoreApplication::translate("Compare", compareModeKey(m)); }
 
 // The GLSL that picks A, B, the wipe line or the difference for one output pixel.
 // The viewer defines: vec4 shadeA(vec2 t), vec4 shadeB(vec2 t) (display colour), and

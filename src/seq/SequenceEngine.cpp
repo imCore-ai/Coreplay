@@ -169,7 +169,7 @@ bool SequenceEngine::open(const QString& path) {
     wanted_ = index_;
     playhead(index_, 1);
     view_->setFrame(nullptr);
-    view_->setOverlay("Loading…");
+    view_->setOverlay(tr("Loading…"));
     emit durationChanged(duration());
     emit positionChanged(position());
     return true;
@@ -358,18 +358,19 @@ QStringList SequenceEngine::metadata() const {
 QString SequenceEngine::info() const {
     FramePtr f = view_->frame();
     QStringList l;
-    l << "Sequence: " + seq_.pattern();
-    l << QString("Frames: %1-%2 (%3 frames, %4 missing)").arg(seq_.first).arg(seq_.last).arg(seq_.count()).arg(seq_.missingCount());
-    l << QString("Frame rate: %1/%2 = %3 fps (%4)")
+    l << tr("Sequence: %1").arg(seq_.pattern());
+    l << tr("Frames: %1-%2 (%3 frames, %4 missing)").arg(seq_.first).arg(seq_.last).arg(seq_.count()).arg(seq_.missingCount());
+    l << tr("Frame rate: %1/%2 = %3 fps (%4)")
              .arg(fps_.num).arg(fps_.den).arg(fps_.value(), 0, 'f', 3)
-             .arg(fpsFromFile_ ? "from the file header" : "NOT in the file - set in Play > Sequence Frame Rate");
+             .arg(fpsFromFile_ ? tr("from the file header") : tr("NOT in the file - set in Play > Sequence Frame Rate"));
     if (f) {
-        l << "Image: " + f->description;
-        l << "File colour tag: " + (f->colorSpace.isEmpty() ? QString("none") : f->colorSpace);
+        l << tr("Image: %1").arg(f->description);
+        l << tr("File colour tag: %1").arg(f->colorSpace.isEmpty() ? tr("none") : f->colorSpace);
     }
-    l << "Input colour space: " + view_->inputSpace();
-    l << "Display / view: " + view_->display() + " / " + view_->viewName();
-    l << "OCIO config: " + view_->configName();
-    l << QString("Cache: %1 / %2 GB").arg(cache_->usedBytes() / double(1 << 30), 0, 'f', 2).arg(cache_->budget() / double(1 << 30), 0, 'f', 1);
+    l << tr("Input colour space: %1").arg(view_->inputSpace());
+    l << tr("Display / view: %1 / %2").arg(view_->display(), view_->viewName());
+    //: Keep the product name OCIO in English.
+    l << tr("OCIO config: %1").arg(view_->configName());
+    l << tr("Cache: %1 / %2 GB").arg(cache_->usedBytes() / double(1 << 30), 0, 'f', 2).arg(cache_->budget() / double(1 << 30), 0, 'f', 1);
     return l.join('\n');
 }

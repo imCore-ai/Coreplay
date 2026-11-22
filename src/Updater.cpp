@@ -99,7 +99,7 @@ void Updater::check() {
     // Plain http only for a local test feed; the manifest is signed either way.
     if (url.scheme() != "https" && !(url.scheme() == "http" && (url.host() == "127.0.0.1" || url.host() == "localhost"))) {
         state_ = "failed";
-        emit checked(false, "The update address must be https.");
+        emit checked(false, tr("The update address must be https."));
         return;
     }
     auto get = [this](const QString& u) {
@@ -118,14 +118,15 @@ void Updater::check() {
         QSettings().setValue("updates/lastCheck", QDateTime::currentDateTimeUtc());
         if (manifest->error() || signature->error()) {
             state_ = "failed";
-            emit checked(false, "Cannot reach the update server: " +
-                                    (manifest->error() ? manifest->errorString() : signature->errorString()));
+            emit checked(false, tr("Cannot reach the update server: %1")
+                                    .arg(manifest->error() ? manifest->errorString() : signature->errorString()));
             return;
         }
         const QByteArray body = manifest->readAll();
         if (!verify(body, signature->readAll())) {
             state_ = "failed";
-            emit checked(false, "The update information is not signed by imcore. Nothing was downloaded.");
+            //: Keep the product name in English.
+            emit checked(false, tr("The update information is not signed by imcore. Nothing was downloaded."));
             return;
         }
         const QJsonObject o = QJsonDocument::fromJson(body).object();
@@ -134,7 +135,7 @@ void Updater::check() {
         // The file name comes from the signed manifest; still keep it a plain name.
         if (latest_.version.isEmpty() || latest_.file.isEmpty() || latest_.file.contains('/') || latest_.file.contains('\\')) {
             state_ = "failed";
-            emit checked(false, "The update information is incomplete.");
+            emit checked(false, tr("The update information is incomplete."));
             return;
         }
         state_ = updateAvailable() ? "available" : "current";
@@ -151,7 +152,7 @@ void Updater::download() {
     QDir().mkpath(dir);
     part_ = new QFile(dir + "/" + latest_.file + ".part", this);
     if (!part_->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        fail("Cannot write " + part_->fileName());
+        fail(tr("Cannot write %1").arg(part_->fileName()));
         return;
     }
     QNetworkRequest rq{QUrl(feedUrl() + QUrl::toPercentEncoding(latest_.file))};
@@ -180,10 +181,10 @@ void Updater::download() {
         part_->deleteLater();
         part_ = nullptr;
         if (state_ != "downloading") { QFile::remove(partName); return; }  // cancelled
-        if (netError) { QFile::remove(partName); fail("Download failed: " + netMsg); return; }
+        if (netError) { QFile::remove(partName); fail(tr("Download failed: %1").arg(netMsg)); return; }
         if (size != latest_.size || QString(hash->result().toHex()) != latest_.sha256) {
             QFile::remove(partName);
-            fail("The downloaded file does not match the signed release. It was deleted.");
+            fail(tr("The downloaded file does not match the signed release. It was deleted."));
             return;
         }
         QString final = partName.chopped(5);  // drop ".part"

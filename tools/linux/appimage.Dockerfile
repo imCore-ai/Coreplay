@@ -6,7 +6,7 @@ RUN dnf -y install epel-release dnf-plugins-core \
  && dnf config-manager --set-enabled crb \
  && dnf -y install --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm \
  && dnf -y install gcc-toolset-14 cmake ninja-build git pkgconf-pkg-config file patchelf wget \
-      qt6-qtbase-devel qt6-qtwayland qt6-qtsvg mesa-libGL-devel mesa-libEGL-devel \
+      qt6-qtbase-devel qt6-qttools-devel qt6-linguist qt6-qtwayland qt6-qtsvg mesa-libGL-devel mesa-libEGL-devel \
       mpv-devel libtiff-devel libpng-devel libjpeg-turbo-devel libwebp-devel openjpeg2-devel \
       giflib-devel zlib-devel \
       xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers python3 desktop-file-utils \

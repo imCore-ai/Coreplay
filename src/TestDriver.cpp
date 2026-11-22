@@ -116,6 +116,16 @@ void TestDriver::step() {
             const QString want = t.mid(3).join(' ');
             if (check(t[1], t[2], want, &got)) log(QString("PASS  %1 %2 %3 (got %4)").arg(t[1], t[2], want, got));
             else { ++failures_; log(QString("FAIL  %1 %2 %3 (got %4)").arg(t[1], t[2], want, got)); }
+        } else if (cmd == "grabwidget") {
+            // grabwidget <objectName> <png>: a picture of one window or dialog of the app
+            QWidget* found = nullptr;
+            for (QWidget* top : QApplication::topLevelWidgets()) {
+                if (top->objectName() == t.value(1)) found = top;
+                else if (!found) found = top->findChild<QWidget*>(t.value(1));
+            }
+            const bool ok = found && found->isVisible() && found->grab().save(t.value(2));
+            if (!ok) ++failures_;
+            log(QString("%1  grabwidget %2 %3").arg(ok ? "PASS" : "FAIL", t.value(1), t.value(2)));
         } else if (cmd == "grab" || cmd == "grabwindow") {
             const bool ok = cmd == "grab" ? w_->testGrab(rest) : w_->grab().save(rest);
             if (!ok) ++failures_;

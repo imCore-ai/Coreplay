@@ -62,6 +62,7 @@ public:
     bool start(const ExportJob& job, QString* error);
     void cancel();
     bool running() const { return mpv_ != nullptr; }
+    bool wasCancelled() const { return cancelled_; }  // the last job ended by cancel()
     QString lastOptions() const { return options_.join(' '); }  // for the log / tests
     QString burnedSubtitleId() const { return subtitleId_; }
 
