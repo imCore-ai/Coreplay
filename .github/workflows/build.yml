@@ -145,27 +145,42 @@ jobs:
           path: out/Coreplay-*-x86_64.AppImage
           if-no-files-found: error
 
+  # The .deb carries the AppImage's files (its own Qt, libmpv, OpenImageIO, OpenColorIO),
+  # so one .deb installs on Ubuntu 22.04+ and Debian 12+. A .deb on a distribution's own
+  # libraries installed only on Ubuntu 26.04.
   linux-deb:
-    needs: version
+    needs: [version, linux-appimage]
     runs-on: ubuntu-24.04
     env:
       COREPLAY_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - name: Build container (cached)
-        uses: docker/build-push-action@v6
+      - uses: actions/download-artifact@v4
         with:
-          context: tools/linux
-          file: tools/linux/Dockerfile
-          tags: coreplay-linux-build
-          load: true
-          cache-from: type=gha,scope=deb
-          cache-to: type=gha,mode=max,scope=deb
+          name: linux-appimage
+          path: appimage
       - name: Build .deb
         run: |
           mkdir -p out
-          docker run --rm -e COREPLAY_VERSION -v "$PWD:/src:ro" -v "$PWD/out:/out" coreplay-linux-build bash /src/build-linux.sh --deb
+          docker run --rm -v "$PWD:/src:ro" -v "$PWD/appimage:/ai:ro" -v "$PWD/out:/out" ubuntu:22.04 \
+            bash /src/tools/linux/make_deb.sh /ai/Coreplay-$COREPLAY_VERSION-x86_64.AppImage "$COREPLAY_VERSION" /out
+      # apt must find every Depends, every library must resolve, and Coreplay must start.
+      - name: Install check (Ubuntu 22.04, Ubuntu 24.04, Debian 12)
+        run: |
+          for img in ubuntu:22.04 ubuntu:24.04 debian:12; do
+            docker run --rm -v "$PWD/out:/deb:ro" "$img" bash -c '
+              set -e; export DEBIAN_FRONTEND=noninteractive
+              apt-get update -qq >/dev/null
+              apt-get install -y -qq /deb/coreplay_*_amd64.deb >/dev/null
+              missing=$(find /opt/coreplay/usr/bin /opt/coreplay/usr/lib -maxdepth 1 -type f -exec sh -c "LD_LIBRARY_PATH=/opt/coreplay/usr/lib ldd \"\$1\" | grep \"not found\"" _ {} \; || true)
+              if [ -n "$missing" ]; then echo "$missing"; exit 1; fi
+              apt-get install -y -qq --no-install-recommends xvfb xauth libgl1-mesa-dri >/dev/null
+              Xvfb :99 >/dev/null 2>&1 & sleep 2
+              DISPLAY=:99 QT_QPA_PLATFORM=xcb coreplay & pid=$!
+              sleep 10
+              kill -0 $pid
+              echo "'"$img"': installed, every library found, Coreplay is running after 10 s"'
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: linux-deb

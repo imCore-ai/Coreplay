@@ -67,13 +67,6 @@ own builds makes its own key and replaces `src/UpdateKey.h`.
 
 Both packages build in Docker, so any machine with Docker can build them.
 
-**.deb for Ubuntu 26.04 and newer** (uses the system's Qt, libmpv, OpenImageIO, OpenColorIO):
-
-```bash
-docker build -t coreplay-linux-build tools/linux
-docker run --rm -v "$PWD:/src:ro" -v "$PWD/dist/linux:/out" coreplay-linux-build bash /src/build-linux.sh --deb
-```
-
 **AppImage for Rocky/Alma 9, Ubuntu 22.04+, Debian 12+ and newer** (AlmaLinux 9 base, glibc 2.34;
 bundles Qt, libmpv + ffmpeg, and OpenEXR / OpenImageIO / OpenColorIO built from upstream at the
 same versions as the Windows build):
@@ -83,7 +76,24 @@ docker build -t coreplay-appimage-build -f tools/linux/appimage.Dockerfile tools
 docker run --rm -v "$PWD:/src:ro" -v "$PWD/dist/linux:/out" coreplay-appimage-build bash /src/build-appimage.sh
 ```
 
-Add `--tests` to either script for a test build. On Linux there is no update check (the feed
+**.deb for Ubuntu 22.04+ and Debian 12+**: the AppImage's files in `/opt/coreplay`, a `coreplay`
+command, the menu entry and the icons. Depends lists only what every desktop has (glibc, OpenGL,
+X11/Wayland, fonts, sound). A .deb on the distribution's own Qt and OpenColorIO installed only on
+Ubuntu 26.04 (24.04 has Qt 6.4 and OpenColorIO 2.1; Coreplay needs Qt 6.5 and OCIO 2.3).
+
+```bash
+docker run --rm -v "$PWD:/src:ro" -v "$PWD/dist/linux:/out" ubuntu:22.04   bash /src/tools/linux/make_deb.sh /out/Coreplay-<version>-x86_64.AppImage <version> /out
+```
+
+**Development build on Ubuntu 26.04** (the system's Qt, libmpv, OpenImageIO, OpenColorIO; for
+quick builds and tests, not shipped):
+
+```bash
+docker build -t coreplay-linux-build tools/linux
+docker run --rm -v "$PWD:/src:ro" -v "$PWD/dist/linux:/out" coreplay-linux-build bash /src/build-linux.sh --tests
+```
+
+Add `--tests` to `build-appimage.sh` or `build-linux.sh` for a test build. On Linux there is no update check (the feed
 carries the Windows installer); new versions ship as new packages.
 
 ## End-to-end tests

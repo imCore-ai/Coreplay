@@ -102,7 +102,7 @@ Get it from the **[latest release](https://github.com/imCore-ai/coreplay/release
 |---|---|---|
 | Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. |
 | macOS (Apple silicon) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. The first time, right-click it and choose Open. |
-| Linux (x86-64) | `Coreplay-Linux-x86_64.AppImage` | `chmod +x` it and run it. Ubuntu 26.04+: also `Coreplay-Linux-amd64.deb`. |
+| Linux (x86-64) | `Coreplay-Linux-x86_64.AppImage` | `chmod +x` it and run it. Ubuntu 22.04+ / Debian 12+: or `sudo apt install ./Coreplay-Linux-amd64.deb`. |
 
 More: [user guide](docs/USER_GUIDE.md) · [build from source](docs/DEVELOPMENT.md)
 

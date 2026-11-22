@@ -421,7 +421,12 @@ void MpvEngine::drainEvents() {
                 static const QRegularExpression hwProbe(
                     "cuda|nvdec|cuvid|vaapi|libva|vdpau|vulkan|d3d11|dxva|qsv|v4l2|hwaccel|hwdec|hardware",
                     QRegularExpression::CaseInsensitiveOption);
-                if (m->log_level <= MPV_LOG_LEVEL_ERROR && actionable && !text.isEmpty() && !text.contains(hwProbe))
+                // "NULL: ..." comes from ffmpeg's bitstream parsers (no component name): they
+                // skip damaged or empty data and go on ("missing picture in access unit" on
+                // an ordinary H.264 movie). The movie plays; showing it read as a failure.
+                const bool parserNote = prefix == "ffmpeg" && text.startsWith("NULL:");
+                if (m->log_level <= MPV_LOG_LEVEL_ERROR && actionable && !parserNote && !text.isEmpty() &&
+                    !text.contains(hwProbe))
                     emit message(QString("%1: %2").arg(QString::fromUtf8(m->prefix), text));
                 lastLog_ = QString("[%1] %2").arg(QString::fromUtf8(m->prefix), text);
                 break;

@@ -1,45 +1,41 @@
 #!/bin/bash
-# Packs a Linux build into coreplay_<version>_amd64.deb (Ubuntu 26.04 and newer):
-#   make_deb.sh <build/coreplay> <version> <out dir>
-# The libraries it needs (Qt 6, libmpv, OpenImageIO, OpenColorIO) come from the
-# distribution: dpkg-shlibdeps writes them into Depends.
+# Packs the Coreplay AppImage into coreplay_<version>_amd64.deb:
+#   make_deb.sh <Coreplay-<version>-x86_64.AppImage> <version> <out dir>
+# The .deb carries the same files as the AppImage (Qt, libmpv + ffmpeg, OpenImageIO,
+# OpenColorIO) in /opt/coreplay, so it installs on Ubuntu 22.04+ and Debian 12+. A .deb
+# built against a distribution's own Qt and OpenColorIO installs only on that release
+# (Ubuntu 24.04 has Qt 6.4 and OpenColorIO 2.1; Coreplay needs Qt 6.5 and OCIO 2.3).
+# Depends lists only what the AppImage takes from the system (glibc, the C++ runtime,
+# OpenGL, X11/Wayland, fonts, sound): every desktop has these.
+# Runs on any Debian or Ubuntu (needs dpkg-deb); no FUSE needed.
 set -euo pipefail
-exe=$1
+appimage=$(readlink -f "$1")
 version=$2
-out=$3
-src=$(cd "$(dirname "$0")/../.." && pwd)
-root=$(mktemp -d)
-trap 'rm -rf "$root"' EXIT
-
-install -Dm755 "$exe" "$root/usr/bin/coreplay"
-strip "$root/usr/bin/coreplay"
-for s in 16 24 32 48 64 128 256 512; do
-  mkdir -p "$root/usr/share/icons/hicolor/${s}x${s}/apps"
-  ffmpeg -loglevel error -y -i "$src/res/coreplay.png" -vf "scale=$s:$s:flags=lanczos" \
-    "$root/usr/share/icons/hicolor/${s}x${s}/apps/coreplay.png"
-done
-mkdir -p "$root/usr/share/applications"
-cat > "$root/usr/share/applications/coreplay.desktop" <<EOF
-[Desktop Entry]
-Type=Application
-Name=Coreplay
-GenericName=Media Player
-Comment=Play and review movies and image sequences (EXR, DPX, TIFF, PNG)
-Exec=coreplay %F
-Icon=coreplay
-Terminal=false
-Categories=AudioVideo;Video;Player;Graphics;
-MimeType=video/mp4;video/quicktime;video/x-matroska;video/webm;video/x-msvideo;video/mpeg;video/x-m4v;image/x-exr;image/x-dpx;image/tiff;image/png;image/jpeg;
-StartupWMClass=coreplay
-EOF
-
-# Depends from the libraries the program links (dpkg-shlibdeps wants a debian/control).
+out=$(mkdir -p "$3" && cd "$3" && pwd)
 work=$(mktemp -d)
-mkdir -p "$work/debian"
-printf 'Source: coreplay\n\nPackage: coreplay\nArchitecture: amd64\n' > "$work/debian/control"
-depends=$(cd "$work" && dpkg-shlibdeps -O -e "$root/usr/bin/coreplay" 2>/dev/null | sed -n 's/^shlibs:Depends=//p')
-rm -rf "$work"
-size=$(du -sk "$root/usr" | cut -f1)
+trap 'rm -rf "$work"' EXIT
+root="$work/root"
+
+cd "$work"
+cp "$appimage" app.AppImage
+chmod +x app.AppImage
+./app.AppImage --appimage-extract >/dev/null
+mkdir -p "$root/opt"
+mv squashfs-root "$root/opt/coreplay"
+chmod -R u+rwX,go+rX,go-w "$root/opt/coreplay"
+
+# The command: AppRun sets up the bundled Qt and libraries, like the AppImage does.
+mkdir -p "$root/usr/bin"
+printf '#!/bin/sh\nexec /opt/coreplay/AppRun "$@"\n' > "$root/usr/bin/coreplay"
+chmod 755 "$root/usr/bin/coreplay"
+
+# Menu entry and icons for the system (the AppImage's own entry has its version line).
+mkdir -p "$root/usr/share/applications"
+grep -v '^X-AppImage-' "$root/opt/coreplay/usr/share/applications/coreplay.desktop" \
+  > "$root/usr/share/applications/coreplay.desktop"
+cp -r "$root/opt/coreplay/usr/share/icons" "$root/usr/share/"
+
+size=$(du -sk "$root" | cut -f1)
 mkdir -p "$root/DEBIAN"
 cat > "$root/DEBIAN/control" <<EOF
 Package: coreplay
@@ -48,16 +44,14 @@ Section: video
 Priority: optional
 Architecture: amd64
 Installed-Size: $size
-Depends: $depends
-Recommends: qt6-wayland
-Maintainer: Coreplay <noreply@imcore.ai>
+Depends: libc6 (>= 2.34), libstdc++6, libgcc-s1, zlib1g, libgl1, libegl1, libglx0, libglvnd0, libgbm1, libdrm2, libx11-6, libx11-xcb1, libxcb1, libxcb-dri3-0, libsm6, libice6, libwayland-client0, libfontconfig1, libfreetype6, libharfbuzz0b, libfribidi0, libasound2t64 | libasound2, libcom-err2, libgpg-error0
+Maintainer: imCore <noreply@imcore.ai>
 Homepage: https://imcore.ai
 Description: Coreplay media player
- Plays and reviews movies (through libmpv) and image sequences (EXR, DPX, TIFF,
- PNG through OpenImageIO, colour through OpenColorIO): A/B compare, LUTs, colour
- grading, frame-accurate stepping and gapless playlists.
+ Plays every common video format and reviews image sequences (EXR, DPX, TIFF,
+ PNG) with colour management: A/B compare, LUTs, colour grading, frame-accurate
+ stepping and gapless playlists.
 EOF
-mkdir -p "$out"
 deb="$out/coreplay_${version}_amd64.deb"
-dpkg-deb --root-owner-group --build "$root" "$deb" >/dev/null
-echo "Packed $deb"
+dpkg-deb --root-owner-group -Zxz --build "$root" "$deb" >/dev/null
+echo "Packed $deb ($(du -h "$deb" | cut -f1))"
