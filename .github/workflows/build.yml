@@ -267,11 +267,22 @@ jobs:
           xcrun stapler validate "$dmg"
           spctl --assess --type open --context context:primary-signature --verbose=2 "$dmg"
           rm -f "$RUNNER_TEMP/key.p8"
-      - name: Start-up check
+      # Like a user's Mac: Homebrew is hidden, so the app can only use what is inside it.
+      # Starts the app from the .dmg (as a user does), not from the build folder.
+      - name: Start-up check (without Homebrew)
         run: |
-          build/Coreplay.app/Contents/MacOS/Coreplay & pid=$!
+          sudo mv /opt/homebrew /opt/homebrew-hidden
+          trap 'sudo mv /opt/homebrew-hidden /opt/homebrew' EXIT
+          mnt="$(mktemp -d)"
+          hdiutil attach -nobrowse -readonly -mountpoint "$mnt" out/Coreplay-*-macOS-arm64.dmg >/dev/null
+          "$mnt/Coreplay.app/Contents/MacOS/Coreplay" > "$RUNNER_TEMP/start.log" 2>&1 & pid=$!
           sleep 10
-          if kill -0 $pid; then echo "Coreplay is running after 10 s"; kill $pid; else echo "Coreplay exited"; exit 1; fi
+          if kill -0 $pid; then
+            echo "Coreplay (from the .dmg, no Homebrew) is running after 10 s"; kill $pid; sleep 1
+          else
+            echo "Coreplay exited:"; cat "$RUNNER_TEMP/start.log"; hdiutil detach "$mnt" >/dev/null || true; exit 1
+          fi
+          hdiutil detach "$mnt" >/dev/null || true
       - uses: actions/upload-artifact@v4
         with:
           name: macos
