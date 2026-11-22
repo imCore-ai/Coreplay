@@ -171,6 +171,12 @@ jobs:
       - name: Package (.app with its libraries, ad-hoc signed, .dmg)
         run: |
           "$(brew --prefix qt)/bin/macdeployqt" build/Coreplay.app -always-overwrite
+          # Plugins for Qt parts Coreplay does not use (PDF, SVG, virtual keyboard): their
+          # frameworks are not installed, so they could only fail to load. Remove them.
+          rm -f build/Coreplay.app/Contents/PlugIns/imageformats/libqpdf.dylib \
+                build/Coreplay.app/Contents/PlugIns/imageformats/libqsvg.dylib \
+                build/Coreplay.app/Contents/PlugIns/iconengines/libqsvgicon.dylib \
+                build/Coreplay.app/Contents/PlugIns/platforminputcontexts/libqtvirtualkeyboardplugin.dylib
           codesign --force --deep --sign - build/Coreplay.app
           codesign --verify --deep build/Coreplay.app
           mkdir -p out dmg && cp -R build/Coreplay.app dmg/ && ln -s /Applications dmg/Applications
