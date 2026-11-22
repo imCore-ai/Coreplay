@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # docker/build-push-action otherwise uploads a build record as an extra artifact.
+  DOCKER_BUILD_RECORD_UPLOAD: false
+
 jobs:
   version:
     runs-on: ubuntu-24.04
@@ -199,10 +203,23 @@ jobs:
     permissions:
       contents: write
     steps:
+      # Only the four downloads, by name (not any other artifact of the run).
       - uses: actions/download-artifact@v4
         with:
+          name: windows
           path: files
-          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-appimage
+          path: files
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-deb
+          path: files
+      - uses: actions/download-artifact@v4
+        with:
+          name: macos
+          path: files
       - name: GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
