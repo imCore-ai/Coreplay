@@ -162,6 +162,9 @@ jobs:
           iconutil -c icns coreplay.iconset -o res/coreplay.icns
       - name: Build
         run: |
+          # mpv.pc requires libarchive, which Homebrew keeps out of the default paths (keg-only).
+          export PKG_CONFIG_PATH="$(brew --prefix libarchive)/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+          pkg-config --libs mpv
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="$(brew --prefix qt)" -DCOREPLAY_VERSION_FULL="$COREPLAY_VERSION"
           ninja -C build
