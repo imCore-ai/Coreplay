@@ -15,7 +15,7 @@ for a in "$@"; do
 done
 count=$(git -c safe.directory='*' -C "$SRC" rev-list --count HEAD 2>/dev/null || echo 0)
 base=$(sed -n 's/^project(Coreplay VERSION \([0-9]*\.[0-9]*\).*/\1/p' "$SRC/CMakeLists.txt")
-version="$base.$count"
+version="${COREPLAY_VERSION:-$base.$count}"   # COREPLAY_VERSION: a release tag's version
 B="$OUT/build-appimage"
 cmake -S "$SRC" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCOREPLAY_TESTS=$tests \
   -DCMAKE_PREFIX_PATH="/opt/oiio;/opt/ocio" -DCOREPLAY_VERSION_FULL="$version"

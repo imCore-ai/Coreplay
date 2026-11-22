@@ -163,10 +163,10 @@ QIcon loopIcon(bool on) {
         return pm;
     }, on ? QColor(225, 225, 225) : QColor(95, 95, 95));
 }
-// The Recycle Bin (Linux: the freedesktop Trash). Qt's Linux trash needs the Trash
-// folder to exist already; a new account may not have it, so it is made first.
+// The Recycle Bin (macOS: the Trash; Linux: the freedesktop Trash). Qt's Linux trash needs
+// the Trash folder to exist already; a new account may not have it, so it is made first.
 bool moveToRecycleBin(const QString& path) {
-#ifndef Q_OS_WIN
+#ifdef Q_OS_LINUX
     const QString trash = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/Trash";
     QDir().mkpath(trash + "/files");
     QDir().mkpath(trash + "/info");

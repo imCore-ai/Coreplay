@@ -20,6 +20,8 @@ $build = Join-Path $root "build"
 $mm = (Select-String -Path "$root\CMakeLists.txt" -Pattern 'project\(Coreplay VERSION (\d+)\.(\d+)').Matches[0].Groups
 $count = (git -C $root rev-list --count HEAD).Trim()
 $version = "$($mm[1].Value).$($mm[2].Value).$count"
+# A release build elsewhere (e.g. GitHub Actions from a v1.2.3 tag) passes its own version.
+if ($env:COREPLAY_VERSION) { $version = $env:COREPLAY_VERSION }
 Write-Host "Coreplay $version"
 
 # Load the MSVC environment into this PowerShell session.

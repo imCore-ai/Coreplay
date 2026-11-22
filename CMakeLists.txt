@@ -74,6 +74,21 @@ if(WIN32)
     # The resource compiler does not track the .ico it includes: rebuild when it changes.
     set_source_files_properties(res/coreplay.rc PROPERTIES OBJECT_DEPENDS ${CMAKE_SOURCE_DIR}/res/coreplay.ico)
 endif()
+if(APPLE)
+    # Coreplay.app; the icon (coreplay.icns, made from res/coreplay.png) is used when present.
+    set_target_properties(coreplay PROPERTIES
+        MACOSX_BUNDLE TRUE
+        OUTPUT_NAME Coreplay
+        MACOSX_BUNDLE_BUNDLE_NAME Coreplay
+        MACOSX_BUNDLE_GUI_IDENTIFIER ai.imcore.coreplay
+        MACOSX_BUNDLE_BUNDLE_VERSION "${COREPLAY_VERSION_FULL}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${COREPLAY_VERSION_FULL}")
+    if(EXISTS "${CMAKE_SOURCE_DIR}/res/coreplay.icns")
+        target_sources(coreplay PRIVATE res/coreplay.icns)
+        set_source_files_properties(res/coreplay.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+        set_target_properties(coreplay PROPERTIES MACOSX_BUNDLE_ICON_FILE coreplay.icns)
+    endif()
+endif()
 target_include_directories(coreplay PRIVATE src ${MPV_INCLUDE_DIR})
 target_link_libraries(coreplay PRIVATE
     Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Network
