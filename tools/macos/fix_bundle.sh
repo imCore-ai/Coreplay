@@ -30,13 +30,20 @@ while IFS= read -r b; do
   done
 done < "$list"
 
-# 2. Every library finds the others in Frameworks.
-for b in "$fw"/*.dylib; do [ -f "$b" ] && add_rpath "$b" "@loader_path"; done
+# 2. Every library finds the others in Frameworks, and its own name (install name) is its
+#    place in the app, not Homebrew's.
+for b in "$fw"/*.dylib; do
+  [ -f "$b" ] || continue
+  install_name_tool -id "@rpath/$(basename "$b")" "$b" 2>/dev/null || true
+  add_rpath "$b" "@loader_path"
+done
 for f in "$fw"/*.framework; do
   [ -d "$f" ] || continue
   n="$(basename "$f" .framework)"
   b="$f/Versions/A/$n"
-  [ -f "$b" ] && add_rpath "$b" "@loader_path/../../.."
+  [ -f "$b" ] || continue
+  install_name_tool -id "@rpath/$n.framework/Versions/A/$n" "$b" 2>/dev/null || true
+  add_rpath "$b" "@loader_path/../../.."
 done
 find "$app/Contents/PlugIns" -type f -name '*.dylib' | while IFS= read -r b; do
   add_rpath "$b" "@loader_path/../../Frameworks"
