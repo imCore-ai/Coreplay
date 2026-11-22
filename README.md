@@ -14,7 +14,7 @@
   <a href="docs/DEVELOPMENT.md">Build from source</a>
 </p>
 
-![Coreplay playing a clip](docs/images/main.png)
+![Coreplay playing GodBeing, a film made with Core Studio](docs/images/main.png)
 
 ## Download
 
