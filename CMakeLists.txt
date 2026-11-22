@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 # Version = major.minor from here + the commit count as the third number (set by build.ps1
 # as COREPLAY_VERSION_FULL), so every pushed commit is a newer version for the update feed.
-project(Coreplay VERSION 0.2.0 LANGUAGES CXX)
+project(Coreplay VERSION 0.3.0 LANGUAGES CXX)
 set(COREPLAY_VERSION_FULL "${PROJECT_VERSION}" CACHE STRING "Full version (build.ps1 sets it)")
 
 set(CMAKE_CXX_STANDARD 20)
