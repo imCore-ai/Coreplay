@@ -145,7 +145,7 @@ jobs:
 
   macos:
     needs: version
-    runs-on: macos-14   # Apple silicon (arm64)
+    runs-on: macos-15   # Apple silicon (arm64)
     env:
       COREPLAY_VERSION: ${{ needs.version.outputs.version }}
     steps:
