@@ -23,6 +23,21 @@
   <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb">Linux .deb</a>
 </p>
 
+> [!IMPORTANT]
+> **Code signing is in progress. The warning you may see is normal, and Coreplay is safe to run.**
+> Coreplay is new, and its certificates from Microsoft and Apple are not issued yet. Until they are,
+> Windows and macOS show a warning the first time you open it. That warning appears for every new
+> app that is not signed yet. It does not mean that something is wrong with Coreplay: its full source
+> code is in this repository, and every download is built from it by GitHub Actions.
+>
+> - **Windows:** on *Windows protected your PC*, click **More info**, then **Run anyway**.
+> - **macOS:** open Coreplay once and click **Done**. Then open **System Settings → Privacy & Security**,
+>   scroll down and click **Open Anyway**. Or run this one line in Terminal:
+>   `xattr -dr com.apple.quarantine /Applications/Coreplay.app`
+> - **Linux:** no warning.
+>
+> You do this only once. When the signing is done, the warning goes away.
+
 ![Coreplay playing God Being, made with Core Studio](docs/images/main.png)
 
 <p align="center"><sub>Background: <i>God Being</i>, made with <a href="https://imcore.ai/core-studio.html">Core Studio</a>.</sub></p>
@@ -108,8 +123,8 @@ Get it from the **[latest release](https://github.com/imCore-ai/coreplay/release
 
 | System | File | Install |
 |---|---|---|
-| Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. |
-| macOS (Apple silicon) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. The first time, right-click it and choose Open. |
+| Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. The first time, allow it as shown in the note at the top. |
+| macOS (Apple silicon) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. The first time, allow it as shown in the note at the top. |
 | Linux (x86-64) | `Coreplay-Linux-x86_64.AppImage` | `chmod +x` it and run it. Ubuntu 22.04+ / Debian 12+: or `sudo apt install ./Coreplay-Linux-amd64.deb`. |
 
 More: [user guide](docs/USER_GUIDE.md) · [build from source](docs/DEVELOPMENT.md)
