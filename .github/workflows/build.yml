@@ -339,5 +339,11 @@ jobs:
           cp files/coreplay_*_amd64.deb            files/Coreplay-Linux-amd64.deb
           cp files/Coreplay-*-macOS-arm64.dmg      files/Coreplay-macOS-arm64.dmg
           ls -la files
+          # The release text is the tag's message (tools/sync_github.py writes it from
+          # .github/release_notes.md). A tag without it stops here: no bare release.
+          obj=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$GITHUB_REF_NAME" --jq '.object.type + " " + .object.sha')
+          [ "${obj%% *}" = tag ] || { echo "::error::$GITHUB_REF_NAME is not an annotated tag"; exit 1; }
+          gh api "repos/$GITHUB_REPOSITORY/git/tags/${obj#* }" --jq .message > notes.md
+          grep -q '^## Download' notes.md || { echo "::error::the tag message has no release notes"; cat notes.md; exit 1; }
           gh release create "$GITHUB_REF_NAME" files/* --repo "$GITHUB_REPOSITORY" \
-            --title "Coreplay ${{ needs.version.outputs.version }}" --generate-notes
+            --title "Coreplay ${{ needs.version.outputs.version }}" --notes-file notes.md
