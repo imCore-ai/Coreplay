@@ -5,26 +5,39 @@
 <p align="center">
   <b>A fast media player for film and VFX review.</b><br>
   Movies and image sequences (EXR, DPX, TIFF, PNG) in one window, with correct colour,
-  exact frame rates and MPC-HC hotkeys. Windows and Linux. Fully offline.
+  exact frame rates and MPC-HC hotkeys. Windows, macOS and Linux. Fully offline.
+</p>
+
+<h3 align="center">Download</h3>
+
+<p align="center">
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Windows-Setup.exe"><img src="https://img.shields.io/badge/Download_for-Windows-0078D6?style=for-the-badge" alt="Download for Windows" height="44"></a>
+  &nbsp;
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg"><img src="https://img.shields.io/badge/Download_for-macOS-555555?style=for-the-badge" alt="Download for macOS" height="44"></a>
+  &nbsp;
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-x86_64.AppImage"><img src="https://img.shields.io/badge/Download_for-Linux-E95420?style=for-the-badge" alt="Download for Linux" height="44"></a>
 </p>
 
 <p align="center">
-  <a href="../../releases/latest"><b>Download</b></a> ·
+  <sub>Windows 10 / 11 · macOS on Apple silicon (M1 and newer) · Linux x86-64 AppImage
+  (<a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb">.deb for Ubuntu 26.04+</a>)
+  · <a href="../../releases/latest">all files and release notes</a></sub>
+</p>
+
+<p align="center">
   <a href="docs/USER_GUIDE.md">User guide</a> ·
   <a href="docs/DEVELOPMENT.md">Build from source</a>
 </p>
 
 ![Coreplay playing GodBeing, a film made with Core Studio](docs/images/main.png)
 
-## Download
+## Installing
 
-| Platform | File | Notes |
-|---|---|---|
-| Windows 10 / 11 | `Coreplay-<version>-Setup.exe` | Per-user install, no admin rights. Updates itself (signed updates). |
-| Linux: Rocky / Alma 9, Ubuntu 22.04+, Debian 12+, Fedora | `Coreplay-<version>-x86_64.AppImage` | One file, nothing to install: `chmod +x` it and run it. |
-| Linux: Ubuntu 26.04 and newer | `coreplay_<version>_amd64.deb` | `sudo apt install ./coreplay_<version>_amd64.deb` |
-
-All files are on the [Releases](../../releases/latest) page.
+| Platform | How |
+|---|---|
+| **Windows** | Run `Coreplay-Windows-Setup.exe`. Per-user install, no admin rights; Coreplay updates itself. If SmartScreen warns, choose More info > Run anyway. |
+| **macOS** | Open `Coreplay-macOS-arm64.dmg` and drag Coreplay to Applications. The first time, right-click Coreplay and choose Open. |
+| **Linux** | `chmod +x Coreplay-Linux-x86_64.AppImage`, then run it. Runs on Rocky / Alma 9, Ubuntu 22.04+, Debian 12+, Fedora. On Ubuntu 26.04+ you can also `sudo apt install ./Coreplay-Linux-amd64.deb`. |
 
 ## Why Coreplay
 
