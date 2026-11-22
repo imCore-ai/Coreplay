@@ -48,9 +48,9 @@ All files are on the [Releases](../../releases/latest) page.
 - **Keyboard first.** The MPC-HC key table, changed for frame work. Press **F1** for the
   full list; change any key in `hotkeys.json`.
 
-![A/B compare: wipe between two clips](docs/images/compare.png)
+![A/B compare, Wipe mode: the graded shot (A, left) against the original (B, right)](docs/images/compare.png)
 
-![The F1 hotkey list](docs/images/hotkeys.png)
+![Press F1 for every hotkey, over the picture](docs/images/hotkeys.png)
 
 ## Fully offline
 
