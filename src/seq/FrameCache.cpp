@@ -103,6 +103,11 @@ int FrameCache::nextToDecode() const {
     if (int(frames_.size()) >= count_) return -1;
     const int len = out_ - in_ + 1;
     const int ph = std::clamp(playhead_, in_, out_);
+    // A sequence just opened, nothing decoded yet: the frame to show first decodes ALONE, on
+    // the decoder's whole thread pool, before the other workers start. When all workers
+    // started at once, that frame shared the CPU with them and came last with the batch
+    // (4K PIZ: 1.25 s to the first picture; alone it takes about 75 ms).
+    if (frames_.empty() && inFlight_.count(ph)) return -1;
     for (int d = 0; d < len; ++d) {
         int i = ph + d * dir_;
         i = in_ + ((i - in_) % len + len) % len;

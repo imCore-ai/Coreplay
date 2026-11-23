@@ -10,10 +10,14 @@
 namespace ImageDecoder {
 
 void init() {
-    // Frame-level parallelism comes from FrameCache's workers. One thread per
-    // file avoids oversubscribing the CPU.
-    OIIO::attribute("threads", 1);
-    OIIO::attribute("exr_threads", 1);  // measured: 1, 8 and 24 give the same first-frame time and cache fill
+    // The library's own thread pool (0 = every core) decodes the blocks of ONE file in
+    // parallel, on top of FrameCache's one-frame-per-worker parallelism. Measured on 4K half
+    // RGBA, 24 cores, 23 workers (the old setting, one thread per file -> the pool):
+    //   first frame  PIZ 317 -> 74 ms, DWAA 573 -> 70 ms, ZIP 163 -> 49 ms, PIZ 16 ch 1712 -> 412 ms
+    //   cache fill   PIZ 18.6 -> 21.4 fps, DWAA 11.6 -> 14.9 fps, PIZ 16 ch 3.1 -> 5.3 fps
+    // (the old setting was measured on 1080p test files only, where it made no difference).
+    OIIO::attribute("threads", 0);
+    OIIO::attribute("exr_threads", 0);
 }
 
 FramePtr decode(const QString& path) {

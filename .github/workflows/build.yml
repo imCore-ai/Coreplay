@@ -57,6 +57,7 @@ jobs:
         with:
           path: vcpkg-bincache
           key: vcpkg-${{ env.VCPKG_COMMIT }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ env.VCPKG_COMMIT }}-   # a changed vcpkg.json reuses what it can
       - name: vcpkg
         shell: pwsh
         run: |
@@ -103,8 +104,13 @@ jobs:
           [W.EM]::SetErrorMode(3) | Out-Null
           $app = Start-Process "$d\coreplay.exe" -PassThru
           Start-Sleep 15
-          if ($app.HasExited) { throw ("Coreplay closed at start (exit 0x{0:X8})" -f $app.ExitCode) }
-          Stop-Process $app -Force
+          # This machine has no GPU: Coreplay restarts itself once on software OpenGL (a new
+          # process). A crash leaves no Coreplay running.
+          $running = @(Get-Process coreplay -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "$d\*" })
+          if ($app.HasExited) { "first process ended: 0x{0:X8} (0 = the software OpenGL restart)" -f $app.ExitCode }
+          if ($app.HasExited -and $app.ExitCode -ne 0) { throw ("Coreplay crashed at start (exit 0x{0:X8})" -f $app.ExitCode) }
+          if (-not $running) { throw "no Coreplay is running 15 s after the start" }
+          $running | Stop-Process -Force
           "Coreplay ran for 15 s"
       # Code signing (SSL.com OV certificate, eSigner cloud key). Runs only when the four
       # ES_* secrets are set; until then the installer stays unsigned.

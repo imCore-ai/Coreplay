@@ -78,6 +78,13 @@ if ($Installer) {
     # are copied from vcpkg's bin folder; one found nowhere stops the build.
     $vbins = @((Join-Path $build "vcpkg_installed\x64-windows\bin"), (Join-Path $Vcpkg "installed\x64-windows\bin")) | Where-Object { Test-Path $_ }
     $sys = Join-Path $env:windir "System32"
+    # libmpv links the Vulkan loader. Graphics drivers install it in System32, but a PC without a
+    # full GPU driver (a virtual machine, a server, Remote Desktop, a basic display adapter) has
+    # none, and Coreplay then crashed when it first loaded libmpv. Ship it always, also when this
+    # build PC has its own copy.
+    $vk = $vbins | ForEach-Object { Join-Path $_ "vulkan-1.dll" } | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if (-not $vk) { throw "vulkan-1.dll not found in vcpkg (vcpkg.json: vulkan-loader)" }
+    Copy-Item $vk $dist
     do {
         $added = 0
         $missing = @()

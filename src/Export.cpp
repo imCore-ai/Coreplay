@@ -33,6 +33,31 @@ bool ExportPreset::audioOnly() const { return !*ovc; }
 bool ExportPreset::yuv() const { return QByteArray(pixfmt).startsWith("yuv"); }
 
 namespace ExportPresets {
+
+QString framePattern(const QString& output) {
+    const QString norm = QDir::fromNativeSeparators(output);
+    const int slash = norm.lastIndexOf('/');
+    const QString dir = norm.left(slash + 1), name = norm.mid(slash + 1);
+    static const QRegularExpression field(R"(%0?\d*d)"), hashes("#+");
+    auto escape = [](QString s) { return s.replace('%', "%%"); };
+    QString out;
+    const QRegularExpressionMatch m = field.match(name);
+    if (m.hasMatch()) {
+        out = escape(name.left(m.capturedStart())) + m.captured() + escape(name.mid(m.capturedEnd()));
+    } else {
+        // the LAST run of # is the frame number (an earlier one is part of the name)
+        QRegularExpressionMatch last;
+        for (auto it = hashes.globalMatch(name); it.hasNext();) last = it.next();
+        if (last.hasMatch()) {
+            out = escape(name.left(last.capturedStart())) + "%0" + QString::number(last.capturedLength()) + "d"  /* not arg(): Qt reads "%0" as a place marker */ +
+                  escape(name.mid(last.capturedEnd()));
+        } else {
+            const int dot = name.lastIndexOf('.');
+            out = dot > 0 ? escape(name.left(dot)) + ".%04d" + escape(name.mid(dot)) : escape(name) + ".%04d";
+        }
+    }
+    return escape(dir) + out;
+}
 const std::vector<ExportPreset>& all() {
     // Encoders all ship inside libmpv-2.dll (checked by name in the DLL).
     static const std::vector<ExportPreset> p = {
@@ -104,6 +129,7 @@ bool Exporter::start(const ExportJob& job, QString* error) {
     const ExportPreset* p = ExportPresets::find(job.presetId);
     if (!p) { *error = tr("Unknown export format"); return false; }
     job_ = job;
+    if (p->sequence()) job_.output = ExportPresets::framePattern(job.output);  // whatever name the user typed
     cancelled_ = false;
     options_.clear();
     lastError_.clear();
@@ -146,7 +172,7 @@ bool Exporter::start(const ExportJob& job, QString* error) {
         opt("log-file", log + ".export");   // the export's own libmpv log, next to the player's
         opt("msg-level", "all=v");
     }
-    opt("o", QDir::toNativeSeparators(job.output));
+    opt("o", QDir::toNativeSeparators(job_.output));
     if (!job.muxer.isEmpty()) opt("of", job.muxer);
     else if (*p->of) opt("of", p->of);
     if (p->sequence()) opt("ofopts", QString("start_number=%1").arg(job.startNumber));

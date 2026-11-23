@@ -32,6 +32,10 @@ struct ExportPreset {
 namespace ExportPresets {
 const std::vector<ExportPreset>& all();
 const ExportPreset* find(const QString& id);
+// A sequence output name as the encoder needs it: exactly one %0Nd frame field. "####" (as in
+// Nuke and RV) becomes %04d; a name with no frame field gets ".%04d" before its extension;
+// any other "%" is written as "%%" so it stays a plain character.
+QString framePattern(const QString& output);
 }
 
 struct ExportJob {

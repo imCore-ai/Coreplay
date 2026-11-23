@@ -137,7 +137,9 @@ QIcon frameStepIcon(bool forward) {
 
 // Loop: a circle of two arrows chasing each other (the usual loop sign). Bright when
 // loop is on, dim when it is off (the button has no pressed background of its own).
-QIcon loopIcon(bool on) {
+// On: the strongest ink on the bar; off: dimmer than the other icons. The bar follows the
+// system theme, so the inks swap on a light bar (bright "on" on a light bar looked disabled).
+QIcon loopIcon(bool on, bool lightBar) {
     return twoTone([](int px, const QColor& c) {
         QPixmap pm(px, px);
         pm.fill(Qt::transparent);
@@ -168,7 +170,7 @@ QIcon loopIcon(bool on) {
         }
         p.end();
         return pm;
-    }, on ? QColor(225, 225, 225) : QColor(95, 95, 95));
+    }, lightBar ? (on ? QColor(20, 20, 20) : QColor(185, 185, 185)) : (on ? QColor(225, 225, 225) : QColor(95, 95, 95)));
 }
 // The Recycle Bin (macOS: the Trash; Linux: the freedesktop Trash). Qt's Linux trash needs
 // the Trash folder to exist already; a new account may not have it, so it is made first.
@@ -350,8 +352,8 @@ void MainWindow::buildUi() {
     timeLabel_->setFont(mono);
     cl->addWidget(timeLabel_);
     cl->addSpacing(10);
-    auto* mute = button(QStyle::SP_MediaVolume, tr("Mute"), [this] { act("vol.mute")->trigger(); });
-    (void)mute;
+    muteBtn_ = button(QStyle::SP_MediaVolume, tr("Mute"), [this] { act("vol.mute")->trigger(); });
+    updateMuteButton();
     volSlider_ = new QSlider(Qt::Horizontal, controls_);
     volSlider_->setRange(0, 100);
     volSlider_->setFixedWidth(90);
@@ -671,6 +673,7 @@ void MainWindow::buildActions() {
         QSettings().setValue("audio/muted", muted_);
         if (cur_) cur_->setMuted(muted_);
         osd_->showMessage(muted_ ? tr("Mute: On") : tr("Mute: Off"));
+        updateMuteButton();
     });
     on("stream.audionext", withEngine([](Engine* e) { e->cycleAudio(1); }));
     on("stream.audioprev", withEngine([](Engine* e) { e->cycleAudio(-1); }));
@@ -1863,9 +1866,16 @@ void MainWindow::setChannel(int c, bool toggle) {
 
 // BunnyLab's behaviour in Coreplay's greys (no accent colours): grey letters; the
 // active channel is filled grey with a black letter.
+// The speaker with a cross while muted (mute is kept between sessions, so Coreplay may start muted).
+void MainWindow::updateMuteButton() {
+    if (!muteBtn_) return;
+    muteBtn_->setIcon(grayIcon(style(), muted_ ? QStyle::SP_MediaVolumeMuted : QStyle::SP_MediaVolume));
+    muteBtn_->setToolTip(muted_ ? tr("Mute: On") : tr("Mute"));
+}
+
 void MainWindow::updateLoopButton() {
     if (!loopBtn_) return;
-    loopBtn_->setIcon(loopIcon(repeat_ != Repeat::None));
+    loopBtn_->setIcon(loopIcon(repeat_ != Repeat::None, controls_->palette().color(QPalette::Window).lightness() > 128));
     loopBtn_->setToolTip(repeat_ == Repeat::One   ? tr("Loop: on, this file (click: off; right-click: options)")
                          : repeat_ == Repeat::All ? tr("Loop: on, the playlist (click: off; right-click: options)")
                                                   : tr("Loop: off (click: on; right-click: options)"));
@@ -2376,6 +2386,7 @@ QVariantMap MainWindow::testState() const {
     m["mpv.scale"] = mpv_ ? mpv_->property("scale") : QString();
     m["repeat"] = repeat_ == Repeat::One ? "one" : repeat_ == Repeat::All ? "all" : "none";
     m["loopButton"] = loopBtn_ ? loopBtn_->toolTip() : QString();
+    m["muteButton"] = muteBtn_ ? muteBtn_->toolTip() : QString();
     m["placeholder.shown"] = stack_->currentWidget() == placeholder_;
     m["placeholder.logo"] = logo_ && !logo_->pixmap().isNull() ? logo_->pixmap().width() / logo_->pixmap().devicePixelRatio() : 0;
     m["compare.on"] = comparing_;

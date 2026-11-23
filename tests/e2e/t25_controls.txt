@@ -19,6 +19,15 @@ clickbutton Loop
 expect repeat == one
 action play.repeat.all
 expect repeat == all
+# Mute shows its state: a crossed-out speaker and "Mute: On" while muted
+expect muteButton == Mute
+clickbutton Mute
+expect muted == true
+expect muteButton == Mute: On
+grabwindow $OUT/t25_muted.png
+clickbutton Mute
+expect muted == false
+expect muteButton == Mute
 hover Play/Pause $OUT/t25_hover_play.png
 hover Stop $OUT/t25_hover_stop.png
 hover Previous $OUT/t25_hover_prev.png

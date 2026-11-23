@@ -201,8 +201,10 @@ private:
     class QToolButton* chanBtn_[3] = {};
     QToolButton* playBtn_ = nullptr;
     QToolButton* loopBtn_ = nullptr;     // loop on / off (Play > Repeat)
+    QToolButton* muteBtn_ = nullptr;     // speaker, crossed out while muted
     Repeat lastLoop_ = Repeat::All;      // what the loop button turns on
     void updateLoopButton();
+    void updateMuteButton();
     QSlider* volSlider_ = nullptr;
     QLabel* timeLabel_ = nullptr;
     QLabel* statusLeft_ = nullptr;

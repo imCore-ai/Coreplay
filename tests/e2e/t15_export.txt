@@ -62,6 +62,23 @@ expect export.state == done
 expect export.suggested == $OUT/exp/h264_23976_png16/h264_23976.%04d.png
 probe $OUT/exp/h264_23976_png16/h264_23976.1001.png exists == yes
 probe $OUT/exp/h264_23976_png16/h264_23976.1048.png exists == yes
+# Names the user types: "####" (Nuke / RV style), no frame number at all, and a "%" in
+# the name. Each must still give one file per frame, never one file for every frame.
+export png8 $OUT/exp/hash/h_####.png range=2.002:2.169
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/hash/h_1001.png exists == yes
+probe $OUT/exp/hash/h_1004.png exists == yes
+export png8 $OUT/exp/plain/p.png range=2.002:2.169
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/plain/p.1001.png exists == yes
+probe $OUT/exp/plain/p.1004.png exists == yes
+export png8 $OUT/exp/pct/50%_grey.%04d.png range=2.002:2.169
+until export.state != running 60000
+expect export.state == done
+probe $OUT/exp/pct/50%_grey.1001.png exists == yes
+probe $OUT/exp/pct/50%_grey.1004.png exists == yes
 export prores422hq $OUT/exp/m_range.mov range=2.002:4.004
 until export.state != running 60000
 probe $OUT/exp/m_range.mov frames == 48
