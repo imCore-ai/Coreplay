@@ -10,9 +10,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="docs/images/button-windows.svg" alt="Windows 10 | 11" height="38"></a>
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="docs/images/button-macos.svg" alt="macOS 12+ · Apple silicon | Intel" height="38"></a>
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="docs/images/button-linux.svg" alt="Linux x86-64" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Windows-Setup.exe"><img src="docs/images/button-windows.svg" alt="Download for Windows 10 | 11" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg"><img src="docs/images/button-macos-arm64.svg" alt="Download for macOS 12+ on Apple silicon" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-x86_64.dmg"><img src="docs/images/button-macos-intel.svg" alt="Download for macOS 12+ on Intel" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-x86_64.AppImage"><img src="docs/images/button-linux-appimage.svg" alt="Download for Linux x86-64, AppImage" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb"><img src="docs/images/button-linux-deb.svg" alt="Download for Linux x86-64, .deb package" height="38"></a>
   <br>
   <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="https://img.shields.io/github/v/release/imCore-ai/coreplay?style=flat-square&label=version" alt="Latest version"></a>
   <a href="https://github.com/imCore-ai/coreplay/releases"><img src="https://img.shields.io/github/downloads/imCore-ai/coreplay/total?style=flat-square&label=downloads" alt="Downloads"></a>
@@ -21,12 +23,7 @@
 </p>
 
 <p align="center">
-  <b>Download:</b>
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Windows-Setup.exe">Windows</a> ·
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg">macOS (Apple silicon)</a> ·
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-x86_64.dmg">macOS (Intel)</a> ·
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-x86_64.AppImage">Linux AppImage</a> ·
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb">Linux .deb</a>
+  Windows 10 and 11 · macOS 12 and later · Linux x86-64 · <a href="https://github.com/imCore-ai/coreplay/releases">All releases</a>
 </p>
 
 > [!IMPORTANT]
