@@ -54,6 +54,14 @@ expect export.state == done
 probe $OUT/exp/m_png/m.1001.png exists == yes
 probe $OUT/exp/m_png/m.1048.png exists == yes
 probe $OUT/exp/m_png/m.1049.png exists == no
+# The name the Export window suggests for a sequence (it once came out as "%pngd" and
+# every frame went to one file: "Writing packet failed")
+export png16 suggest=$OUT/exp range=2.002:4.004
+until export.state != running 60000
+expect export.state == done
+expect export.suggested == $OUT/exp/h264_23976_png16/h264_23976.%04d.png
+probe $OUT/exp/h264_23976_png16/h264_23976.1001.png exists == yes
+probe $OUT/exp/h264_23976_png16/h264_23976.1048.png exists == yes
 export prores422hq $OUT/exp/m_range.mov range=2.002:4.004
 until export.state != running 60000
 probe $OUT/exp/m_range.mov frames == 48

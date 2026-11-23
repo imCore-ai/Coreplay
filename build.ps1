@@ -71,6 +71,28 @@ if ($Installer) {
     if (-not $crt) { throw "C++ runtime redistributable folder not found under $env:VCToolsRedistDir" }
     Copy-Item "$($crt.FullName)\*.dll" $dist
 
+    # Every DLL that a file in the folder loads (delay-loaded too) must be in the folder or
+    # in Windows. vcpkg's own copy step does not run on every machine: on GitHub Actions it
+    # did not, and 0.3.0 to 0.3.22 shipped without OpenImageIO / OpenColorIO / OpenEXR, so
+    # Coreplay crashed just after its window opened (they are delay-loaded). Missing DLLs
+    # are copied from vcpkg's bin folder; one found nowhere stops the build.
+    $vbins = @((Join-Path $build "vcpkg_installed\x64-windows\bin"), (Join-Path $Vcpkg "installed\x64-windows\bin")) | Where-Object { Test-Path $_ }
+    $sys = Join-Path $env:windir "System32"
+    do {
+        $added = 0
+        $missing = @()
+        foreach ($f in Get-ChildItem $dist -Recurse -Include *.exe, *.dll) {
+            $deps = dumpbin /nologo /dependents $f.FullName | Where-Object { $_ -match '^\s{4}(\S+\.dll)\s*$' } | ForEach-Object { $matches[1] }
+            foreach ($d in $deps) {
+                if ((Test-Path (Join-Path $dist $d)) -or (Test-Path (Join-Path $sys $d)) -or $d -match '^(api|ext)-ms-') { continue }
+                $src = $vbins | ForEach-Object { Join-Path $_ $d } | Where-Object { Test-Path $_ } | Select-Object -First 1
+                if ($src) { Copy-Item $src $dist; $added++; Write-Host "  + $d (for $($f.Name))" }
+                else { $missing += "$d (for $($f.Name))" }
+            }
+        }
+    } while ($added -gt 0)
+    if ($missing) { throw "DLLs missing from the app folder: $(($missing | Sort-Object -Unique) -join ', ')" }
+
     # 2. The file types, then the installer.
     python -I "$root\installer\make_filetypes.py"
     if ($LASTEXITCODE) { throw "make_filetypes failed" }

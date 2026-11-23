@@ -227,3 +227,15 @@ pixel 0.5 0.5 mlutsame
 expectpixel mlutsame == 0,0,0 24
 key Ctrl+Shift+A
 until compare.bar == false 1000
+# ---- a movie dropped on slot B from outside (Explorer), routed as a real drop
+open $MEDIA/prores_25.mov
+until engine == mpv 5000
+wait 800
+key Ctrl+Shift+A
+wait 500
+dropon B $MEDIA/cmp_blue.mp4
+until compare.on == true 3000
+expect compare.b == cmp_blue.mp4
+dropon B $MEDIA/h264_23976.mp4
+wait 1500
+expect compare.b == h264_23976.mp4

@@ -106,6 +106,8 @@ public:
     };
     ExportDialog(const Source& src, QWidget* parent = nullptr);
     ExportJob job() const;
+    // The output name the dialog suggests, in <dir>.
+    static QString suggestedOutput(const Source& src, const ExportPreset* p, const QString& dir);
 
 private:
     void presetChanged();

@@ -60,6 +60,12 @@
 #include "SeekBar.h"
 #include "seq/SequenceEngine.h"
 
+// Save As of a sequence: the same name in <dir>, <prefix>%0Nd<suffix>. The pattern is joined
+// outside arg(): inside an arg() string Qt reads "%0" + digits as a place marker.
+static QString gradedSequenceOutput(const QString& dir, const Sequence& s) {
+    return dir + "/" + s.prefix + "%0" + QString::number(std::max(4, s.padding)) + "d" + s.suffix;
+}
+
 namespace {
 // MPC-HC defaults (AppSettings.h DEFAULT_JUMPDISTANCE_1/2/3, volume step 5).
 constexpr double kJumpSmall = 1.0;
@@ -1675,6 +1681,13 @@ bool MainWindow::testExport(const QString& presetId, const QString& output, bool
     j.end = end;
     j.presetId = presetId;
     j.output = output;
+    if (output.startsWith("suggest=")) {  // the name the Export window suggests, in that folder
+        if (s.isSequence) s.seq = seq_->sequence();
+        const ExportPreset* p = ExportPresets::find(presetId);
+        if (!p) return false;
+        j.output = ExportDialog::suggestedOutput(s, p, output.mid(8));
+        qApp->setProperty("exportSuggested", j.output);
+    }
     if (s.isSequence) {
         j.seq = seq_->sequence();
         j.startNumber = j.seq.first;
@@ -2406,6 +2419,7 @@ QVariantMap MainWindow::testState() const {
         m["contextMenu.lut"] = lutItems.join(" | ");
     }
     m["export.state"] = exportState_;
+    m["export.suggested"] = qApp->property("exportSuggested").toString();
     m["export.message"] = exportMessage_;
     m["export.progress"] = exportProgress_;
     m["export.options"] = exporter_ ? exporter_->lastOptions() : QString();
@@ -2621,7 +2635,7 @@ void MainWindow::saveGraded(bool asNew) {
             QMessageBox::warning(this, tr("Save As"), tr("Choose another folder: the graded frames would replace the originals."));
             return;
         }
-        output = QString("%1/%2%%0%3d%4").arg(dir, s.prefix).arg(std::max(4, s.padding)).arg(s.suffix);
+        output = gradedSequenceOutput(dir, s);
     } else {
         const QString ext = fi.suffix().toLower();
         output = QFileDialog::getSaveFileName(this, tr("Save As"), fi.absolutePath() + "/" + fi.completeBaseName() + "_graded." + ext,
@@ -2758,6 +2772,10 @@ QString MainWindow::testGrade(const QStringList& a) {
     }
     if (cmd == "still") return saveImageTo(a.value(1)) ? QString() : "the still was not saved";
     if (cmd == "saveas") return saveGradedTo(a.value(1), false, false) ? QString() : "the save did not start";
+    if (cmd == "saveasdir") {  // Save As of a sequence into a folder, named as the menu names it
+        if (cur_ != seq_) return "not a sequence";
+        return saveGradedTo(gradedSequenceOutput(a.value(1), seq_->sequence()), false, false) ? QString() : "the save did not start";
+    }
     if (cmd == "save") {
         if (currentGrade().isIdentity()) return "no grade";
         return saveGradedTo(QString(), true, false) ? QString() : "the save did not start";

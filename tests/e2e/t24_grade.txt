@@ -222,7 +222,7 @@ open $MEDIA/patch_seq/patch.0001.png
 until engine == seq 3000
 wait 400
 expect grade.summary has Contrast 130
-grade saveas $OUT/t24_seq/patch.%04d.png
+grade saveasdir $OUT/t24_seq
 until export.state != running 60000
 expect export.state == done
 expect grade.modified == false

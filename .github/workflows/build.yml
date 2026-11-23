@@ -90,6 +90,22 @@ jobs:
           .\build.ps1 -QtDir $env:QT_ROOT_DIR -Vcpkg C:\vcpkg-cp -Installer -Nsis $nsis
           "setup=$((Resolve-Path dist\Coreplay-*-Setup.exe).Path)" >> $env:GITHUB_OUTPUT
         id: pkg
+      # Install it like a user and start it: it must still run 15 s later (its libraries are
+      # delay-loaded, so a missing one crashes it only after the window opens). Error dialogs
+      # are off, so a crash ends the process instead of waiting on a dialog.
+      - name: Start-up check (installed copy)
+        shell: pwsh
+        run: |
+          $d = Join-Path $env:RUNNER_TEMP "coreplay-installed"
+          $p = Start-Process "${{ steps.pkg.outputs.setup }}" -ArgumentList "/S", "/D=$d" -Wait -PassThru
+          if ($p.ExitCode) { throw "the installer failed ($($p.ExitCode))" }
+          Add-Type -Name EM -Namespace W -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetErrorMode(uint m);'
+          [W.EM]::SetErrorMode(3) | Out-Null
+          $app = Start-Process "$d\coreplay.exe" -PassThru
+          Start-Sleep 15
+          if ($app.HasExited) { throw ("Coreplay closed at start (exit 0x{0:X8})" -f $app.ExitCode) }
+          Stop-Process $app -Force
+          "Coreplay ran for 15 s"
       # Code signing (SSL.com OV certificate, eSigner cloud key). Runs only when the four
       # ES_* secrets are set; until then the installer stays unsigned.
       - name: Sign the installer (SSL.com eSigner)

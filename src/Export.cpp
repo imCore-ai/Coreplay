@@ -500,18 +500,23 @@ void ExportDialog::presetChanged() {
     updateOutput();
 }
 
+// <dir>/<base>_<preset>.<ext>, or for a sequence <dir>/<base>_<preset>/<base>.%04d.<ext>.
+// The frame-number pattern is added AFTER arg(): inside an arg() string Qt reads "%04" as
+// place marker 4, and the old "%%04d.%4" came out as "%pngd" (every frame went to one file,
+// and the export failed with "Writing packet failed").
+QString ExportDialog::suggestedOutput(const Source& src, const ExportPreset* p, const QString& dir) {
+    const QFileInfo fi(src.path);
+    const QString base = src.isSequence ? QString(src.seq.prefix).remove(QRegularExpression("[._-]+$")) : fi.completeBaseName();
+    if (p->sequence())
+        return QString("%1/%2_%3/%2.").arg(dir, base, p->id) + "%04d." + p->ext;
+    return QString("%1/%2_%3.%4").arg(dir, base, p->id, p->ext);
+}
+
 void ExportDialog::updateOutput() {
     const ExportPreset* p = ExportPresets::find(format_->currentData().toString());
     if (!p) return;
     // Suggest a name next to the source; keep a name the user typed.
-    const QFileInfo fi(src_.path);
-    const QString base = src_.isSequence ? QString(src_.seq.prefix).remove(QRegularExpression("[._-]+$")) : fi.completeBaseName();
-    QString suggestion;
-    if (p->sequence())
-        suggestion = QString("%1/%2_%3/%2.%%04d.%4").arg(fi.absolutePath(), base, p->id, p->ext);
-    else
-        suggestion = QString("%1/%2_%3.%4").arg(fi.absolutePath(), base, p->id, p->ext);
-    suggestion = QDir::toNativeSeparators(suggestion);
+    const QString suggestion = QDir::toNativeSeparators(suggestedOutput(src_, p, QFileInfo(src_.path).absolutePath()));
     if (path_->text().isEmpty() || path_->text() == lastAuto_) path_->setText(suggestion);
     else {  // the user's name with the new extension
         QString t = path_->text();

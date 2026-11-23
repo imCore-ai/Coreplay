@@ -2,6 +2,9 @@
 
 #include <QAbstractButton>
 #include <QAction>
+#include <QMimeData>
+#include <QUrl>
+#include "CompareBar.h"
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QApplication>
@@ -188,6 +191,35 @@ void TestDriver::step() {
             QApplication::sendEvent(hit, &press);
             QApplication::sendEvent(hit, &release);
             log(line + " -> " + hit->metaObject()->className());
+        } else if (cmd == "dropon") {
+            // dropon A|B <path>: drag a file from outside onto the middle of compare slot A or B
+            // and drop it, routed as Qt routes a real drop (the top widget at that point, then up
+            // to the first one that accepts drops).
+            CompareSlot* slot = nullptr;
+            for (CompareSlot* s : w_->findChildren<CompareSlot*>())
+                if (s->toolTip().startsWith(QString("Slot %1:").arg(t.value(1)))) slot = s;
+            const QString path = rest.section(' ', 1);
+            if (!slot || !slot->isVisible()) {
+                ++failures_;
+                log("FAIL  " + line + ": slot not visible");
+            } else {
+                const QPoint wp = slot->mapTo(w_, slot->rect().center());
+                QWidget* hit = w_->childAt(wp);
+                while (hit && !hit->acceptDrops()) hit = hit->parentWidget();
+                if (!hit) hit = w_;
+                QMimeData mime;
+                mime.setUrls({QUrl::fromLocalFile(path)});
+                const QPointF p = hit->mapFrom(w_, wp);
+                QDragEnterEvent enter(p.toPoint(), Qt::CopyAction, &mime, Qt::LeftButton, Qt::NoModifier);
+                QApplication::sendEvent(hit, &enter);
+                QDragMoveEvent move(p.toPoint(), Qt::CopyAction, &mime, Qt::LeftButton, Qt::NoModifier);
+                move.setAccepted(enter.isAccepted());  // as Qt does: a move starts with the enter's answer
+                if (enter.isAccepted()) QApplication::sendEvent(hit, &move);
+                const bool accepted = enter.isAccepted() && move.isAccepted();
+                QDropEvent drop(p, Qt::CopyAction, &mime, Qt::LeftButton, Qt::NoModifier);
+                if (accepted) QApplication::sendEvent(hit, &drop);
+                log(QString("%1 -> %2 (%3)").arg(line, hit->metaObject()->className(), accepted ? "accepted" : "REFUSED"));
+            }
         } else if (cmd == "hover") {
             // hover <tooltip start> <png>: show that control button as under the mouse, save it,
             // and check its icon or letter is dark (readable on the light hover background).
