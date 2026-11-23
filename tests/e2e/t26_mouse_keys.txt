@@ -1,0 +1,54 @@
+# Mouse keys: the wheel, the middle click and the side buttons are bound like keyboard keys
+# (Settings > Hotkeys, hotkeys.json). Defaults keep the old behaviour; any command can take them.
+open $MEDIA/gap_a.mp4|$MEDIA/gap_b.mp4
+until engine == mpv 3000
+until media.w == 1280 3000
+mpvset pause yes
+until paused == true 2000
+# defaults: Wheel = zoom at the mouse, Ctrl+Wheel = large jump (no zoom), Back / Forward = playlist
+expect pan.zoom == 1
+wheel 0.5 0.5 120
+expect pan.zoom > 1.19
+wheel 0.5 0.5 -120
+expect pan.zoom == 1
+wheel 0.5 0.5 120 ctrl
+expect pan.zoom == 1
+expect playlist.current == 0
+sidebutton forward
+until playlist.current == 1 3000
+sidebutton back
+until playlist.current == 0 3000
+# no binding: Middle Click does nothing, and a middle drag still pans
+mclick 0.5 0.5
+expect channel == 0
+# bind in Settings > Hotkeys, as a user does: Shift+Wheel Up -> red channel, Middle Click -> green
+settings open 1
+until settings.visible == true 2000
+settings select channel.r
+settings add Shift+Wheel Up
+expect settings.message has Shift+Wheel Up is now on
+settings select channel.g
+settings set Middle Click
+expect settings.message has Middle Click is now on
+settings apply
+settings close
+wheel 0.5 0.5 120 shift
+expect channel == 1
+expect pan.zoom == 1
+mclick 0.5 0.5
+expect channel == 2
+# a middle DRAG is still a pan, not a click
+mdrag 0.4 0.5 0.6 0.5
+expect channel == 2
+# back to the defaults: Shift+Wheel no longer changes the channel
+settings open 1
+until settings.visible == true 2000
+settings select channel.r
+settings reset
+expect settings.message has default keys
+settings select channel.g
+settings reset
+settings apply
+settings close
+wheel 0.5 0.5 120 shift
+expect channel == 2

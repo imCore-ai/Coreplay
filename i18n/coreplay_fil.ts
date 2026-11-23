@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="fil">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>Na-export ang %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>Na-export, pero hindi naitakda ang tagal ng huling frame: %1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ I-reset</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>Alisin ang grade ng clip na ito</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>Isinasara ito ng F1, Esc o isang click.  Palitan ang mga key sa Tulong &gt; I-edit ang Hotkeys.</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>I-reset ang Pan&amp;&amp;Scan</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD: Ipakita ang Kasalukuyang Oras</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>&amp;Tungkol sa Coreplay</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     <message>
         <source>Exposure Reset</source>
         <translation>I-reset ang Exposure</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>Mag-zoom &amp;In</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>Mag-zoom &amp;Out</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Tuklasin ang Core Studio</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>&amp;Mag-update sa Coreplay %1...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Available na ang Coreplay %1: Tulong &gt; Update</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Tungkol sa Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Ang Coreplay ay gawa ng %1 bilang kasama ng %2, ang aming propesyonal na AI film studio: mula sa unang linya ng script hanggang sa huling frame, sa iisang workspace.</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Ang Coreplay %1 ang pinakabagong bersyon.</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Available na ang Coreplay %1. Ang nasa iyo ay %2.
 
 %3</translation>
@@ -1627,6 +1636,7 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>%1 channel%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Isara at mawala ang mga grade?</translation>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Kapag nag-double-click ng pangalawang file, magbubukas ito ng pangalawang Coreplay window sa halip na
 palitan ang nagpe-play na file. Ang mga file na sabay na pinili ay bubukas sa iisang window.</translation>
     </message>
@@ -2313,7 +2323,7 @@ palitan ang nagpe-play na file. Ang mga file na sabay na pinili ay bubukas sa ii
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Kusa itong ino-on ng Coreplay kapag hindi kayang i-draw ng GPU driver ang larawan.
 I-off ito pagkatapos mag-install ng GPU driver.</translation>
     </message>
@@ -2354,15 +2364,11 @@ I-off ito pagkatapos mag-install ng GPU driver.</translation>
         <translation>Pumili ng command.</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>I-click dito, saka pindutin ang bagong key</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>Itakda</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>Palitan ang mga key ng command na ito ng pinindot na key</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ I-off ito pagkatapos mag-install ng GPU driver.</translation>
         <translation>Default</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>Mga default key ng command na ito</translation>
     </message>
     <message>
@@ -2445,6 +2451,10 @@ I-off ito pagkatapos mag-install ng GPU driver.</translation>
     <message>
         <source>Cannot write %1</source>
         <translation>Hindi maisulat ang %1</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>I-click dito, saka pindutin ang bagong key, iikot ang mouse wheel, o i-click ang gitna o isang gilid na button ng mouse</translation>
     </message>
 </context>
 <context>

@@ -31,6 +31,7 @@ public:
     void clearKeys();
     void resetCommand();
     void resetAll();
+    void setNewKey(const QKeySequence& ks);   // what the New key field holds (a key or a mouse key)
     bool apply();                               // writes the settings and hotkeys.json
     QString keysText(const QString& id) const;
     QString message() const;
@@ -42,6 +43,9 @@ public:
 
 signals:
     void applied();                             // the window reloads its keys
+
+protected:
+    bool eventFilter(QObject* o, QEvent* e) override;
 
 private:
     void fill();

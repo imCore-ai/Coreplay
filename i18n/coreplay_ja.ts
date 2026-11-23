@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="ja">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>%1 を書き出しました</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>書き出しましたが、最終フレームのデュレーションを設定できませんでした：%1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ リセット</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>このクリップのグレードを削除</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>F1、Esc、またはクリックで閉じます。  キーの変更は「ヘルプ &gt; ホットキーの編集」で行います。</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>パン&amp;&amp;スキャンをリセット</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD：現在時刻を表示</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Coreplay について(&amp;A)</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ The original goes to the Recycle Bin.</source>
     <message>
         <source>Exposure Reset</source>
         <translation>露出をリセット</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>拡大(&amp;I)</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>縮小(&amp;O)</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Core Studio を見る</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 にアップデート(&amp;U)...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 が利用可能です：ヘルプ &gt; アップデート</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay について</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Coreplay は、プロ向け AI 映画スタジオ %2 のコンパニオンとして %1 が開発しました。%2 では、脚本の最初の 1 行から最後のフレームまで、1 つのワークスペースで制作できます。</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 は最新バージョンです。</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 が利用可能です。現在のバージョンは %2 です。
 
 %3</translation>
@@ -1627,6 +1636,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>%1 チャンネル%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Close and lose the grades?</source>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>2 つ目のファイルをダブルクリックすると、再生中のファイルを置き換えずに
 2 つ目の Coreplay ウィンドウが開きます。同時に選択したファイルは 1 つのウィンドウで開きます。</translation>
     </message>
@@ -2313,7 +2323,7 @@ replacing the file that plays. Files selected together open in one window.</sour
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>GPU ドライバーで描画できない場合、Coreplay はこの設定を自動でオンにします。
 GPU ドライバーをインストールしたらオフにしてください。</translation>
     </message>
@@ -2354,15 +2364,11 @@ GPU ドライバーをインストールしたらオフにしてください。<
         <translation>コマンドを選択してください。</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>ここをクリックして新しいキーを押す</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>設定</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>このコマンドのキーを押したキーに置き換える</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ GPU ドライバーをインストールしたらオフにしてください。<
         <translation>デフォルト</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>このコマンドのデフォルトキー</translation>
     </message>
     <message>
@@ -2445,6 +2451,10 @@ GPU ドライバーをインストールしたらオフにしてください。<
     <message>
         <source>Cannot write %1</source>
         <translation>%1 を書き込めません</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>ここをクリックしてから、新しいキーを押すか、マウスホイールを回すか、マウスの中ボタンまたはサイドボタンをクリックします</translation>
     </message>
 </context>
 <context>

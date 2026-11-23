@@ -148,7 +148,8 @@ void TestDriver::step() {
             }
             failures_ += clashes;
             log(QString("%1  keymap: %2 keys, %3 clashes").arg(clashes ? "FAIL" : "PASS").arg(keys).arg(clashes));
-        } else if (cmd == "wheel" || cmd == "dblclick" || cmd == "mdrag" || cmd == "ldrag" || cmd == "mousemove") {
+        } else if (cmd == "wheel" || cmd == "dblclick" || cmd == "mdrag" || cmd == "ldrag" || cmd == "mousemove" ||
+                   cmd == "mclick" || cmd == "sidebutton") {
             // Positions are fractions of the picture widget (0..1), so scripts work at any size.
             QWidget* v = w_->testView();
             auto at = [&](int i) { return QPointF(t.value(i).toDouble() * v->width(), t.value(i + 1).toDouble() * v->height()); };
@@ -156,9 +157,31 @@ void TestDriver::step() {
                 QMouseEvent ev(type, p, v->mapToGlobal(p), b, bs, Qt::NoModifier);
                 QApplication::sendEvent(v, &ev);
             };
-            if (cmd == "wheel") {
+            // Modifiers: ctrl, shift, alt, or several joined by "+" (ctrl+shift).
+            auto modsOf = [](const QString& s) {
+                Qt::KeyboardModifiers m;
+                for (const QString& p : s.toLower().split('+', Qt::SkipEmptyParts)) {
+                    if (p == "ctrl") m |= Qt::ControlModifier;
+                    else if (p == "shift") m |= Qt::ShiftModifier;
+                    else if (p == "alt") m |= Qt::AltModifier;
+                }
+                return m;
+            };
+            if (cmd == "mclick") {  // mclick x y [mods]: middle button down and up in place
                 const QPointF p = at(1);
-                const Qt::KeyboardModifiers mods = t.value(4) == "ctrl" ? Qt::ControlModifier : Qt::NoModifier;
+                const Qt::KeyboardModifiers mods = modsOf(t.value(3));
+                QMouseEvent down(QEvent::MouseButtonPress, p, v->mapToGlobal(p), Qt::MiddleButton, Qt::MiddleButton, mods);
+                QApplication::sendEvent(v, &down);
+                QMouseEvent up(QEvent::MouseButtonRelease, p, v->mapToGlobal(p), Qt::MiddleButton, Qt::NoButton, mods);
+                QApplication::sendEvent(v, &up);
+            } else if (cmd == "sidebutton") {  // sidebutton back|forward [mods]: the mouse's side button, to the window
+                const Qt::MouseButton b = t.value(1) == "forward" ? Qt::ForwardButton : Qt::BackButton;
+                const QPointF p(w_->width() / 2.0, w_->height() / 2.0);
+                QMouseEvent up(QEvent::MouseButtonRelease, p, w_->mapToGlobal(p), b, Qt::NoButton, modsOf(t.value(2)));
+                QApplication::sendEvent(w_, &up);
+            } else if (cmd == "wheel") {
+                const QPointF p = at(1);
+                const Qt::KeyboardModifiers mods = modsOf(t.value(4));
                 QWheelEvent ev(p, v->mapToGlobal(p), QPoint(), QPoint(0, t.value(3).toInt()), Qt::NoButton, mods,
                                Qt::NoScrollPhase, false);
                 QApplication::sendEvent(v, &ev);

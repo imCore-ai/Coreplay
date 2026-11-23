@@ -470,12 +470,26 @@ void MainWindow::on(const char* id, std::function<void()> fn, bool checkable) {
 }
 
 void MainWindow::applyHotkeys() {
+    mouseKeys_.clear();
     for (const auto& d : Hotkeys::load()) {
         QAction* a = actions_.value(d.id);
         if (!a) continue;
         a->setText(QCoreApplication::translate("Hotkeys", d.label));
-        a->setShortcuts(d.keys);
+        // Keyboard keys go to the action; mouse keys (wheel, middle click, side buttons) to the
+        // table the picture's mouse events read (mouseCommand).
+        QList<QKeySequence> keyboard;
+        for (const auto& ks : d.keys) {
+            if (!Hotkeys::isMouse(ks)) keyboard << ks;
+            else if (!mouseKeys_.contains(ks[0].toCombined())) mouseKeys_.insert(ks[0].toCombined(), d.id);
+        }
+        a->setShortcuts(keyboard);
     }
+}
+
+// The command bound to a mouse key with these modifiers, or none.
+QAction* MainWindow::mouseCommand(int key, Qt::KeyboardModifiers mods) const {
+    const QString id = mouseKeys_.value(Hotkeys::mouseKey(key, mods)[0].toCombined());
+    return id.isEmpty() ? nullptr : actions_.value(id);
 }
 
 void MainWindow::buildActions() {
@@ -549,6 +563,10 @@ void MainWindow::buildActions() {
     on("nav.nextfile", [this] { nextFileInFolder(1); });
     on("nav.prevfile", [this] { nextFileInFolder(-1); });
     on("zoom.fit", [this] { zoomFit(); });
+    // From the wheel: at the mouse, by the wheel's own step (trackpads send small ones);
+    // from a key: at the centre, one step.
+    on("zoom.in", [this] { zoomAt(wheelZoom_ ? wheelAt_ : QPointF(videoArea_->width() / 2.0, videoArea_->height() / 2.0), std::pow(1.2, wheelZoom_ ? wheelSteps_ : 1.0)); });
+    on("zoom.out", [this] { zoomAt(wheelZoom_ ? wheelAt_ : QPointF(videoArea_->width() / 2.0, videoArea_->height() / 2.0), std::pow(1.2, -(wheelZoom_ ? wheelSteps_ : 1.0))); });
     on("zoom.1to1", [this] { zoom1to1(); });
     on("lut.load", [this] {
         const QString f = QFileDialog::getOpenFileName(this, tr("Load a LUT"), QSettings().value("lut/lastDir").toString(),
@@ -772,7 +790,7 @@ void MainWindow::buildMenus() {
     add(pns, {"pns.reset", "", "pns.incsize", "pns.decsize", "pns.incwidth", "pns.decwidth", "pns.incheight",
               "pns.decheight", "", "pns.center", "pns.left", "pns.right", "pns.up", "pns.down", "pns.upleft",
               "pns.upright", "pns.downleft", "pns.downright", "", "pns.rotatezp", "pns.rotatezm"});
-    add(view, {"zoom.fit", "zoom.1to1", ""});
+    add(view, {"zoom.in", "zoom.out", "zoom.fit", "zoom.1to1", ""});
     QMenu* lutMenu = view->addMenu(tr("&LUT"));
     connect(lutMenu, &QMenu::aboutToShow, this, [this, lutMenu] {
         lutMenu->clear();
@@ -978,7 +996,7 @@ QString MainWindow::testSettings(const QStringList& a) {
     if (c == "open") { openSettings(a.value(1).toInt()); return "open"; }
     if (!settings_) return "not open";
     if (c == "select") { settings_->selectCommand(a.value(1)); return settings_->keysText(a.value(1)); }
-    if (c == "set" || c == "add") return settings_->assignKey(QKeySequence::fromString(a.mid(1).join(' '), QKeySequence::PortableText), c == "add");
+    if (c == "set" || c == "add") return settings_->assignKey(Hotkeys::fromText(a.mid(1).join(' ')), c == "add");
     if (c == "clear") { settings_->clearKeys(); return settings_->message(); }
     if (c == "reset") { settings_->resetCommand(); return settings_->message(); }
     if (c == "resetall") { settings_->resetAll(); return settings_->message(); }
@@ -2836,9 +2854,13 @@ void MainWindow::dropEvent(QDropEvent* e) {
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* e) {
-    if (e->button() == Qt::BackButton) act("nav.prev")->trigger();
-    else if (e->button() == Qt::ForwardButton) act("nav.next")->trigger();
-    else QMainWindow::mouseReleaseEvent(e);
+    // The mouse's side buttons, bound like keys (default: previous / next in the playlist).
+    if (e->button() == Qt::BackButton || e->button() == Qt::ForwardButton) {
+        if (QAction* a = mouseCommand(e->button() == Qt::BackButton ? Hotkeys::MouseBack : Hotkeys::MouseForward, e->modifiers()))
+            a->trigger();
+        return;
+    }
+    QMainWindow::mouseReleaseEvent(e);
 }
 
 bool MainWindow::eventFilter(QObject* o, QEvent* e) {
@@ -2871,15 +2893,34 @@ bool MainWindow::eventFilter(QObject* o, QEvent* e) {
     const bool onView = cur_ && o == cur_->view();
     if (onView && e->type() == QEvent::Wheel) {
         auto* w = static_cast<QWheelEvent*>(e);
-        const int d = w->angleDelta().y();
+        // Bound like a key (Settings > Hotkeys): by default Wheel = zoom at the mouse and
+        // Ctrl+Wheel = jump 20 s (MPC-HC). macOS turns Shift+wheel into a sideways scroll.
+        const int d = w->angleDelta().y() ? w->angleDelta().y() : w->angleDelta().x();
         if (d == 0) return true;
-        if (w->modifiers() & Qt::ControlModifier) seekBy(d > 0 ? kJumpLarge : -kJumpLarge);  // MPC-HC
-        else zoomAt(w->position(), std::pow(1.2, d / 120.0));
+        QAction* a = mouseCommand(d > 0 ? Hotkeys::WheelUp : Hotkeys::WheelDown, w->modifiers());
+        if (!a) return true;
+        const QString id = actions_.key(a);
+        if (id == "zoom.in" || id == "zoom.out") {  // smooth: every event, by its own size
+            wheelZoom_ = true;
+            wheelAt_ = w->position();
+            wheelSteps_ = std::abs(d) / 120.0;
+            a->trigger();
+            wheelZoom_ = false;
+            return true;
+        }
+        // Any other command: once per wheel notch (120), so a trackpad does not repeat it.
+        if ((wheelAcc_ > 0) != (d > 0)) wheelAcc_ = 0;
+        wheelAcc_ += d;
+        while (std::abs(wheelAcc_) >= 120) {
+            a->trigger();
+            wheelAcc_ -= wheelAcc_ > 0 ? 120 : -120;
+        }
         return true;
     }
     if (onView && e->type() == QEvent::MouseButtonPress && static_cast<QMouseEvent*>(e)->button() == Qt::MiddleButton) {
         dragging_ = true;
         dragLast_ = static_cast<QMouseEvent*>(e)->position();
+        middleFrom_ = dragLast_;
         cur_->view()->setCursor(Qt::ClosedHandCursor);
         return true;
     }
@@ -2894,6 +2935,10 @@ bool MainWindow::eventFilter(QObject* o, QEvent* e) {
         static_cast<QMouseEvent*>(e)->button() == Qt::MiddleButton) {
         dragging_ = false;
         if (cur_) cur_->view()->unsetCursor();
+        // Held and moved: a pan. Pressed and let go in place: a Middle Click (bindable).
+        auto* me = static_cast<QMouseEvent*>(e);
+        if ((me->position() - middleFrom_).manhattanLength() < 5)
+            if (QAction* a = mouseCommand(Hotkeys::MiddleClick, me->modifiers())) a->trigger();
         return true;
     }
     if (e->type() == QEvent::MouseMove && isFullScreen()) {

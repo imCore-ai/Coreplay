@@ -105,7 +105,7 @@ void HotkeyOverlay::fill() {
             // key itself; listed, they made the columns wide and the text small.
             const int key = k[0].key();
             if (key >= Qt::Key_VolumeDown && key <= Qt::Key_MediaLast) continue;
-            keys << k.toString(QKeySequence::NativeText);
+            keys << Hotkeys::text(k, true);
         }
         if (keys.isEmpty()) continue;
         const int g = int(kOrder.indexOf(groupOf(d.id)));

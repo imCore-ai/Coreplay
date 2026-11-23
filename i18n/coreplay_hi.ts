@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="hi">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>एक्सपोर्ट किया गया: %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>एक्सपोर्ट हो गया, लेकिन आख़िरी फ़्रेम की अवधि सेट नहीं हो सकी: %1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ रीसेट</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>इस क्लिप का ग्रेड हटाएँ</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>F1, Esc या एक क्लिक से यह बंद होता है।  कुंजियाँ सहायता &gt; हॉटकी संपादित करें में बदलें।</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>पैन&amp;&amp;स्कैन रीसेट</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD: मौजूदा समय दिखाएँ</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Coreplay के बारे में(&amp;A)</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ The original goes to the Recycle Bin.</source>
     <message>
         <source>Exposure Reset</source>
         <translation>एक्सपोज़र रीसेट</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>ज़ूम इन(&amp;I)</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>ज़ूम आउट(&amp;O)</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Core Studio देखें</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 पर अपडेट करें(&amp;U)...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 उपलब्ध है: सहायता &gt; अपडेट</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay के बारे में</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Coreplay को %1 ने %2 के साथी के रूप में बनाया है, जो हमारा प्रोफ़ेशनल AI फ़िल्म स्टूडियो है: स्क्रिप्ट की पहली पंक्ति से आख़िरी फ़्रेम तक, एक ही वर्कस्पेस में।</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 सबसे नया वर्ज़न है।</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 उपलब्ध है। आपके पास %2 है।
 
 %3</translation>
@@ -1627,6 +1636,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>%1 चैनल%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Close and lose the grades?</source>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>दूसरी फ़ाइल पर डबल-क्लिक करने से चल रही फ़ाइल बदलने के बजाय
 दूसरी Coreplay विंडो खुलती है। साथ चुनी गई फ़ाइलें एक ही विंडो में खुलती हैं।</translation>
     </message>
@@ -2313,7 +2323,7 @@ replacing the file that plays. Files selected together open in one window.</sour
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>जब GPU ड्राइवर तस्वीर नहीं बना पाता, तो Coreplay इसे अपने-आप चालू कर देता है।
 GPU ड्राइवर इंस्टॉल करने के बाद इसे बंद करें।</translation>
     </message>
@@ -2354,15 +2364,11 @@ GPU ड्राइवर इंस्टॉल करने के बाद �
         <translation>एक कमांड चुनें।</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>यहाँ क्लिक करें, फिर नई कुंजी दबाएँ</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>सेट करें</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>इस कमांड की कुंजियों को दबाई गई कुंजी से बदलें</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ GPU ड्राइवर इंस्टॉल करने के बाद �
         <translation>डिफ़ॉल्ट</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>इस कमांड की डिफ़ॉल्ट कुंजियाँ</translation>
     </message>
     <message>
@@ -2403,7 +2409,7 @@ GPU ड्राइवर इंस्टॉल करने के बाद �
     </message>
     <message>
         <source>Select a command, click in New key and press the key.</source>
-        <translation>एक कमांड चुनें, "नई कुंजी" में क्लिक करें और कुंजी दबाएँ।</translation>
+        <translation>एक कमांड चुनें, &quot;नई कुंजी&quot; में क्लिक करें और कुंजी दबाएँ।</translation>
     </message>
     <message>
         <source>%1:  %2   (default: %3)</source>
@@ -2416,7 +2422,7 @@ GPU ड्राइवर इंस्टॉल करने के बाद �
     </message>
     <message>
         <source>Press a key in New key first.</source>
-        <translation>पहले "नई कुंजी" में कोई कुंजी दबाएँ।</translation>
+        <translation>पहले &quot;नई कुंजी&quot; में कोई कुंजी दबाएँ।</translation>
     </message>
     <message>
         <source>%1 is now on %2.</source>
@@ -2440,11 +2446,15 @@ GPU ड्राइवर इंस्टॉल करने के बाद �
     </message>
     <message>
         <source>All hotkeys are back to the defaults (saved when you press OK or Apply).</source>
-        <translation>सभी हॉटकी डिफ़ॉल्ट पर वापस आ गई हैं ("ठीक है" या "लागू करें" दबाने पर सहेजी जाएँगी)।</translation>
+        <translation>सभी हॉटकी डिफ़ॉल्ट पर वापस आ गई हैं (&quot;ठीक है&quot; या &quot;लागू करें&quot; दबाने पर सहेजी जाएँगी)।</translation>
     </message>
     <message>
         <source>Cannot write %1</source>
         <translation>%1 नहीं लिखा जा सका</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>यहाँ क्लिक करें, फिर नई कुंजी दबाएँ, माउस व्हील घुमाएँ, या माउस का बीच वाला या किनारे का बटन क्लिक करें</translation>
     </message>
 </context>
 <context>

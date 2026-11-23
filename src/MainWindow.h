@@ -74,6 +74,7 @@ private:
     void buildActions();
     void buildMenus();
     void applyHotkeys();
+    QAction* mouseCommand(int key, Qt::KeyboardModifiers mods) const;
     QAction* act(const char* id);
     void on(const char* id, std::function<void()> fn, bool checkable = false);
 
@@ -189,6 +190,12 @@ private:
     class QToolButton* oneBtn_ = nullptr;
     bool dragging_ = false;
     QPointF dragLast_;
+    QPointF middleFrom_;                 // where the middle button went down (a click, or a pan)
+    QHash<int, QString> mouseKeys_;      // mouse key (with modifiers) -> command id
+    int wheelAcc_ = 0;                   // wheel delta toward the next notch (non-zoom commands)
+    bool wheelZoom_ = false;             // zoom.in / zoom.out triggered by the wheel: at the mouse
+    QPointF wheelAt_;
+    double wheelSteps_ = 1.0;
     LutChoice lut_;
     QStringList subFiles_;              // subtitle files loaded for the current movie
     class Exporter* exporter_ = nullptr;

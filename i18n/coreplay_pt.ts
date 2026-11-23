@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="pt_BR">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>Exportado: %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>Exportado, mas não foi possível definir a duração do último quadro: %1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ Redefinir</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>Remover a correção de cor deste clipe</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>F1, Esc ou um clique fecha isto.  Altere as teclas em Ajuda &gt; Editar atalhos.</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>Redefinir Pan&amp;&amp;Scan</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD: mostrar tempo atual</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>&amp;Sobre o Coreplay</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ O original vai para a Lixeira.</translation>
     <message>
         <source>Exposure Reset</source>
         <translation>Redefinir exposição</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>&amp;Aproximar</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>A&amp;fastar</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Conheça o Core Studio</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>&amp;Atualizar para o Coreplay %1...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>O Coreplay %1 está disponível: Ajuda &gt; Atualizar</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Sobre o Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>O Coreplay é feito pela %1 como complemento do %2, nosso estúdio de cinema profissional com IA: da primeira linha do roteiro ao último quadro, em um único espaço de trabalho.</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>O Coreplay %1 é a versão mais recente.</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>O Coreplay %1 está disponível. Você tem a %2.
 
 %3</translation>
@@ -1627,6 +1636,7 @@ O original vai para a Lixeira.</translation>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>Canal %1%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Fechar e perder as correções?</translation>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Clicar duas vezes em um segundo arquivo abre uma segunda janela do Coreplay em vez de
 substituir o arquivo em reprodução. Arquivos selecionados juntos abrem em uma janela.</translation>
     </message>
@@ -2313,7 +2323,7 @@ substituir o arquivo em reprodução. Arquivos selecionados juntos abrem em uma 
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>O Coreplay liga isto sozinho quando o driver da GPU não consegue desenhar a imagem.
 Desligue depois de instalar um driver de GPU.</translation>
     </message>
@@ -2354,15 +2364,11 @@ Desligue depois de instalar um driver de GPU.</translation>
         <translation>Selecione um comando.</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>Clique aqui e pressione a nova tecla</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>Definir</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>Substituir as teclas deste comando pela tecla pressionada</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ Desligue depois de instalar um driver de GPU.</translation>
         <translation>Padrão</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>As teclas padrão deste comando</translation>
     </message>
     <message>
@@ -2445,6 +2451,10 @@ Desligue depois de instalar um driver de GPU.</translation>
     <message>
         <source>Cannot write %1</source>
         <translation>Não é possível gravar %1</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>Clique aqui e pressione a nova tecla, gire a roda do mouse ou clique com o botão do meio ou um botão lateral do mouse</translation>
     </message>
 </context>
 <context>

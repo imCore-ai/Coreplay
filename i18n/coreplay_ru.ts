@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="ru">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>Экспортировано: %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>Экспортировано, но не удалось задать длительность последнего кадра: %1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ Сброс</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>Удалить цветокоррекцию этого клипа</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>F1, Esc или щелчок закрывают это окно.  Изменить клавиши: Справка &gt; Изменить горячие клавиши.</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>Сброс панорамирования &amp;&amp; масштаба</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD: текущее время</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>&amp;О программе Coreplay</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ The original goes to the Recycle Bin.</source>
     <message>
         <source>Exposure Reset</source>
         <translation>Сброс экспозиции</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>&amp;Увеличить</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>У&amp;меньшить</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Узнать о Core Studio</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>&amp;Обновить до Coreplay %1...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Доступна версия Coreplay %1: Справка &gt; Обновить</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>О программе Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Coreplay создан компанией %1 в дополнение к %2 — нашей профессиональной ИИ-киностудии: от первой строки сценария до финального кадра в одном рабочем пространстве.</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 — новейшая версия.</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Доступна версия Coreplay %1. У вас %2.
 
 %3</translation>
@@ -1627,6 +1636,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>Канал %1%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Close and lose the grades?</source>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Двойной щелчок по второму файлу открывает второе окно Coreplay вместо
 замены воспроизводимого файла. Файлы, выбранные вместе, открываются в одном окне.</translation>
     </message>
@@ -2313,7 +2323,7 @@ replacing the file that plays. Files selected together open in one window.</sour
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Coreplay включает это сам, если драйвер GPU не может отрисовать изображение.
 Отключите после установки драйвера GPU.</translation>
     </message>
@@ -2354,15 +2364,11 @@ Turn it off after installing a GPU driver.</source>
         <translation>Выберите команду.</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>Щёлкните здесь и нажмите новую клавишу</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>Задать</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>Заменить клавиши этой команды нажатой клавишей</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ Turn it off after installing a GPU driver.</source>
         <translation>По умолчанию</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>Клавиши этой команды по умолчанию</translation>
     </message>
     <message>
@@ -2445,6 +2451,10 @@ Turn it off after installing a GPU driver.</source>
     <message>
         <source>Cannot write %1</source>
         <translation>Не удаётся записать %1</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>Щёлкните здесь, затем нажмите новую клавишу, прокрутите колёсико мыши или нажмите среднюю или боковую кнопку мыши</translation>
     </message>
 </context>
 <context>

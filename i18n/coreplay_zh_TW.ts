@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="zh_TW">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>已匯出 %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>已匯出，但無法設定最後一個影格的持續時間：%1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ 重設</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>移除此片段的調色</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>按 F1、Esc 或按一下即可關閉。  請在「說明 &gt; 編輯快速鍵」中變更按鍵。</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>重設平移&amp;&amp;縮放</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD：顯示目前時間</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>關於 Coreplay(&amp;A)</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ The original goes to the Recycle Bin.</source>
     <message>
         <source>Exposure Reset</source>
         <translation>重設曝光</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>放大(&amp;I)</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>縮小(&amp;O)</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>探索 Core Studio</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>更新至 Coreplay %1(&amp;U)...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 已推出：說明 &gt; 更新</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>關於 Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Coreplay 由 %1 打造，是 %2 的搭配工具。%2 是我們的專業 AI 電影工作室：從劇本的第一行到最後一個影格，都在同一個工作空間中完成。</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 已是最新版本。</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 已推出。您目前的版本是 %2。
 
 %3</translation>
@@ -1627,6 +1636,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>%1 通道%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Close and lose the grades?</source>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>按兩下第二個檔案時，會開啟第二個 Coreplay 視窗，
 而不是取代正在播放的檔案。一起選取的檔案會在同一個視窗中開啟。</translation>
     </message>
@@ -2313,7 +2323,7 @@ replacing the file that plays. Files selected together open in one window.</sour
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>當 GPU 驅動程式無法繪製畫面時，Coreplay 會自動開啟此選項。
 安裝 GPU 驅動程式後請將其關閉。</translation>
     </message>
@@ -2354,15 +2364,11 @@ Turn it off after installing a GPU driver.</source>
         <translation>請選擇一個命令。</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>按一下這裡，然後按下新按鍵</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>設定</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>以按下的按鍵取代此命令的按鍵</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ Turn it off after installing a GPU driver.</source>
         <translation>預設值</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>此命令的預設按鍵</translation>
     </message>
     <message>
@@ -2445,6 +2451,10 @@ Turn it off after installing a GPU driver.</source>
     <message>
         <source>Cannot write %1</source>
         <translation>無法寫入 %1</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>點這裡，然後按下新按鍵、轉動滑鼠滾輪，或按一下滑鼠中鍵或側鍵</translation>
     </message>
 </context>
 <context>

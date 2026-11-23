@@ -17,6 +17,7 @@ constexpr auto K = Qt::KeypadModifier;
 
 QKeySequence k(QKeyCombination c) { return QKeySequence(c); }
 QKeySequence k(Qt::Key key) { return QKeySequence(key); }
+QKeySequence m(int key, Qt::KeyboardModifiers mods = Qt::NoModifier) { return Hotkeys::mouseKey(key, mods); }
 }  // namespace
 
 namespace Hotkeys {
@@ -55,16 +56,16 @@ const std::vector<HotkeyDef>& defaults() {
         {"play.seekbacksmall", QT_TRANSLATE_NOOP("Hotkeys", "Jump Backward (small)"), {}},
         {"play.seekfwdmed", QT_TRANSLATE_NOOP("Hotkeys", "Jump Forward 5 s"), {k(S | Qt::Key_Right)}},
         {"play.seekbackmed", QT_TRANSLATE_NOOP("Hotkeys", "Jump Backward 5 s"), {k(S | Qt::Key_Left)}},
-        {"play.seekfwdlarge", QT_TRANSLATE_NOOP("Hotkeys", "Jump Forward (large)"), {}},
-        {"play.seekbacklarge", QT_TRANSLATE_NOOP("Hotkeys", "Jump Backward (large)"), {}},
+        {"play.seekfwdlarge", QT_TRANSLATE_NOOP("Hotkeys", "Jump Forward (large)"), {m(Hotkeys::WheelUp, C)}},
+        {"play.seekbacklarge", QT_TRANSLATE_NOOP("Hotkeys", "Jump Backward (large)"), {m(Hotkeys::WheelDown, C)}},
         {"play.seekkeyfwd", QT_TRANSLATE_NOOP("Hotkeys", "Jump Forward (keyframe)"), {}},
         {"play.seekkeyback", QT_TRANSLATE_NOOP("Hotkeys", "Jump Backward (keyframe)"), {}},
         {"play.seekbegin", QT_TRANSLATE_NOOP("Hotkeys", "Jump to Beginning"), {k(Qt::Key_Home)}},
         {"play.abmarka", QT_TRANSLATE_NOOP("Hotkeys", "Set A-B Mark A"), {k(Qt::Key_BracketLeft)}},
         {"play.abmarkb", QT_TRANSLATE_NOOP("Hotkeys", "Set A-B Mark B"), {k(Qt::Key_BracketRight)}},
         {"play.abclear", QT_TRANSLATE_NOOP("Hotkeys", "Clear A-B Loop"), {}},
-        {"nav.next", QT_TRANSLATE_NOOP("Hotkeys", "Next in &Playlist"), {k(C | Qt::Key_PageDown), k(Qt::Key_MediaNext)}},
-        {"nav.prev", QT_TRANSLATE_NOOP("Hotkeys", "Previous in Pla&ylist"), {k(C | Qt::Key_PageUp), k(Qt::Key_MediaPrevious)}},
+        {"nav.next", QT_TRANSLATE_NOOP("Hotkeys", "Next in &Playlist"), {k(C | Qt::Key_PageDown), k(Qt::Key_MediaNext), m(Hotkeys::MouseForward)}},
+        {"nav.prev", QT_TRANSLATE_NOOP("Hotkeys", "Previous in Pla&ylist"), {k(C | Qt::Key_PageUp), k(Qt::Key_MediaPrevious), m(Hotkeys::MouseBack)}},
         {"nav.nextfile", QT_TRANSLATE_NOOP("Hotkeys", "&Next Clip in Folder"), {k(Qt::Key_PageDown)}},
         {"nav.prevfile", QT_TRANSLATE_NOOP("Hotkeys", "P&revious Clip in Folder"), {k(Qt::Key_PageUp)}},
         // A/B compare (RV style)
@@ -148,6 +149,8 @@ const std::vector<HotkeyDef>& defaults() {
         //: "Coreplay" is the product name; keep it in English.
         {"help.about", QT_TRANSLATE_NOOP("Hotkeys", "&About Coreplay"), {}},
         // Viewer zoom and LUTs (not in MPC-HC)
+        {"zoom.in", QT_TRANSLATE_NOOP("Hotkeys", "Zoom &In"), {m(Hotkeys::WheelUp)}},
+        {"zoom.out", QT_TRANSLATE_NOOP("Hotkeys", "Zoom &Out"), {m(Hotkeys::WheelDown)}},
         {"zoom.fit", QT_TRANSLATE_NOOP("Hotkeys", "Zoom to &Fit"), {}},
         {"zoom.1to1", QT_TRANSLATE_NOOP("Hotkeys", "Zoom &1:1 (actual pixels)"), {}},
         {"lut.load", QT_TRANSLATE_NOOP("Hotkeys", "&Load a LUT..."), {}},
@@ -167,6 +170,54 @@ const std::vector<HotkeyDef>& defaults() {
     return table;
 }
 
+namespace {
+const struct { int key; const char* name; } kMouseNames[] = {
+    {WheelUp, "Wheel Up"}, {WheelDown, "Wheel Down"}, {MiddleClick, "Middle Click"},
+    {MouseBack, "Mouse Back"}, {MouseForward, "Mouse Forward"}};
+}  // namespace
+
+QKeySequence mouseKey(int key, Qt::KeyboardModifiers mods) {
+    mods &= Qt::ControlModifier | Qt::ShiftModifier | Qt::AltModifier | Qt::MetaModifier;
+    return QKeySequence(QKeyCombination(mods, Qt::Key(key)));
+}
+
+bool isMouse(const QKeySequence& ks) {
+    if (ks.count() != 1) return false;
+    const int key = ks[0].key();
+    return key >= WheelUp && key <= MouseForward;
+}
+
+QString text(const QKeySequence& ks, bool native) {
+    if (!isMouse(ks)) return ks.toString(native ? QKeySequence::NativeText : QKeySequence::PortableText);
+    const Qt::KeyboardModifiers mods = ks[0].keyboardModifiers();
+    QString s;
+    if (mods & Qt::ControlModifier) s += "Ctrl+";
+    if (mods & Qt::ShiftModifier) s += "Shift+";
+    if (mods & Qt::AltModifier) s += "Alt+";
+    if (mods & Qt::MetaModifier) s += "Meta+";
+    for (const auto& n : kMouseNames)
+        if (n.key == ks[0].key()) return s + n.name;
+    return s;
+}
+
+QKeySequence fromText(const QString& in) {
+    const QString s = in.trimmed();
+    for (const auto& n : kMouseNames) {
+        if (!s.endsWith(n.name, Qt::CaseInsensitive)) continue;
+        Qt::KeyboardModifiers mods;
+        for (const QString& part : s.left(s.size() - int(qstrlen(n.name))).split('+', Qt::SkipEmptyParts)) {
+            const QString p = part.trimmed().toLower();
+            if (p == "ctrl") mods |= Qt::ControlModifier;
+            else if (p == "shift") mods |= Qt::ShiftModifier;
+            else if (p == "alt") mods |= Qt::AltModifier;
+            else if (p == "meta") mods |= Qt::MetaModifier;
+            else return {};
+        }
+        return mouseKey(n.key, mods);
+    }
+    return QKeySequence::fromString(s, QKeySequence::PortableText);
+}
+
 QString configPath() {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     QDir().mkpath(dir);
@@ -181,7 +232,7 @@ std::vector<HotkeyDef> load() {
     QJsonObject all;
     for (const auto& d : out) {
         QJsonArray arr;
-        for (const auto& ks : d.keys) arr.append(ks.toString(QKeySequence::PortableText));
+        for (const auto& ks : d.keys) arr.append(text(ks, false));
         all.insert(d.id, arr);
     }
     const QByteArray allBytes = QJsonDocument(all).toJson(QJsonDocument::Indented);
@@ -213,7 +264,7 @@ std::vector<HotkeyDef> load() {
         if (!root.contains(d.id)) continue;
         d.keys.clear();
         for (const auto& v : root.value(d.id).toArray()) {
-            QKeySequence ks = QKeySequence::fromString(v.toString(), QKeySequence::PortableText);
+            QKeySequence ks = fromText(v.toString());
             if (!ks.isEmpty()) d.keys.append(ks);
         }
     }
@@ -228,7 +279,7 @@ bool saveOverrides(const std::vector<HotkeyDef>& keys) {
     for (size_t i = 0; i < keys.size() && i < defs.size(); ++i) {
         if (keys[i].keys == defs[i].keys) continue;
         QJsonArray arr;
-        for (const auto& ks : keys[i].keys) arr.append(ks.toString(QKeySequence::PortableText));
+        for (const auto& ks : keys[i].keys) arr.append(text(ks, false));
         root.insert(keys[i].id, arr);
     }
     QFile f(configPath());

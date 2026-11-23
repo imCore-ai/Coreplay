@@ -19,12 +19,14 @@
 #include <QTabWidget>
 #include <QTableWidget>
 #include <QTimer>
+#include <QMouseEvent>
+#include <QWheelEvent>
 #include <QVBoxLayout>
 
 namespace {
 QString keysToText(const QList<QKeySequence>& keys) {
     QStringList l;
-    for (const auto& k : keys) l << k.toString(QKeySequence::NativeText);
+    for (const auto& k : keys) l << Hotkeys::text(k, true);
     return l.join(",  ");
 }
 // "Pan&&Scan" -> "Pan&Scan"; a CJK/Thai/Arabic/Hindi menu key "(&P)" goes as a whole.
@@ -133,7 +135,10 @@ SettingsDialog::SettingsDialog(QWidget* parent) : QDialog(parent), keys_(Hotkeys
     auto* row = new QHBoxLayout;
     edit_ = new QKeySequenceEdit;
     edit_->setMaximumSequenceLength(1);
-    edit_->setToolTip(tr("Click here, then press the new key"));
+    edit_->setToolTip(tr("Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button"));
+    // The wheel and the extra mouse buttons are keys too (Settings > Hotkeys, hotkeys.json).
+    edit_->installEventFilter(this);
+    if (auto* le = edit_->findChild<QLineEdit*>()) le->installEventFilter(this);
     setBtn_ = new QPushButton(tr("Set"));
     setBtn_->setToolTip(tr("Replace this command's keys with the pressed key"));
     addBtn_ = new QPushButton(tr("Add"));
@@ -184,6 +189,38 @@ SettingsDialog::SettingsDialog(QWidget* parent) : QDialog(parent), keys_(Hotkeys
 }
 
 void SettingsDialog::showPage(int page) { tabs_->setCurrentIndex(page); }
+
+// New key: a wheel turn or a middle / side button click over the field is taken as that
+// mouse key, with the modifiers held (Ctrl+Wheel Up, Middle Click, ...).
+bool SettingsDialog::eventFilter(QObject* o, QEvent* e) {
+    if (o == edit_ || o->parent() == edit_) {
+        int key = 0;
+        Qt::KeyboardModifiers mods;
+        if (e->type() == QEvent::Wheel) {
+            auto* w = static_cast<QWheelEvent*>(e);
+            const int d = w->angleDelta().y() ? w->angleDelta().y() : w->angleDelta().x();
+            if (d) key = d > 0 ? Hotkeys::WheelUp : Hotkeys::WheelDown;
+            mods = w->modifiers();
+        } else if (e->type() == QEvent::MouseButtonPress) {
+            auto* m = static_cast<QMouseEvent*>(e);
+            key = m->button() == Qt::MiddleButton    ? Hotkeys::MiddleClick
+                  : m->button() == Qt::BackButton    ? Hotkeys::MouseBack
+                  : m->button() == Qt::ForwardButton ? Hotkeys::MouseForward
+                                                     : 0;
+            mods = m->modifiers();
+        }
+        if (key) {
+            setNewKey(Hotkeys::mouseKey(key, mods));
+            return true;
+        }
+    }
+    return QDialog::eventFilter(o, e);
+}
+
+void SettingsDialog::setNewKey(const QKeySequence& ks) {
+    edit_->setKeySequence(ks);
+    if (auto* le = edit_->findChild<QLineEdit*>()) le->setText(Hotkeys::text(ks, true));
+}
 
 int SettingsDialog::indexOf(const QString& id) const {
     for (size_t i = 0; i < keys_.size(); ++i)
@@ -246,7 +283,7 @@ QString SettingsDialog::assignKey(const QKeySequence& key, bool add) {
     auto& ks = keys_[i].keys;
     if (!add) ks.clear();
     if (!ks.contains(key)) ks << key;
-    const QString k = key.toString(QKeySequence::NativeText);
+    const QString k = Hotkeys::text(key, true);
     message_->setText(movedFrom.isEmpty()
                           //: %1 is a key, %2 a command.
                           ? tr("%1 is now on %2.").arg(k, plainLabel(keys_[i].label))

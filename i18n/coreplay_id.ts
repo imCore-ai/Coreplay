@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="id">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>Diekspor: %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>Diekspor, tetapi durasi frame terakhir tidak dapat diatur: %1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ Reset</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>Hapus grade klip ini</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>F1, Esc, atau klik untuk menutup ini.  Ubah tombol di Bantuan &gt; Edit Tombol Pintas.</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>Reset Pan&amp;&amp;Scan</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD: Tampilkan Waktu Saat Ini</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>&amp;Tentang Coreplay</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ File asli dipindahkan ke Recycle Bin.</translation>
     <message>
         <source>Exposure Reset</source>
         <translation>Reset Eksposur</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>Perbe&amp;sar</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>Perke&amp;cil</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Jelajahi Core Studio</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>&amp;Perbarui ke Coreplay %1...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 tersedia: Bantuan &gt; Perbarui</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Tentang Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Coreplay dibuat oleh %1 sebagai pendamping %2, studio film AI profesional kami: dari baris pertama naskah hingga frame terakhir, dalam satu ruang kerja.</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 adalah versi terbaru.</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 tersedia. Versi Anda %2.
 
 %3</translation>
@@ -1627,6 +1636,7 @@ File asli dipindahkan ke Recycle Bin.</translation>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>Kanal %1%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Tutup dan buang grade-nya?</translation>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Klik dua kali pada file kedua membuka jendela Coreplay kedua alih-alih
 mengganti file yang sedang diputar. File yang dipilih bersamaan dibuka di satu jendela.</translation>
     </message>
@@ -2313,7 +2323,7 @@ mengganti file yang sedang diputar. File yang dipilih bersamaan dibuka di satu j
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Coreplay mengaktifkan ini sendiri bila driver GPU tidak dapat menggambar.
 Matikan setelah memasang driver GPU.</translation>
     </message>
@@ -2354,15 +2364,11 @@ Matikan setelah memasang driver GPU.</translation>
         <translation>Pilih sebuah perintah.</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>Klik di sini, lalu tekan tombol baru</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>Atur</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>Ganti tombol perintah ini dengan tombol yang ditekan</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ Matikan setelah memasang driver GPU.</translation>
         <translation>Default</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>Tombol default perintah ini</translation>
     </message>
     <message>
@@ -2445,6 +2451,10 @@ Matikan setelah memasang driver GPU.</translation>
     <message>
         <source>Cannot write %1</source>
         <translation>Tidak dapat menulis %1</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>Klik di sini, lalu tekan tombol baru, putar roda mouse, atau klik tombol tengah atau tombol samping mouse</translation>
     </message>
 </context>
 <context>

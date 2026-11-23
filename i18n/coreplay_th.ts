@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="th">
 <context>
     <name>Compare</name>
@@ -377,7 +378,7 @@
         <translation>ส่งออกแล้ว: %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
         <translation>ส่งออกแล้ว แต่ตั้งระยะเวลาของเฟรมสุดท้ายไม่ได้: %1</translation>
     </message>
 </context>
@@ -498,7 +499,7 @@
         <translation>↺ รีเซ็ต</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
+        <source>Remove this clip&apos;s grade</source>
         <translation>ลบเกรดสีของคลิปนี้</translation>
     </message>
     <message>
@@ -544,7 +545,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>กด F1, Esc หรือคลิกเพื่อปิด  เปลี่ยนปุ่มได้ที่ วิธีใช้ &gt; แก้ไขปุ่มลัด</translation>
     </message>
 </context>
@@ -876,7 +877,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>รีเซ็ตแพน&amp;&amp;สแกน</translation>
     </message>
     <message>
@@ -1013,7 +1014,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
         <translation>OSD: แสดงเวลาปัจจุบัน</translation>
     </message>
     <message>
@@ -1042,7 +1043,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>เกี่ยวกับ Coreplay(&amp;A)</translation>
     </message>
     <message>
@@ -1096,6 +1097,14 @@ The original goes to the Recycle Bin.</source>
     <message>
         <source>Exposure Reset</source>
         <translation>รีเซ็ตเอ็กซ์โพเชอร์</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>ซูมเข้า(&amp;I)</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>ซูมออก(&amp;O)</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1305,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>สำรวจ Core Studio</translation>
     </message>
     <message>
@@ -1505,22 +1514,22 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>อัปเดตเป็น Coreplay %1(&amp;U)...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 พร้อมให้ใช้แล้ว: วิธีใช้ &gt; อัปเดต</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>เกี่ยวกับ Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
         <translation>Coreplay สร้างโดย %1 เพื่อใช้คู่กับ %2 สตูดิโอภาพยนตร์ AI ระดับมืออาชีพของเรา ตั้งแต่บรรทัดแรกของบทจนถึงเฟรมสุดท้าย ในเวิร์กสเปซเดียว</translation>
     </message>
     <message>
@@ -1565,14 +1574,14 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 เป็นเวอร์ชันล่าสุดแล้ว</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 พร้อมให้ใช้แล้ว คุณใช้เวอร์ชัน %2
 
 %3</translation>
@@ -1627,6 +1636,7 @@ The original goes to the Recycle Bin.</source>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>แชนเนล%1%2 (%1)</translation>
     </message>
     <message>
@@ -2298,7 +2308,7 @@ Close and lose the grades?</source>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>ดับเบิลคลิกไฟล์ที่สองจะเปิดหน้าต่าง Coreplay ที่สองแทนการ
 แทนที่ไฟล์ที่กำลังเล่น ไฟล์ที่เลือกพร้อมกันจะเปิดในหน้าต่างเดียว</translation>
     </message>
@@ -2313,7 +2323,7 @@ replacing the file that plays. Files selected together open in one window.</sour
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Coreplay จะเปิดตัวเลือกนี้เองเมื่อไดรเวอร์ GPU วาดภาพไม่ได้
 ปิดตัวเลือกนี้หลังติดตั้งไดรเวอร์ GPU</translation>
     </message>
@@ -2354,15 +2364,11 @@ Turn it off after installing a GPU driver.</source>
         <translation>เลือกคำสั่ง</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>คลิกที่นี่ แล้วกดปุ่มใหม่</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>ตั้ง</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>แทนที่ปุ่มของคำสั่งนี้ด้วยปุ่มที่กด</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ Turn it off after installing a GPU driver.</source>
         <translation>ค่าเริ่มต้น</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>ปุ่มเริ่มต้นของคำสั่งนี้</translation>
     </message>
     <message>
@@ -2403,7 +2409,7 @@ Turn it off after installing a GPU driver.</source>
     </message>
     <message>
         <source>Select a command, click in New key and press the key.</source>
-        <translation>เลือกคำสั่ง คลิกในช่อง "ปุ่มใหม่" แล้วกดปุ่ม</translation>
+        <translation>เลือกคำสั่ง คลิกในช่อง &quot;ปุ่มใหม่&quot; แล้วกดปุ่ม</translation>
     </message>
     <message>
         <source>%1:  %2   (default: %3)</source>
@@ -2416,7 +2422,7 @@ Turn it off after installing a GPU driver.</source>
     </message>
     <message>
         <source>Press a key in New key first.</source>
-        <translation>กดปุ่มในช่อง "ปุ่มใหม่" ก่อน</translation>
+        <translation>กดปุ่มในช่อง &quot;ปุ่มใหม่&quot; ก่อน</translation>
     </message>
     <message>
         <source>%1 is now on %2.</source>
@@ -2440,11 +2446,15 @@ Turn it off after installing a GPU driver.</source>
     </message>
     <message>
         <source>All hotkeys are back to the defaults (saved when you press OK or Apply).</source>
-        <translation>ปุ่มลัดทั้งหมดกลับเป็นค่าเริ่มต้นแล้ว (บันทึกเมื่อกด "ตกลง" หรือ "นำไปใช้")</translation>
+        <translation>ปุ่มลัดทั้งหมดกลับเป็นค่าเริ่มต้นแล้ว (บันทึกเมื่อกด &quot;ตกลง&quot; หรือ &quot;นำไปใช้&quot;)</translation>
     </message>
     <message>
         <source>Cannot write %1</source>
         <translation>เขียน %1 ไม่ได้</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>คลิกที่นี่ แล้วกดปุ่มใหม่ หมุนล้อเมาส์ หรือคลิกปุ่มกลางหรือปุ่มด้านข้างของเมาส์</translation>
     </message>
 </context>
 <context>

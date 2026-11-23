@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="fr">
 <context>
     <name>Compare</name>
@@ -31,7 +32,7 @@
     </message>
     <message>
         <source>LUT for slot %1</source>
-        <translation>LUT de l'emplacement %1</translation>
+        <translation>LUT de l&apos;emplacement %1</translation>
     </message>
     <message>
         <source>None</source>
@@ -106,7 +107,7 @@
     </message>
     <message>
         <source>Bake the grade: %1</source>
-        <translation>Intégrer l'étalonnage : %1</translation>
+        <translation>Intégrer l&apos;étalonnage : %1</translation>
     </message>
     <message>
         <source>Grade</source>
@@ -114,7 +115,7 @@
     </message>
     <message>
         <source>Include audio</source>
-        <translation>Inclure l'audio</translation>
+        <translation>Inclure l&apos;audio</translation>
     </message>
     <message>
         <source>Audio</source>
@@ -255,7 +256,7 @@
     </message>
     <message>
         <source>Image sequence</source>
-        <translation>Séquence d'images</translation>
+        <translation>Séquence d&apos;images</translation>
     </message>
     <message>
         <source>OpenEXR half float (ZIP)</source>
@@ -346,27 +347,27 @@
     <name>Exporter</name>
     <message>
         <source>Unknown export format</source>
-        <translation>Format d'export inconnu</translation>
+        <translation>Format d&apos;export inconnu</translation>
     </message>
     <message>
         <source>Cannot write the frame list</source>
-        <translation>Impossible d'écrire la liste des images</translation>
+        <translation>Impossible d&apos;écrire la liste des images</translation>
     </message>
     <message>
         <source>Cannot bake the colour transform: %1</source>
-        <translation>Impossible d'intégrer la transformation colorimétrique : %1</translation>
+        <translation>Impossible d&apos;intégrer la transformation colorimétrique : %1</translation>
     </message>
     <message>
         <source>Cannot bake the grade: %1</source>
-        <translation>Impossible d'intégrer l'étalonnage : %1</translation>
+        <translation>Impossible d&apos;intégrer l&apos;étalonnage : %1</translation>
     </message>
     <message>
         <source>The encoder did not start: %1</source>
-        <translation>L'encodeur n'a pas démarré : %1</translation>
+        <translation>L&apos;encodeur n&apos;a pas démarré : %1</translation>
     </message>
     <message>
         <source>Export failed: %1</source>
-        <translation>Échec de l'export : %1</translation>
+        <translation>Échec de l&apos;export : %1</translation>
     </message>
     <message>
         <source>Export cancelled</source>
@@ -377,8 +378,8 @@
         <translation>Exporté : %1</translation>
     </message>
     <message>
-        <source>Exported, but the last frame's duration could not be set: %1</source>
-        <translation>Exporté, mais la durée de la dernière image n'a pas pu être définie : %1</translation>
+        <source>Exported, but the last frame&apos;s duration could not be set: %1</source>
+        <translation>Exporté, mais la durée de la dernière image n&apos;a pas pu être définie : %1</translation>
     </message>
 </context>
 <context>
@@ -425,7 +426,7 @@
     </message>
     <message>
         <source>Cannot write %1</source>
-        <translation>Impossible d'écrire %1</translation>
+        <translation>Impossible d&apos;écrire %1</translation>
     </message>
 </context>
 <context>
@@ -498,8 +499,8 @@
         <translation>↺ Réinitialiser</translation>
     </message>
     <message>
-        <source>Remove this clip's grade</source>
-        <translation>Supprimer l'étalonnage de ce clip</translation>
+        <source>Remove this clip&apos;s grade</source>
+        <translation>Supprimer l&apos;étalonnage de ce clip</translation>
     </message>
     <message>
         <source>Save</source>
@@ -509,7 +510,7 @@
         <source>Write the graded clip over the file (Ctrl+S).
 The original goes to the Recycle Bin.</source>
         <translation>Écrire le clip étalonné à la place du fichier (Ctrl+S).
-L'original va dans la Corbeille.</translation>
+L&apos;original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Save As...</source>
@@ -544,7 +545,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>F1, Esc or a click closes this.  Change keys in Help &gt; Edit Hotkeys.</source>
-        <extracomment>"F1" and "Esc" are key names; keep them in English. "Help &gt; Edit Hotkeys" is a menu path.</extracomment>
+        <extracomment>&quot;F1&quot; and &quot;Esc&quot; are key names; keep them in English. &quot;Help &gt; Edit Hotkeys&quot; is a menu path.</extracomment>
         <translation>F1, Esc ou un clic ferme cette fenêtre.  Modifiez les touches dans Aide &gt; Modifier les raccourcis.</translation>
     </message>
 </context>
@@ -624,11 +625,11 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Save &amp;Image...</source>
-        <translation>Enregistrer l'&amp;image...</translation>
+        <translation>Enregistrer l&apos;&amp;image...</translation>
     </message>
     <message>
         <source>Save Image (auto)</source>
-        <translation>Enregistrer l'image (auto)</translation>
+        <translation>Enregistrer l&apos;image (auto)</translation>
     </message>
     <message>
         <source>&amp;Close</source>
@@ -640,7 +641,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Open File &amp;Location</source>
-        <translation>Ouvrir l'&amp;emplacement du fichier</translation>
+        <translation>Ouvrir l&apos;&amp;emplacement du fichier</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -876,7 +877,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Pan&amp;&amp;Scan Reset</source>
-        <extracomment>"&amp;&amp;" shows one "&amp;"; keep it doubled.</extracomment>
+        <extracomment>&quot;&amp;&amp;&quot; shows one &quot;&amp;&quot;; keep it doubled.</extracomment>
         <translation>Réinitialiser Pan&amp;&amp;Scan</translation>
     </message>
     <message>
@@ -1013,8 +1014,8 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>OSD: Show Current Time</source>
-        <extracomment>"OSD" (on-screen display) may stay in English.</extracomment>
-        <translation>OSD : afficher l'heure actuelle</translation>
+        <extracomment>&quot;OSD&quot; (on-screen display) may stay in English.</extracomment>
+        <translation>OSD : afficher l&apos;heure actuelle</translation>
     </message>
     <message>
         <source>OSD: Show File Name</source>
@@ -1042,7 +1043,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>&amp;About Coreplay</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>À &amp;propos de Coreplay</translation>
     </message>
     <message>
@@ -1095,7 +1096,15 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Exposure Reset</source>
-        <translation>Réinitialiser l'exposition</translation>
+        <translation>Réinitialiser l&apos;exposition</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;In</source>
+        <translation>Zoom &amp;avant</translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation>Zoom a&amp;rrière</translation>
     </message>
 </context>
 <context>
@@ -1106,7 +1115,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>data window: %1,%2 %3x%4   display window: %5,%6 %7x%8</source>
-        <translation>fenêtre de données : %1,%2 %3x%4   fenêtre d'affichage : %5,%6 %7x%8</translation>
+        <translation>fenêtre de données : %1,%2 %3x%4   fenêtre d&apos;affichage : %5,%6 %7x%8</translation>
     </message>
     <message>
         <source>tiles: %1x%2</source>
@@ -1133,7 +1142,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Cannot write %1</source>
-        <translation>Impossible d'écrire %1</translation>
+        <translation>Impossible d&apos;écrire %1</translation>
     </message>
 </context>
 <context>
@@ -1192,15 +1201,15 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Open a Clip for Slot B</source>
-        <translation>Ouvrir un clip pour l'emplacement B</translation>
+        <translation>Ouvrir un clip pour l&apos;emplacement B</translation>
     </message>
     <message>
         <source>Open a Clip for Slot A</source>
-        <translation>Ouvrir un clip pour l'emplacement A</translation>
+        <translation>Ouvrir un clip pour l&apos;emplacement A</translation>
     </message>
     <message>
         <source>Actual pixels: one image pixel per screen pixel</source>
-        <translation>Pixels réels : un pixel d'image par pixel d'écran</translation>
+        <translation>Pixels réels : un pixel d&apos;image par pixel d&apos;écran</translation>
     </message>
     <message>
         <source>Fit</source>
@@ -1208,7 +1217,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Fit the whole picture in the window</source>
-        <translation>Ajuster l'image entière à la fenêtre</translation>
+        <translation>Ajuster l&apos;image entière à la fenêtre</translation>
     </message>
     <message>
         <source>Playlist</source>
@@ -1228,7 +1237,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Open a movie first: subtitles show on movies</source>
-        <translation>Ouvrez d'abord un film : les sous-titres s'affichent sur les films</translation>
+        <translation>Ouvrez d&apos;abord un film : les sous-titres s&apos;affichent sur les films</translation>
     </message>
     <message>
         <source>Subtitles</source>
@@ -1296,7 +1305,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Explore Core Studio</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Découvrir Core Studio</translation>
     </message>
     <message>
@@ -1361,11 +1370,11 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Open an image sequence first</source>
-        <translation>Ouvrez d'abord une séquence d'images</translation>
+        <translation>Ouvrez d&apos;abord une séquence d&apos;images</translation>
     </message>
     <message>
         <source>&amp;Input Colour Space</source>
-        <translation>Espace colorimétrique d'&amp;entrée</translation>
+        <translation>Espace colorimétrique d&apos;&amp;entrée</translation>
     </message>
     <message>
         <source>Input: %1</source>
@@ -1381,7 +1390,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>No frame rate in the file header: playing at %1 fps (Image &gt; Sequence Frame Rate)</source>
-        <translation>Pas de cadence dans l'en-tête du fichier : lecture à %1 fps (Image &gt; Cadence de la séquence)</translation>
+        <translation>Pas de cadence dans l&apos;en-tête du fichier : lecture à %1 fps (Image &gt; Cadence de la séquence)</translation>
     </message>
     <message>
         <source>Settings saved</source>
@@ -1389,11 +1398,11 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Compare needs two movies or two image sequences</source>
-        <translation>La comparaison nécessite deux films ou deux séquences d'images</translation>
+        <translation>La comparaison nécessite deux films ou deux séquences d&apos;images</translation>
     </message>
     <message>
         <source>Compare: cannot open %1</source>
-        <translation>Comparaison : impossible d'ouvrir %1</translation>
+        <translation>Comparaison : impossible d&apos;ouvrir %1</translation>
     </message>
     <message>
         <source>Compare off</source>
@@ -1425,7 +1434,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Cannot use this LUT: %1</source>
-        <translation>Impossible d'utiliser cette LUT : %1</translation>
+        <translation>Impossible d&apos;utiliser cette LUT : %1</translation>
     </message>
     <message>
         <source>B: LUT off</source>
@@ -1477,7 +1486,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Subtitles show on movies; open a movie first</source>
-        <translation>Les sous-titres s'affichent sur les films ; ouvrez d'abord un film</translation>
+        <translation>Les sous-titres s&apos;affichent sur les films ; ouvrez d&apos;abord un film</translation>
     </message>
     <message>
         <source>Subtitle: %1</source>
@@ -1485,7 +1494,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Open a clip first</source>
-        <translation>Ouvrez d'abord un clip</translation>
+        <translation>Ouvrez d&apos;abord un clip</translation>
     </message>
     <message>
         <source>An export is already running</source>
@@ -1505,23 +1514,23 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>&amp;Update to Coreplay %1...</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>&amp;Mettre à jour vers Coreplay %1...</translation>
     </message>
     <message>
         <source>Coreplay %1 is available: Help &gt; Update</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 est disponible : Aide &gt; Mise à jour</translation>
     </message>
     <message>
         <source>About Coreplay</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>À propos de Coreplay</translation>
     </message>
     <message>
         <source>Coreplay is made by %1 as a companion to %2, our professional AI film studio: from the first line of the script to the final frame, in one workspace.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", "imCore Corp.", library and format names in English.</extracomment>
-        <translation>Coreplay est conçu par %1 en complément de %2, notre studio de cinéma professionnel par IA : de la première ligne du scénario à l'image finale, dans un seul espace de travail.</translation>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, &quot;imCore Corp.&quot;, library and format names in English.</extracomment>
+        <translation>Coreplay est conçu par %1 en complément de %2, notre studio de cinéma professionnel par IA : de la première ligne du scénario à l&apos;image finale, dans un seul espace de travail.</translation>
     </message>
     <message>
         <source>Coreplay %1</source>
@@ -1529,7 +1538,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>A fast, free player for movies and image sequences.</source>
-        <translation>Un lecteur rapide et gratuit pour les films et les séquences d'images.</translation>
+        <translation>Un lecteur rapide et gratuit pour les films et les séquences d&apos;images.</translation>
     </message>
     <message>
         <source>If you enjoy working with Coreplay, you will feel at home in Core Studio.</source>
@@ -1541,7 +1550,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Movies through libmpv (FFmpeg). Image sequences through OpenImageIO, colour through OpenColorIO. Hotkeys follow MPC-HC.</source>
-        <translation>Films via libmpv (FFmpeg). Séquences d'images via OpenImageIO, couleur via OpenColorIO. Raccourcis calqués sur MPC-HC.</translation>
+        <translation>Films via libmpv (FFmpeg). Séquences d&apos;images via OpenImageIO, couleur via OpenColorIO. Raccourcis calqués sur MPC-HC.</translation>
     </message>
     <message>
         <source>Check for Updates</source>
@@ -1561,18 +1570,18 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Download Installer</source>
-        <translation>Télécharger le programme d'installation</translation>
+        <translation>Télécharger le programme d&apos;installation</translation>
     </message>
     <message>
         <source>Coreplay %1 is the newest version.</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 est la version la plus récente.</translation>
     </message>
     <message>
         <source>Coreplay %1 is available. You have %2.
 
 %3</source>
-        <extracomment>Keep "Core Studio", "Coreplay", format and colour-space names in English.</extracomment>
+        <extracomment>Keep &quot;Core Studio&quot;, &quot;Coreplay&quot;, format and colour-space names in English.</extracomment>
         <translation>Coreplay %1 est disponible. Vous avez la version %2.
 
 %3</translation>
@@ -1587,7 +1596,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>The installer could not start: %1</source>
-        <translation>Le programme d'installation n'a pas pu démarrer : %1</translation>
+        <translation>Le programme d&apos;installation n&apos;a pas pu démarrer : %1</translation>
     </message>
     <message>
         <source>All (RGB)</source>
@@ -1627,6 +1636,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>%1 channel%2 (%1)</source>
+        <extracomment>Tooltip of the R, G, B buttons. %1 = the letter R, G or B (also the key); %2 = &quot; (active)&quot; when that channel is shown, else empty.</extracomment>
         <translation>Canal %1%2 (%1)</translation>
     </message>
     <message>
@@ -1659,7 +1669,7 @@ L'original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Time (hh:mm:ss.ms) or frame number:</source>
-        <translation>Temps (hh:mm:ss.ms) ou numéro d'image :</translation>
+        <translation>Temps (hh:mm:ss.ms) ou numéro d&apos;image :</translation>
     </message>
     <message>
         <source>Sequence Frame Rate</source>
@@ -1673,7 +1683,7 @@ Saisissez une fraction comme 30000/1001 pour une cadence exacte.</translation>
     </message>
     <message>
         <source>, from the file</source>
-        <translation>, d'après le fichier</translation>
+        <translation>, d&apos;après le fichier</translation>
     </message>
     <message>
         <source>Sequence frame rate: %1/%2</source>
@@ -1689,7 +1699,7 @@ Saisissez une fraction comme 30000/1001 pour une cadence exacte.</translation>
     </message>
     <message>
         <source>Save Image</source>
-        <translation>Enregistrer l'image</translation>
+        <translation>Enregistrer l&apos;image</translation>
     </message>
     <message>
         <source>Saved %1</source>
@@ -1697,7 +1707,7 @@ Saisissez une fraction comme 30000/1001 pour une cadence exacte.</translation>
     </message>
     <message>
         <source>Could not save the image</source>
-        <translation>Impossible d'enregistrer l'image</translation>
+        <translation>Impossible d&apos;enregistrer l&apos;image</translation>
     </message>
     <message>
         <source>all %1 frames of
@@ -1717,7 +1727,7 @@ dans la Corbeille ?</translation>
     </message>
     <message>
         <source>%1 file(s) could not be moved</source>
-        <translation>%1 fichier(s) n'ont pas pu être déplacés</translation>
+        <translation>%1 fichier(s) n&apos;ont pas pu être déplacés</translation>
     </message>
     <message>
         <source>Properties</source>
@@ -1754,7 +1764,7 @@ dans la Corbeille ?</translation>
     </message>
     <message>
         <source> (set, not from the file)</source>
-        <translation> (définie, pas d'après le fichier)</translation>
+        <translation> (définie, pas d&apos;après le fichier)</translation>
     </message>
     <message>
         <source>   playing at %1 fps</source>
@@ -1814,11 +1824,11 @@ dans la Corbeille ?</translation>
     </message>
     <message>
         <source>Nothing to save: this clip has no grade (Alt+G)</source>
-        <translation>Rien à enregistrer : ce clip n'a pas d'étalonnage (Alt+G)</translation>
+        <translation>Rien à enregistrer : ce clip n&apos;a pas d&apos;étalonnage (Alt+G)</translation>
     </message>
     <message>
         <source>Image sequences are saved as new frames: choose a folder</source>
-        <translation>Les séquences d'images sont enregistrées en nouvelles images : choisissez un dossier</translation>
+        <translation>Les séquences d&apos;images sont enregistrées en nouvelles images : choisissez un dossier</translation>
     </message>
     <message>
         <source>Save</source>
@@ -1829,10 +1839,10 @@ dans la Corbeille ?</translation>
 %1?
 
 The clip is encoded again with its own codec. The original goes to the Recycle Bin.</source>
-        <translation>Écrire l'étalonnage dans
+        <translation>Écrire l&apos;étalonnage dans
 %1 ?
 
-Le clip est réencodé avec son propre codec. L'original va dans la Corbeille.</translation>
+Le clip est réencodé avec son propre codec. L&apos;original va dans la Corbeille.</translation>
     </message>
     <message>
         <source>Folder for the graded frames</source>
@@ -1852,11 +1862,11 @@ Le clip est réencodé avec son propre codec. L'original va dans la Corbeille.</
     </message>
     <message>
         <source>Could not move the original to the Recycle Bin. The graded clip is %1</source>
-        <translation>Impossible de déplacer l'original dans la Corbeille. Le clip étalonné est %1</translation>
+        <translation>Impossible de déplacer l&apos;original dans la Corbeille. Le clip étalonné est %1</translation>
     </message>
     <message>
         <source> (the original is in the Recycle Bin)</source>
-        <translation> (l'original est dans la Corbeille)</translation>
+        <translation> (l&apos;original est dans la Corbeille)</translation>
     </message>
     <message>
         <source>%1 graded clip(s) are not saved:
@@ -1879,7 +1889,7 @@ Fermer et perdre les étalonnages ?</translation>
     <name>MovFix</name>
     <message>
         <source>cannot open %1</source>
-        <translation>impossible d'ouvrir %1</translation>
+        <translation>impossible d&apos;ouvrir %1</translation>
     </message>
     <message>
         <source>no moov box</source>
@@ -1903,7 +1913,7 @@ Fermer et perdre les étalonnages ?</translation>
     </message>
     <message>
         <source>write failed</source>
-        <translation>échec de l'écriture</translation>
+        <translation>échec de l&apos;écriture</translation>
     </message>
 </context>
 <context>
@@ -1946,7 +1956,7 @@ Fermer et perdre les étalonnages ?</translation>
     </message>
     <message>
         <source>Display aspect: %1</source>
-        <translation>Format d'affichage : %1</translation>
+        <translation>Format d&apos;affichage : %1</translation>
     </message>
     <message>
         <source>   rotated %1</source>
@@ -2185,7 +2195,7 @@ Fermer et perdre les étalonnages ?</translation>
     </message>
     <message>
         <source>Copy &amp;Link Location</source>
-        <translation>Copier l'adresse du &amp;lien</translation>
+        <translation>Copier l&apos;adresse du &amp;lien</translation>
     </message>
     <message>
         <source>&amp;Paste</source>
@@ -2205,7 +2215,7 @@ Fermer et perdre les étalonnages ?</translation>
     <message>
         <source>OCIO built-in studio config</source>
         <extracomment>Keep the product name OCIO in English.</extracomment>
-        <translation>Configuration studio intégrée d'OCIO</translation>
+        <translation>Configuration studio intégrée d&apos;OCIO</translation>
     </message>
     <message>
         <source>OCIO error: %1</source>
@@ -2253,7 +2263,7 @@ Fermer et perdre les étalonnages ?</translation>
     </message>
     <message>
         <source>from the file header</source>
-        <translation>d'après l'en-tête du fichier</translation>
+        <translation>d&apos;après l&apos;en-tête du fichier</translation>
     </message>
     <message>
         <source>NOT in the file - set in Play &gt; Sequence Frame Rate</source>
@@ -2269,7 +2279,7 @@ Fermer et perdre les étalonnages ?</translation>
     </message>
     <message>
         <source>Input colour space: %1</source>
-        <translation>Espace colorimétrique d'entrée : %1</translation>
+        <translation>Espace colorimétrique d&apos;entrée : %1</translation>
     </message>
     <message>
         <source>Display / view: %1 / %2</source>
@@ -2298,9 +2308,9 @@ Fermer et perdre les étalonnages ?</translation>
     <message>
         <source>Double-clicking a second file opens a second Coreplay window instead of
 replacing the file that plays. Files selected together open in one window.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
         <translation>Un double-clic sur un second fichier ouvre une seconde fenêtre Coreplay au lieu de
-remplacer le fichier en lecture. Les fichiers sélectionnés ensemble s'ouvrent dans une seule fenêtre.</translation>
+remplacer le fichier en lecture. Les fichiers sélectionnés ensemble s&apos;ouvrent dans une seule fenêtre.</translation>
     </message>
     <message>
         <source>Check for updates automatically (once a day)</source>
@@ -2313,8 +2323,8 @@ remplacer le fichier en lecture. Les fichiers sélectionnés ensemble s'ouvrent 
     <message>
         <source>Coreplay turns this on by itself when the GPU driver cannot draw its picture.
 Turn it off after installing a GPU driver.</source>
-        <extracomment>"Coreplay" is the product name; keep it in English.</extracomment>
-        <translation>Coreplay l'active de lui-même quand le pilote GPU ne parvient pas à afficher l'image.
+        <extracomment>&quot;Coreplay&quot; is the product name; keep it in English.</extracomment>
+        <translation>Coreplay l&apos;active de lui-même quand le pilote GPU ne parvient pas à afficher l&apos;image.
 Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
@@ -2331,7 +2341,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
         <source>The new language applies when Coreplay starts again.</source>
-        <translation>La nouvelle langue s'applique au prochain démarrage de Coreplay.</translation>
+        <translation>La nouvelle langue s&apos;applique au prochain démarrage de Coreplay.</translation>
     </message>
     <message>
         <source>General</source>
@@ -2354,15 +2364,11 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
         <translation>Sélectionnez une commande.</translation>
     </message>
     <message>
-        <source>Click here, then press the new key</source>
-        <translation>Cliquez ici, puis appuyez sur la nouvelle touche</translation>
-    </message>
-    <message>
         <source>Set</source>
         <translation>Définir</translation>
     </message>
     <message>
-        <source>Replace this command's keys with the pressed key</source>
+        <source>Replace this command&apos;s keys with the pressed key</source>
         <translation>Remplacer les touches de cette commande par la touche pressée</translation>
     </message>
     <message>
@@ -2386,7 +2392,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
         <translation>Par défaut</translation>
     </message>
     <message>
-        <source>This command's default keys</source>
+        <source>This command&apos;s default keys</source>
         <translation>Touches par défaut de cette commande</translation>
     </message>
     <message>
@@ -2416,7 +2422,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
         <source>Press a key in New key first.</source>
-        <translation>Appuyez d'abord sur une touche dans Nouvelle touche.</translation>
+        <translation>Appuyez d&apos;abord sur une touche dans Nouvelle touche.</translation>
     </message>
     <message>
         <source>%1 is now on %2.</source>
@@ -2428,7 +2434,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
         <source>%1 has no key now.</source>
-        <translation>%1 n'a plus de touche.</translation>
+        <translation>%1 n&apos;a plus de touche.</translation>
     </message>
     <message>
         <source>%1 has its default keys.</source>
@@ -2444,7 +2450,11 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
         <source>Cannot write %1</source>
-        <translation>Impossible d'écrire %1</translation>
+        <translation>Impossible d&apos;écrire %1</translation>
+    </message>
+    <message>
+        <source>Click here, then press the new key, turn the mouse wheel, or click the middle or a side mouse button</source>
+        <translation>Cliquez ici, puis appuyez sur la nouvelle touche, tournez la molette de la souris ou cliquez avec le bouton du milieu ou un bouton latéral</translation>
     </message>
 </context>
 <context>
@@ -2495,11 +2505,11 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
         <source>Background colour</source>
-        <translation>Couleur d'arrière-plan</translation>
+        <translation>Couleur d&apos;arrière-plan</translation>
     </message>
     <message>
         <source>Background opacity</source>
-        <translation>Opacité de l'arrière-plan</translation>
+        <translation>Opacité de l&apos;arrière-plan</translation>
     </message>
     <message>
         <source>Vertical position</source>
@@ -2526,7 +2536,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     <name>Updater</name>
     <message>
         <source>The update address must be https.</source>
-        <translation>L'adresse de mise à jour doit être en https.</translation>
+        <translation>L&apos;adresse de mise à jour doit être en https.</translation>
     </message>
     <message>
         <source>Cannot reach the update server: %1</source>
@@ -2535,7 +2545,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     <message>
         <source>The update information is not signed by imcore. Nothing was downloaded.</source>
         <extracomment>Keep the product name in English.</extracomment>
-        <translation>Les informations de mise à jour ne sont pas signées par imcore. Rien n'a été téléchargé.</translation>
+        <translation>Les informations de mise à jour ne sont pas signées par imcore. Rien n&apos;a été téléchargé.</translation>
     </message>
     <message>
         <source>The update information is incomplete.</source>
@@ -2543,7 +2553,7 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     </message>
     <message>
         <source>Cannot write %1</source>
-        <translation>Impossible d'écrire %1</translation>
+        <translation>Impossible d&apos;écrire %1</translation>
     </message>
     <message>
         <source>Download failed: %1</source>
