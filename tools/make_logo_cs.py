@@ -39,9 +39,14 @@ def letters():
     dd = a.crop((s(1533), s(ASC), s(1765), s(BASE + 1)))
     p = Image.new("L", (dd.width, H), 0)
     p.paste(dd.rotate(180), (0, s(XTOP)))
-    # a: the d below the x-height only (single-storey a with a flat-topped stem)
+    # a: the d below the x-height only (single-storey a with a flat-topped stem). Only the
+    # STEM is cut at the x-height: the round bowl rises a little above it (its overshoot, to
+    # row 66 in the source) and keeps that, or its top is cut flat. The stem starts at source
+    # column 1731; the bowl's curve is below the x-height from column 1688 on.
     aa = Image.new("L", d.size, 0)
-    aa.paste(d.crop((0, s(XTOP), d.width, H)), (0, s(XTOP)))
+    split = s(1730 - 1533)
+    aa.paste(d.crop((0, s(XTOP - 10), split, H)), (0, s(XTOP - 10)))
+    aa.paste(d.crop((split, s(XTOP), d.width, H)), (split, s(XTOP)))
     # l: the i stem (no dot), from the ascender to the baseline
     stem = a.crop((s(1787), s(XTOP + 4), s(1837), s(BASE + 1)))
     l = Image.new("L", (stem.width, H), 0)
