@@ -16,6 +16,8 @@
 #include <QProxyStyle>
 #ifdef Q_OS_WIN
 #include <QEvent>
+#include <QAbstractNativeEventFilter>
+#include <QTimer>
 #include <QWidget>
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -23,23 +25,45 @@
 #include <windows.h>
 #include <dwmapi.h>
 
-// Windows 11: Qt's style leaves the system backdrop on, and DWM paints it under the title
-// bar (and under the menu bar) in a tone of the accent colour. Off: the backdrop; on: dark
-// mode, and a neutral caption colour that matches the player's bars.
-class WindowFrameFix : public QObject {
+// One dark title bar on every Windows window of Coreplay, whatever the Windows theme. Qt sets
+// the title bar from Windows' light / dark mode itself, also later (on activation, on a theme or
+// setting change), so a dark bar set once when the window first showed went light again on a PC
+// in light mode. Coreplay sets it again after each of those messages, after Qt has handled them.
+// Attribute 20 = DWMWA_USE_IMMERSIVE_DARK_MODE (Windows 10 2004 and later); 19 = the same on
+// Windows 10 1809-1909. Windows 11 also: no accent backdrop under the bars, and the caption
+// colour of the player's bars.
+static void darkTitleBar(HWND h) {
+    const BOOL dark = TRUE;
+    if (FAILED(DwmSetWindowAttribute(h, 20, &dark, sizeof dark))) DwmSetWindowAttribute(h, 19, &dark, sizeof dark);
+    const int none = 1;  // DWMSBT_NONE
+    DwmSetWindowAttribute(h, 38 /* DWMWA_SYSTEMBACKDROP_TYPE */, &none, sizeof none);
+    const COLORREF caption = RGB(31, 31, 31);
+    DwmSetWindowAttribute(h, 35 /* DWMWA_CAPTION_COLOR */, &caption, sizeof caption);
+}
+
+static bool framedWindow(QWidget* w) {
+    return w && w->isWindow() && !w->windowFlags().testFlag(Qt::FramelessWindowHint) &&
+           !(w->windowType() == Qt::Popup || w->windowType() == Qt::ToolTip);
+}
+
+class WindowFrameFix : public QObject, public QAbstractNativeEventFilter {
 public:
     bool eventFilter(QObject* o, QEvent* e) override {
-        if (e->type() == QEvent::Show && o->isWidgetType()) {
-            auto* w = static_cast<QWidget*>(o);
-            if (w->isWindow() && !w->windowFlags().testFlag(Qt::FramelessWindowHint) &&
-                !(w->windowType() == Qt::Popup || w->windowType() == Qt::ToolTip)) {
-                const HWND h = reinterpret_cast<HWND>(w->winId());
-                const BOOL dark = TRUE;
-                DwmSetWindowAttribute(h, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, &dark, sizeof dark);
-                const int none = 1;  // DWMSBT_NONE
-                DwmSetWindowAttribute(h, 38 /* DWMWA_SYSTEMBACKDROP_TYPE */, &none, sizeof none);
-                const COLORREF caption = RGB(31, 31, 31);
-                DwmSetWindowAttribute(h, 35 /* DWMWA_CAPTION_COLOR */, &caption, sizeof caption);
+        if (e->type() == QEvent::Show && o->isWidgetType() && framedWindow(static_cast<QWidget*>(o)))
+            darkTitleBar(reinterpret_cast<HWND>(static_cast<QWidget*>(o)->winId()));
+        return false;
+    }
+    bool nativeEventFilter(const QByteArray&, void* message, qintptr*) override {
+        const MSG* m = static_cast<const MSG*>(message);
+        switch (m->message) {
+            case WM_ACTIVATE: case WM_NCACTIVATE: case WM_SETTINGCHANGE: case WM_THEMECHANGED:
+            case WM_DWMCOLORIZATIONCOLORCHANGED: case WM_DPICHANGED: {
+                const HWND h = m->hwnd;
+                // After Qt has handled the message (it may set the light title bar in it).
+                QTimer::singleShot(0, qApp, [h] {
+                    if (framedWindow(QWidget::find(reinterpret_cast<WId>(h)))) darkTitleBar(h);
+                });
+                break;
             }
         }
         return false;
@@ -274,6 +298,7 @@ int main(int argc, char* argv[]) {
     // which tints the title bar and the menu bar with the accent colour.
     static WindowFrameFix frameFix;
     app.installEventFilter(&frameFix);
+    app.installNativeEventFilter(&frameFix);
 #endif
     const QStringList files = absolutePaths(app.arguments().mid(1));
     const QStringList args = app.arguments();

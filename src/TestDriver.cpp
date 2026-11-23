@@ -26,6 +26,7 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#include <dwmapi.h>
 #endif
 
 TestDriver::TestDriver(MainWindow* w, const QString& script, const QString& log)
@@ -207,6 +208,20 @@ void TestDriver::step() {
             } else {
                 send(QEvent::MouseMove, at(1), Qt::NoButton, Qt::NoButton);
             }
+            log(line);
+        } else if (cmd == "titlebarlight") {
+            // titlebarlight <message>: what Qt does on a PC in light mode (title bar set light),
+            // then Windows sends <message> (theme | activate | setting); Coreplay must make it dark again.
+#ifdef Q_OS_WIN
+            const HWND h = reinterpret_cast<HWND>(w_->winId());
+            const BOOL light = FALSE;
+            DwmSetWindowAttribute(h, 20, &light, sizeof light);
+            const QString m = t.value(1);
+            if (m == "theme") SendMessageW(h, WM_THEMECHANGED, 0, 0);
+            else if (m == "setting") SendMessageW(h, WM_SETTINGCHANGE, 0, reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
+            else SendMessageW(h, WM_NCACTIVATE, TRUE, 0);
+            for (int i = 0; i < 5; ++i) QApplication::processEvents();
+#endif
             log(line);
         } else if (cmd == "grabframe") {
             // grabframe <png>: the whole window as Windows composes it, title bar included
