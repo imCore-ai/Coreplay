@@ -3,6 +3,9 @@
 # icon or letter on the light hover background).
 open $MEDIA/h264_23976.mp4
 until engine == mpv 3000
+# one dark look: the title bar too (Windows reports dark mode for it), whatever the system setting
+expect titlebar.dark == true
+grabframe $OUT/t25_frame.png
 expect repeat == all
 expect loopButton has Loop: on, the playlist
 clickbutton Loop

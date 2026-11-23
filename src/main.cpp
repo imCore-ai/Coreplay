@@ -11,6 +11,7 @@
 #include <QProcess>
 #include <QSettings>
 #include <QPalette>
+#include <QStyleHints>
 #include <QStyleFactory>
 #include <QProxyStyle>
 #ifdef Q_OS_WIN
@@ -219,6 +220,10 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationName("Coreplay");
     QApplication::setApplicationVersion(COREPLAY_VERSION);
     QApplication::setWindowIcon(QIcon(":/coreplay.png"));
+    // The window frame too: dark title bars on macOS (Qt switches the app to the dark
+    // appearance) and on Windows in light mode (Qt would set the title bar back to light).
+    // Before the palette: a scheme change rebuilds the palette, and ours must win.
+    QGuiApplication::styleHints()->setColorScheme(Qt::ColorScheme::Dark);
     // One fixed dark look on every system, whatever its light / dark setting or desktop theme:
     // Fusion with Coreplay's own palette. (Windows used to follow its light mode: the bars and
     // menus turned light grey there.) Accents stay grey: no accent colour anywhere.

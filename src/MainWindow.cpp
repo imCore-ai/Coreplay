@@ -28,6 +28,7 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#include <dwmapi.h>
 #endif
 #include <QPainter>
 #include <QPainterPath>
@@ -767,10 +768,15 @@ void MainWindow::buildMenus() {
         explore->setText(tr("Explore Core Studio"));
         explore->setToolTip("https://imcore.ai/core-studio.html");
         explore->setCursor(Qt::PointingHandCursor);
+        QFont ef = explore->font();
+        ef.setBold(true);
+        explore->setFont(ef);
         explore->setFocusPolicy(Qt::NoFocus);
-        explore->setStyleSheet("QToolButton { color: rgb(160,160,160); background: transparent; border: none;"
-                               " padding: 2px 10px; }"
-                               " QToolButton:hover { color: rgb(255,255,255); text-decoration: underline; }");
+        // A filled light pill, the brightest thing on the bar (monochrome like the rest).
+        explore->setStyleSheet("QToolButton { color: rgb(17,17,17); background: rgb(236,236,236); border: none;"
+                               " border-radius: 9px; padding: 1px 14px; margin: 4px 8px 4px 0px; }"
+                               " QToolButton:hover { background: rgb(255,255,255); }"
+                               " QToolButton:pressed { background: rgb(200,200,200); }");
         connect(explore, &QToolButton::clicked, this,
                 [] { QDesktopServices::openUrl(QUrl("https://imcore.ai/core-studio.html")); });
         menuBar()->setCornerWidget(explore, Qt::TopRightCorner);
@@ -2443,6 +2449,17 @@ QVariantMap MainWindow::testState() const {
     m["winId"] = qulonglong(winId());
     m["window.w"] = width();
     m["window.h"] = height();
+#ifdef Q_OS_WIN
+    {   // the title bar as Windows has it (DWM): dark mode on, and its caption colour
+        BOOL dark = FALSE;
+        COLORREF caption = 0;
+        const HWND h = reinterpret_cast<HWND>(winId());
+        DwmGetWindowAttribute(h, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, &dark, sizeof dark);
+        DwmGetWindowAttribute(h, 35 /* DWMWA_CAPTION_COLOR */, &caption, sizeof caption);
+        m["titlebar.dark"] = bool(dark);
+        m["titlebar.caption"] = QString("%1,%2,%3").arg(GetRValue(caption)).arg(GetGValue(caption)).arg(GetBValue(caption));
+    }
+#endif
     m["picture.area"] = QString("%1x%2").arg(videoArea_->width()).arg(videoArea_->height());
     m["picture.areaAspect"] = videoArea_->height() > 0 ? double(videoArea_->width()) / videoArea_->height() : 0.0;
     {   const QSizeF s = shownSize();

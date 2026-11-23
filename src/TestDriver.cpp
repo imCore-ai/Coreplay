@@ -208,6 +208,26 @@ void TestDriver::step() {
                 send(QEvent::MouseMove, at(1), Qt::NoButton, Qt::NoButton);
             }
             log(line);
+        } else if (cmd == "grabframe") {
+            // grabframe <png>: the whole window as Windows composes it, title bar included
+#ifdef Q_OS_WIN
+            const HWND h = reinterpret_cast<HWND>(w_->winId());
+            RECT r;
+            GetWindowRect(h, &r);
+            const int W = r.right - r.left, H = r.bottom - r.top;
+            HDC screen = GetDC(nullptr), dc = CreateCompatibleDC(screen);
+            HBITMAP bmp = CreateCompatibleBitmap(screen, W, H);
+            HGDIOBJ old = SelectObject(dc, bmp);
+            PrintWindow(h, dc, 2 /* PW_RENDERFULLCONTENT */);
+            SelectObject(dc, old);
+            const QImage img = QImage::fromHBITMAP(bmp);
+            DeleteObject(bmp);
+            DeleteDC(dc);
+            ReleaseDC(nullptr, screen);
+            const bool ok = img.save(rest);
+            if (!ok) ++failures_;
+            log(QString("%1  grabframe %2").arg(ok ? "PASS" : "FAIL", rest));
+#endif
         } else if (cmd == "sizing") {
             // sizing right|bottom|topleft <dx> <dy>: drag that window edge by dx, dy device
             // pixels the way Windows does (WM_SIZING, which the window may correct), then apply it.
