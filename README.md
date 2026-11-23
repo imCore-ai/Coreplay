@@ -47,7 +47,9 @@
 
 ## Movies and frames, one window.
 
-![Coreplay playing God Being, made with Core Studio](docs/images/main.png)
+![Coreplay playing Warrior, made with Core Studio](docs/images/main.png)
+
+<p align="center"><sub>Shown: <i>Warrior</i>, made with <a href="https://imcore.ai/core-studio.html">Core Studio</a>.</sub></p>
 
 Open any movie, or any one frame of a sequence. Coreplay finds the rest of the shot, its
 range and its missing frames, and plays it at its real frame rate, in the right colour.
