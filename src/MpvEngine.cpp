@@ -1,5 +1,6 @@
 #include "MpvEngine.h"
 
+#include <QCoreApplication>
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
@@ -296,6 +297,10 @@ MpvEngine::MpvEngine(QWidget* parentWidget, QObject* parent) : Engine(parent) {
     mpv_ = mpv_create();
     auto opt = [&](const char* k, const char* v) { mpv_set_option_string(mpv_, k, v); };
     opt("vo", "libmpv");
+    // Test runs are silent: the test clips carry 440 / 660 Hz tones, and a run played them
+    // on the speakers of whoever sat at the PC. Sound is still decoded and timed (ao=null
+    // keeps the audio clock), so audio checks stay real. COREPLAY_TEST_AUDIO=1 plays it.
+    if (QCoreApplication::organizationName() == "CoreplayTest" && !qEnvironmentVariableIsSet("COREPLAY_TEST_AUDIO")) opt("ao", "null");
     opt("hwdec", "auto-safe");
     opt("keep-open", "yes");          // stay on the last frame; frame-back-step still works
     opt("idle", "yes");
@@ -483,7 +488,13 @@ void MpvEngine::setNext(const QString& path) {
     if (!path.isEmpty()) command({"loadfile", QFileInfo(path).absoluteFilePath(), "append"});
 }
 
-void MpvEngine::setPaused(bool p) { setProp("pause", p ? "yes" : "no"); }
+// paused_ takes the new state at once; mpv's own report (the "pause" observer) confirms it.
+// Waiting for that report left a gap: compare started right after a file opened read the
+// old "paused" and reopened the movie paused (t22, about 1 run in 5).
+void MpvEngine::setPaused(bool p) {
+    paused_ = p;
+    setProp("pause", p ? "yes" : "no");
+}
 
 void MpvEngine::stop() {
     setPaused(true);

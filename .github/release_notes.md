@@ -7,7 +7,8 @@
 | System | File |
 |---|---|
 | Windows 10 / 11 | [Coreplay-Windows-Setup.exe](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-Windows-Setup.exe) |
-| macOS (Apple silicon) | [Coreplay-macOS-arm64.dmg](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-macOS-arm64.dmg) |
+| macOS 12+, Apple silicon | [Coreplay-macOS-arm64.dmg](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-macOS-arm64.dmg) |
+| macOS 12+, Intel | [Coreplay-macOS-x86_64.dmg](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-macOS-x86_64.dmg) |
 | Linux (x86-64, any desktop) | [Coreplay-Linux-x86_64.AppImage](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-Linux-x86_64.AppImage) |
 | Ubuntu 22.04+ / Debian 12+ | [Coreplay-Linux-amd64.deb](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-Linux-amd64.deb) — `sudo apt install ./Coreplay-Linux-amd64.deb` |
 

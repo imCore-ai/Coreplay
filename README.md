@@ -10,15 +10,21 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="https://img.shields.io/badge/Windows-10_%7C_11-0078D6?style=flat-square" alt="Windows 10 | 11"></a>
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="https://img.shields.io/badge/macOS-Apple_silicon-555555?style=flat-square" alt="macOS Apple silicon"></a>
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="https://img.shields.io/badge/Linux-x86--64-E95420?style=flat-square" alt="Linux x86-64"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="docs/images/button-windows.svg" alt="Windows 10 | 11" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="docs/images/button-macos.svg" alt="macOS 12+ · Apple silicon | Intel" height="38"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="docs/images/button-linux.svg" alt="Linux x86-64" height="38"></a>
+  <br>
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest"><img src="https://img.shields.io/github/v/release/imCore-ai/coreplay?style=flat-square&label=version" alt="Latest version"></a>
+  <a href="https://github.com/imCore-ai/coreplay/releases"><img src="https://img.shields.io/github/downloads/imCore-ai/coreplay/total?style=flat-square&label=downloads" alt="Downloads"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/source-Apache_2.0-3B7DDD?style=flat-square" alt="Source code: Apache 2.0"></a>
+  <a href="https://github.com/imCore-ai/coreplay/stargazers"><img src="https://img.shields.io/github/stars/imCore-ai/coreplay?style=flat-square" alt="GitHub stars"></a>
 </p>
 
 <p align="center">
   <b>Download:</b>
   <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Windows-Setup.exe">Windows</a> ·
-  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg">macOS</a> ·
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-arm64.dmg">macOS (Apple silicon)</a> ·
+  <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-macOS-x86_64.dmg">macOS (Intel)</a> ·
   <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-x86_64.AppImage">Linux AppImage</a> ·
   <a href="https://github.com/imCore-ai/coreplay/releases/latest/download/Coreplay-Linux-amd64.deb">Linux .deb</a>
 </p>
@@ -38,11 +44,13 @@
 >
 > You do this only once. When the signing is done, the warning goes away.
 
-![Coreplay playing God Being, made with Core Studio](docs/images/main.png)
+![Coreplay: playing, an A/B wipe against the graded shot, and the grading window](docs/images/demo.webp)
 
 <p align="center"><sub>Background: <i>God Being</i>, made with <a href="https://imcore.ai/core-studio.html">Core Studio</a>.</sub></p>
 
 ## Movies and frames, one window.
+
+![Coreplay playing God Being, made with Core Studio](docs/images/main.png)
 
 Open any movie, or any one frame of a sequence. Coreplay finds the rest of the shot, its
 range and its missing frames, and plays it at its real frame rate, in the right colour.
@@ -124,7 +132,8 @@ Get it from the **[latest release](https://github.com/imCore-ai/coreplay/release
 | System | File | Install |
 |---|---|---|
 | Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. The first time, allow it as shown in the note at the top. |
-| macOS (Apple silicon) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. The first time, allow it as shown in the note at the top. |
+| macOS 12 or later, Apple silicon (M1 and newer) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. The first time, allow it as shown in the note at the top. |
+| macOS 12 or later, Intel | `Coreplay-macOS-x86_64.dmg` | The same. Not sure which Mac you have? Apple menu > About This Mac: "Chip" means Apple silicon, "Processor" means Intel. |
 | Linux (x86-64) | `Coreplay-Linux-x86_64.AppImage` | `chmod +x` it and run it. Ubuntu 22.04+ / Debian 12+: or `sudo apt install ./Coreplay-Linux-amd64.deb`. |
 
 More: [user guide](docs/USER_GUIDE.md) · [build from source](docs/DEVELOPMENT.md)

@@ -28,6 +28,8 @@ BrandingText "${APP} ${VERSION}"
 
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
+!include "LogicLib.nsh"
+!include "WinVer.nsh"
 
 !define MUI_ICON "..\res\coreplay.ico"
 !define MUI_UNICON "..\res\coreplay.ico"
@@ -154,6 +156,13 @@ VIAddVersionKey "LegalCopyright" "imcore"
 ; ------------------------------------------------------------------ install
 
 Function .onInit
+  ; Coreplay (Qt 6, libmpv) needs Windows 10 or 11. On Windows 7 / 8 it installed, then
+  ; Windows refused to start it with "CreateDXGIFactory2 ... dxgi.dll" (a user report,
+  ; 2026-11-23). Refuse here, in words, before anything is installed.
+  ${IfNot} ${AtLeastWin10}
+    MessageBox MB_OK|MB_ICONSTOP "Coreplay needs Windows 10 or Windows 11.$\r$\nThis computer runs an older version of Windows, where Coreplay cannot start.$\r$\n$\r$\nCoreplay 需要 Windows 10 或 Windows 11。$\r$\n這台電腦的 Windows 版本較舊，無法執行 Coreplay。" /SD IDOK
+    Abort
+  ${EndIf}
   Call CheckNotRunning
 FunctionEnd
 

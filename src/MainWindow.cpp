@@ -1356,7 +1356,7 @@ void MainWindow::onAdvanced(const QString& path) {
 // The clip after this one, for the engine to go on to with no stop: same engine only
 // (a movie after a movie, a sequence after a sequence). Loop This File loops instead.
 void MainWindow::queueNext() {
-    if (!cur_ || comparing_) return;
+    if (!cur_) return;
     const int n = playlist_->count();
     const int row = playlist_->currentRow();
     QString next;
@@ -1365,6 +1365,10 @@ void MainWindow::queueNext() {
     // second time into the gapless cache, and playback fell to ~9 fps.
     const bool self = repeat_ == Repeat::One || (repeat_ == Repeat::All && n == 1);
     cur_->setLoopFile(self);
+    // Also while comparing: without the engine's loop, a looping compare STOPPED at the end,
+    // the playlist reopened A alone and compare then reopened B, so for about a second at
+    // every loop B was black (a difference view showed A itself).
+    if (comparing_) return;
     if (!self && row >= 0 && n > 0) {
         const int r = row + 1 < n ? row + 1 : (repeat_ == Repeat::All ? 0 : -1);
         const QString p = r >= 0 ? playlist_->pathAt(r) : QString();
@@ -2491,7 +2495,7 @@ QVariantMap MainWindow::testState() const {
         }
     }
     if (cur_ && cur_ == mpv_) {
-        for (const char* p : {"volume", "speed", "pause", "mute", "hwdec-current", "video-codec-name", "aid",
+        for (const char* p : {"volume", "speed", "pause", "mute", "ao", "hwdec-current", "video-codec-name", "aid",
                               "ab-loop-a", "ab-loop-b", "video-zoom", "video-rotate", "loop-file", "path"})
             m[QString("mpv.") + p] = mpv_->property(p);
     }

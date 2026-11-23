@@ -225,6 +225,56 @@ until mpv.glsl-shaders.cmp == false 3000
 wait 400
 pixel 0.5 0.5 mlutsame
 expectpixel mlutsame == 0,0,0 24
+# A looping compare plays on: B never drops out at the loop (the 2 s clip loops twice here).
+# Before, compare stopped at the end and reopened A alone, and B was black ~1 s per loop.
+wait 300
+pixel 0.5 0.5 mloop1
+expectpixel mloop1 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop2
+expectpixel mloop2 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop3
+expectpixel mloop3 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop4
+expectpixel mloop4 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop5
+expectpixel mloop5 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop6
+expectpixel mloop6 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop7
+expectpixel mloop7 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop8
+expectpixel mloop8 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop9
+expectpixel mloop9 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop10
+expectpixel mloop10 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop11
+expectpixel mloop11 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop12
+expectpixel mloop12 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop13
+expectpixel mloop13 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop14
+expectpixel mloop14 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop15
+expectpixel mloop15 == 0,0,0 24
+wait 300
+pixel 0.5 0.5 mloop16
+expectpixel mloop16 == 0,0,0 24
 key Ctrl+Shift+A
 until compare.bar == false 1000
 # ---- a movie dropped on slot B from outside (Explorer), routed as a real drop

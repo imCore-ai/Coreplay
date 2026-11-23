@@ -1,0 +1,20 @@
+name: Feature request
+description: An idea that would make Coreplay better for you
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want to do?
+      description: Tell us the job you are doing, not only the button you want.
+      placeholder: "I review VFX shots with my supervisor and want to ..."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could Coreplay help?
+  - type: textarea
+    id: elsewhere
+    attributes:
+      label: Does another tool do this well?

@@ -1,0 +1,46 @@
+name: Bug report
+description: Something does not work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for reporting it. A clear report gets fixed faster.
+  - type: input
+    id: version
+    attributes:
+      label: Coreplay version
+      description: Help > About shows it.
+      placeholder: "0.3.24"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: System
+      options: [Windows 10, Windows 11, macOS, Linux (AppImage), Linux (.deb)]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      placeholder: "I opened shot.1001.exr and the picture stayed black. I expected to see the first frame."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen
+      placeholder: |
+        1. Open ...
+        2. Press ...
+        3. See ...
+  - type: textarea
+    id: file
+    attributes:
+      label: The file
+      description: Format, resolution, frame rate, compression, local disk or network share. A small sample file helps a lot.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshot or anything else

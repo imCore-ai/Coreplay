@@ -1,6 +1,8 @@
 # H.264 23.976 fps movie through libmpv, with MPC-HC hotkeys.
 open $MEDIA/h264_23976.mp4
 until engine == mpv 3000
+# test runs are silent (the clips carry test tones): sound goes to the null output
+expect mpv.ao == null
 until fps.rational == 24000/1001 5000
 until paused == false 3000
 until media.w == 1920 3000

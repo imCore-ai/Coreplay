@@ -209,16 +209,98 @@ jobs:
           path: out/coreplay_*_amd64.deb
           if-no-files-found: error
 
+  # Two Macs, one recipe: Apple silicon and Intel. Every library is built here for macOS 12
+  # and later (tools/macos/build_deps.sh); Homebrew only supplies build tools.
   macos:
     needs: version
-    runs-on: macos-15   # Apple silicon (arm64)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write   # uploads the libraries to the macdeps pre-release
     env:
       COREPLAY_VERSION: ${{ needs.version.outputs.version }}
       HAS_MAC_SIGNING: ${{ secrets.MACOS_CERT_P12_BASE64 != '' }}
+      VCPKG_COMMIT: 2fb57e1c4738d4b4484d2234c886caf006612222
+      DEPS: /Users/runner/macdeps   # absolute: GitHub cache paths may not contain ".."
+      MACOSX_DEPLOYMENT_TARGET: "12.0"
     steps:
       - uses: actions/checkout@v4
-      - name: Dependencies
-        run: brew install qt mpv openimageio opencolorio ninja pkg-config
+      - name: Build tools
+        run: brew install ninja meson pkg-config nasm
+      - name: Qt 6.8.3 (runs on macOS 12 and later)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.8.3
+          cache: true
+      # The libraries are compiled only when their recipe changes. Kept permanently as files
+      # on the pre-release "macdeps" (named by a fingerprint of the recipe), with GitHub's
+      # cache (deleted after 7 unused days) as the second place. Order: file, cache, build;
+      # a missing file is uploaded, so the next run takes about a minute.
+      - name: Library fingerprint
+        id: fp
+        run: echo "name=macdeps-${{ matrix.arch }}-${{ hashFiles('tools/macos/build_deps.sh', 'tools/macos/triplets/*') }}-${VCPKG_COMMIT:0:12}" >> "$GITHUB_OUTPUT"
+      - name: Libraries from the macdeps release
+        id: depfile
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download macdeps --repo "$GITHUB_REPOSITORY" -p "${{ steps.fp.outputs.name }}.tar.gz" -D "$RUNNER_TEMP" 2>/dev/null; then
+            mkdir -p "$DEPS" && tar -xzf "$RUNNER_TEMP/${{ steps.fp.outputs.name }}.tar.gz" -C "$DEPS"
+            echo "hit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "hit=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Library cache
+        id: depcache
+        if: steps.depfile.outputs.hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: /Users/runner/macdeps
+          key: ${{ steps.fp.outputs.name }}
+      # vcpkg's own package cache, saved even when a later step fails: a failed libmpv build
+      # then does not throw away an hour of FFmpeg / OpenImageIO compiling.
+      - name: vcpkg package cache (restore)
+        if: steps.depfile.outputs.hit != 'true' && steps.depcache.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: /Users/runner/vcpkg-bin
+          key: vcpkgbin-${{ matrix.arch }}-${{ env.VCPKG_COMMIT }}-${{ github.run_id }}
+          restore-keys: vcpkgbin-${{ matrix.arch }}-${{ env.VCPKG_COMMIT }}-
+      - name: Libraries for macOS 12 (FFmpeg, libmpv, OpenImageIO, OpenColorIO)
+        id: depbuild
+        if: steps.depfile.outputs.hit != 'true' && steps.depcache.outputs.cache-hit != 'true'
+        env:
+          VCPKG_DEFAULT_BINARY_CACHE: /Users/runner/vcpkg-bin
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          git clone -q https://github.com/microsoft/vcpkg "$RUNNER_TEMP/vcpkg"
+          git -C "$RUNNER_TEMP/vcpkg" checkout -q "$VCPKG_COMMIT"
+          "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          bash tools/macos/build_deps.sh ${{ matrix.arch }} "$DEPS" "$RUNNER_TEMP/vcpkg"
+      - name: vcpkg package cache (save, also after a failure)
+        if: always() && steps.depfile.outputs.hit != 'true' && steps.depcache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /Users/runner/vcpkg-bin
+          key: vcpkgbin-${{ matrix.arch }}-${{ env.VCPKG_COMMIT }}-${{ github.run_id }}
+      - name: Store the libraries on the macdeps release
+        if: steps.depfile.outputs.hit != 'true' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          f="$RUNNER_TEMP/${{ steps.fp.outputs.name }}.tar.gz"
+          rm -rf "$DEPS/src"   # sources: not needed to build Coreplay
+          tar -czf "$f" -C "$DEPS" .
+          gh release view macdeps --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 ||             gh release create macdeps --repo "$GITHUB_REPOSITORY" --prerelease --title "Build libraries for macOS (not a Coreplay download)"               --notes "Libraries the Mac build of Coreplay is made with (FFmpeg, libmpv, OpenImageIO, OpenColorIO), compiled for macOS 12 and later. Used by GitHub Actions; download Coreplay from the latest release instead."
+          gh release upload macdeps "$f" --repo "$GITHUB_REPOSITORY" --clobber
+          ls -la "$f"
       - name: Icon
         run: |
           mkdir -p coreplay.iconset
@@ -229,18 +311,24 @@ jobs:
           iconutil -c icns coreplay.iconset -o res/coreplay.icns
       - name: Build
         run: |
-          # mpv.pc requires libarchive, which Homebrew keeps out of the default paths (keg-only).
-          export PKG_CONFIG_PATH="$(brew --prefix libarchive)/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+          V="$(ls -d "$DEPS"/vcpkg/*-osx-12)"
+          export PKG_CONFIG_LIBDIR="$DEPS/mpv/lib/pkgconfig:$V/lib/pkgconfig"   # only ours, never Homebrew's
+          unset PKG_CONFIG_PATH
           pkg-config --libs mpv
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$(brew --prefix qt)" -DCOREPLAY_VERSION_FULL="$COREPLAY_VERSION"
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+            -DCMAKE_IGNORE_PREFIX_PATH="/opt/homebrew;/usr/local" \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR;$V" -DCOREPLAY_VERSION_FULL="$COREPLAY_VERSION"
           ninja -C build
+          # Finder and the Dock read this: an older macOS gets Apple's own "needs macOS 12" message.
+          plutil -replace LSMinimumSystemVersion -string 12.0 build/Coreplay.app/Contents/Info.plist
       - name: Package (.app with its libraries, signed, .dmg)
         env:
           MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
           MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
         run: |
-          "$(brew --prefix qt)/bin/macdeployqt" build/Coreplay.app -always-overwrite
+          V="$(ls -d "$DEPS"/vcpkg/*-osx-12)"
+          "$QT_ROOT_DIR/bin/macdeployqt" build/Coreplay.app -always-overwrite -libpath="$DEPS/mpv/lib" -libpath="$V/lib"
           # Plugins for Qt parts Coreplay does not use (PDF, SVG, virtual keyboard): their
           # frameworks are not installed, so they could only fail to load. Remove them.
           rm -f build/Coreplay.app/Contents/PlugIns/imageformats/libqpdf.dylib \
@@ -250,6 +338,7 @@ jobs:
           # Every library finds the others inside the app, nothing points outside it (fails
           # the build otherwise). Before signing: install_name_tool changes the files.
           bash tools/macos/fix_bundle.sh build/Coreplay.app
+          bash tools/macos/check_minos.sh build/Coreplay.app 12.0
           if [ "$HAS_MAC_SIGNING" = "true" ]; then
             # Developer ID signing (hardened runtime, secure timestamp), in a throw-away keychain.
             kc="$RUNNER_TEMP/signing.keychain-db"; kcpw="$(uuidgen)"
@@ -284,7 +373,7 @@ jobs:
             codesign --verify --deep build/Coreplay.app
           fi
           mkdir -p out dmg && cp -R build/Coreplay.app dmg/ && ln -s /Applications dmg/Applications
-          dmg="out/Coreplay-$COREPLAY_VERSION-macOS-arm64.dmg"
+          dmg="out/Coreplay-$COREPLAY_VERSION-macOS-${{ matrix.arch }}.dmg"
           hdiutil create -volname Coreplay -srcfolder dmg -ov -format UDZO "$dmg"
           [ "$HAS_MAC_SIGNING" = "true" ] && codesign --force --timestamp --sign "$identity" "$dmg" || true
       # Notarization (Apple checks the signed .dmg) and stapling (the ticket travels with
@@ -297,21 +386,23 @@ jobs:
           APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           echo "$APPLE_API_KEY_P8_BASE64" | base64 --decode > "$RUNNER_TEMP/key.p8"
-          dmg="$(ls out/Coreplay-*-macOS-arm64.dmg)"
+          dmg="$(ls out/Coreplay-*-macOS-${{ matrix.arch }}.dmg)"
           xcrun notarytool submit "$dmg" --key "$RUNNER_TEMP/key.p8" --key-id "$APPLE_API_KEY_ID" \
             --issuer "$APPLE_API_ISSUER_ID" --wait --timeout 30m
           xcrun stapler staple "$dmg"
           xcrun stapler validate "$dmg"
           spctl --assess --type open --context context:primary-signature --verbose=2 "$dmg"
           rm -f "$RUNNER_TEMP/key.p8"
-      # Like a user's Mac: Homebrew is hidden, so the app can only use what is inside it.
-      # Starts the app from the .dmg (as a user does), not from the build folder.
-      - name: Start-up check (without Homebrew)
+      # Like a user's Mac: the build's libraries and Homebrew are hidden, so the app can only
+      # use what is inside it. Starts the app from the .dmg (as a user does).
+      - name: Start-up check (without the build's libraries)
         run: |
-          sudo mv /opt/homebrew /opt/homebrew-hidden
-          trap 'sudo mv /opt/homebrew-hidden /opt/homebrew' EXIT
+          hb="$(brew --prefix)"   # /opt/homebrew (Apple silicon) or /usr/local (Intel): hide its libraries only
+          mv "$DEPS" "$DEPS-hidden"
+          for d in lib opt Cellar; do sudo mv "$hb/$d" "$hb/$d-hidden"; done
+          trap 'mv "$DEPS-hidden" "$DEPS"; for d in lib opt Cellar; do sudo mv "$hb/$d-hidden" "$hb/$d"; done' EXIT
           mnt="$(mktemp -d)"
-          hdiutil attach -nobrowse -readonly -mountpoint "$mnt" out/Coreplay-*-macOS-arm64.dmg >/dev/null
+          hdiutil attach -nobrowse -readonly -mountpoint "$mnt" out/Coreplay-*-macOS-${{ matrix.arch }}.dmg >/dev/null
           "$mnt/Coreplay.app/Contents/MacOS/Coreplay" > "$RUNNER_TEMP/start.log" 2>&1 & pid=$!
           sleep 10
           if kill -0 $pid; then
@@ -322,8 +413,8 @@ jobs:
           hdiutil detach "$mnt" >/dev/null || true
       - uses: actions/upload-artifact@v4
         with:
-          name: macos
-          path: out/Coreplay-*-macOS-arm64.dmg
+          name: macos-${{ matrix.arch }}
+          path: out/Coreplay-*-macOS-${{ matrix.arch }}.dmg
           if-no-files-found: error
 
   release:
@@ -348,7 +439,11 @@ jobs:
           path: files
       - uses: actions/download-artifact@v4
         with:
-          name: macos
+          name: macos-arm64
+          path: files
+      - uses: actions/download-artifact@v4
+        with:
+          name: macos-x86_64
           path: files
       - name: GitHub Release
         env:
@@ -360,6 +455,7 @@ jobs:
           cp files/Coreplay-*-x86_64.AppImage      files/Coreplay-Linux-x86_64.AppImage
           cp files/coreplay_*_amd64.deb            files/Coreplay-Linux-amd64.deb
           cp files/Coreplay-*-macOS-arm64.dmg      files/Coreplay-macOS-arm64.dmg
+          cp files/Coreplay-*-macOS-x86_64.dmg     files/Coreplay-macOS-x86_64.dmg
           ls -la files
           # The release text is the tag's message (tools/sync_github.py writes it from
           # .github/release_notes.md). A tag without it stops here: no bare release.
