@@ -407,8 +407,10 @@ void MpvEngine::drainEvents() {
                     int64_t w = 0, h = 0;
                     mpv_get_property(mpv_, "dwidth", MPV_FORMAT_INT64, &w);
                     mpv_get_property(mpv_, "dheight", MPV_FORMAT_INT64, &h);
+                    const QSize was = size_;
                     size_ = QSize(int(w), int(h));
                     syncCompareView();
+                    if (size_ != was && !size_.isEmpty()) emit mediaSizeChanged();
                 }
                 break;
             }

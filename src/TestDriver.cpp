@@ -21,6 +21,12 @@
 #include <QTimer>
 
 #include "MainWindow.h"
+#ifdef Q_OS_WIN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 
 TestDriver::TestDriver(MainWindow* w, const QString& script, const QString& log)
     : QObject(w), w_(w), logPath_(log) {
@@ -201,6 +207,24 @@ void TestDriver::step() {
             } else {
                 send(QEvent::MouseMove, at(1), Qt::NoButton, Qt::NoButton);
             }
+            log(line);
+        } else if (cmd == "sizing") {
+            // sizing right|bottom|topleft <dx> <dy>: drag that window edge by dx, dy device
+            // pixels the way Windows does (WM_SIZING, which the window may correct), then apply it.
+#ifdef Q_OS_WIN
+            const HWND h = reinterpret_cast<HWND>(w_->winId());
+            RECT r;
+            GetWindowRect(h, &r);
+            const QString edge = t.value(1);
+            const int dx = t.value(2).toInt(), dy = t.value(3).toInt();
+            WPARAM side = WMSZ_RIGHT;
+            if (edge == "right") r.right += dx;
+            else if (edge == "bottom") { side = WMSZ_BOTTOM; r.bottom += dy; }
+            else if (edge == "topleft") { side = WMSZ_TOPLEFT; r.left -= dx; r.top -= dy; }
+            SendMessageW(h, WM_SIZING, side, reinterpret_cast<LPARAM>(&r));
+            SetWindowPos(h, nullptr, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_NOZORDER | SWP_NOACTIVATE);
+            QApplication::processEvents();
+#endif
             log(line);
         } else if (cmd == "clickat") {
             // clickat x y: a left click on the top widget at that point of the window

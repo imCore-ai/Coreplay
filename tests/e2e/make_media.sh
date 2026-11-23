@@ -51,6 +51,10 @@ echo "media ready in $M"
 for c in a b; do
   $FF -f lavfi -i "testsrc2=size=1280x720:rate=24000/1001:duration=3" -f lavfi       -i "sine=frequency=$([ $c = a ] && echo 440 || echo 660):duration=3:sample_rate=48000"       -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "$M/gap_$c.mp4"
 done
+# Other picture shapes (t27: the window takes the picture's shape): 2.39:1 scope and 4:3, in their own folder (t11 steps through the media folder)
+mkdir -p "$M/shapes"
+$FF -f lavfi -i "testsrc2=size=1920x804:rate=24:duration=2" -c:v libx264 -pix_fmt yuv420p "$M/shapes/scope_239.mp4"
+$FF -f lavfi -i "testsrc2=size=1440x1080:rate=24:duration=2" -c:v libx264 -pix_fmt yuv420p "$M/shapes/academy_43.mp4"
 
 # Solid red and blue clips (sequence + movie) for the A/B compare test (t22)
 for c in red:0xC02020 blue:0x2020C0; do

@@ -86,4 +86,5 @@ signals:
     void advanced(const QString& path);             // went on to the setNext() clip by itself
     void message(const QString& text);              // OSD text
     void cacheChanged();
+    void mediaSizeChanged();                        // the picture's size is known or changed
 };

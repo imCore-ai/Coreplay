@@ -22,6 +22,13 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QWheelEvent>
+#include <QResizeEvent>
+#ifdef Q_OS_WIN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 #include <QPainter>
 #include <QPainterPath>
 #include <QProcess>
@@ -80,13 +87,10 @@ const QColor kIconGray(160, 160, 160);
 // The style's icons in that flat gray: its own shape (alpha), no shading, no accents.
 // Under the mouse the icon takes hoverInk(), the colour that reads on the style's hover
 // background (QIcon::Active is the mode Qt draws for a hovered auto-raise button).
-// The hover background is light in the Windows style and dark in Fusion (Linux): the
-// icon takes the colour that reads on it.
-QColor hoverInk() {
-    static const QColor ink = QApplication::style()->name().compare("fusion", Qt::CaseInsensitive) == 0
-                                  ? QColor(245, 245, 245) : QColor(30, 30, 30);
-    return ink;
-}
+// Coreplay draws with Fusion and its own dark palette on every system (main.cpp), so the
+// hover background is dark and the hovered icon is light. (It asked the style's name, and
+// the style wrapped in a proxy reports none: the icons turned dark on dark.)
+QColor hoverInk() { return QColor(245, 245, 245); }
 
 // One icon in two colours: `normal`, and hoverInk() when hovered.
 QIcon twoTone(const std::function<QPixmap(int px, const QColor& c)>& draw, const QColor& normal = kIconGray) {
@@ -680,8 +684,8 @@ void MainWindow::buildActions() {
     on("pns.downleft", [this] { pan(-0.01, 0.01); });
     on("pns.downright", [this] { pan(0.01, 0.01); });
     // +90 = clockwise on both engines (mpv video-rotate and the sequence shader).
-    on("pns.rotatezp", [this] { xf_.rotate = (xf_.rotate + 90) % 360; applyTransform(); osd_->showMessage(tr("Rotate %1").arg(xf_.rotate), 900); });
-    on("pns.rotatezm", [this] { xf_.rotate = (xf_.rotate + 270) % 360; applyTransform(); osd_->showMessage(tr("Rotate %1").arg(xf_.rotate), 900); });
+    on("pns.rotatezp", [this] { xf_.rotate = (xf_.rotate + 90) % 360; applyTransform(); fitWindowToPicture(); osd_->showMessage(tr("Rotate %1").arg(xf_.rotate), 900); });
+    on("pns.rotatezm", [this] { xf_.rotate = (xf_.rotate + 270) % 360; applyTransform(); fitWindowToPicture(); osd_->showMessage(tr("Rotate %1").arg(xf_.rotate), 900); });
 
     // Audio / subtitles
     on("vol.up", [this] { setVolume(volume_ + kVolumeStep); });
@@ -949,6 +953,9 @@ void MainWindow::connectEngine(Engine* e) {
     connect(e, &Engine::endReached, this, [this, e] { if (e == cur_) onEnd(); });
     connect(e, &Engine::advanced, this, [this, e](const QString& p) { if (e == cur_) onAdvanced(p); });
     connect(e, &Engine::message, this, [this](const QString& t) { osd_->showMessage(t, 4000); });
+    connect(e, &Engine::mediaSizeChanged, this, [this, e] {
+        if (e == cur_) QTimer::singleShot(0, this, [this] { fitWindowToPicture(); });
+    });
     connect(e, &Engine::loaded, this, [this, e] {
         if (e != cur_) return;
         e->setVolume(volume_);
@@ -1107,6 +1114,7 @@ void MainWindow::startCompare(const QString& b) {
 void MainWindow::stopCompare(bool closeBar) {
     if (comparing_) {
         comparing_ = false;
+        QTimer::singleShot(0, this, [this] { fitWindowToPicture(); });
         cmpOffset_ = 0;
         if (cur_ == seq_) {
             seq_->setCompare({});
@@ -1252,6 +1260,7 @@ void MainWindow::setCompareOffset(int frames) {
 
 void MainWindow::applyCompareView() {
     const CompareView v = comparing_ ? cmpView_ : CompareView{};
+    QTimer::singleShot(0, this, [this] { fitWindowToPicture(); });  // side by side is twice as wide
     if (cur_ == seq_) seq_->seqView()->setCompare(v);
     else if (mpv_) mpv_->setCompareView(v);
 }
@@ -1995,6 +2004,94 @@ void MainWindow::toggleFullscreen() {
     }
 }
 
+// The picture as the window shows it: turned by 90 or 270 degrees it is upright, and side
+// by side compare shows A and B next to each other (twice as wide).
+QSizeF MainWindow::shownSize() const {
+    if (!cur_) return {};
+    QSizeF m = cur_->mediaSize();
+    if (m.isEmpty()) return {};
+    if (xf_.rotate % 180 != 0) m.transpose();
+    if (comparing_ && cmpView_.mode == CompareMode::SideBySide) m.setWidth(m.width() * 2);
+    return m;
+}
+
+// The window takes the picture's shape: its width stays, its height follows (smaller when the
+// screen is too short), so there are no black bars at the sides or at the top and bottom.
+// Not in full screen or maximized: there the screen decides the shape.
+void MainWindow::fitWindowToPicture() {
+    if (!cur_ || !isVisible() || isFullScreen() || isMaximized() || isMinimized()) return;
+    const QSizeF p = shownSize();
+    if (p.isEmpty() || videoArea_->width() <= 0) return;
+    const double a = p.width() / p.height();
+    const QSize chrome = size() - videoArea_->size();                 // menu, bars, docked playlist
+    const QSize frame = frameGeometry().size() - size();              // title bar and borders
+    const QRect avail = screen()->availableGeometry();
+    int vw = videoArea_->width();
+    int vh = int(std::lround(vw / a));
+    const int maxH = avail.height() - frame.height() - chrome.height();
+    if (vh > maxH) {
+        vh = maxH;
+        vw = int(std::lround(vh * a));
+    }
+    const QSize want = QSize(vw, vh) + chrome;
+    if (want == size()) return;
+    resize(want);
+    QRect g = frameGeometry();  // still on the screen
+    if (g.bottom() > avail.bottom()) g.moveBottom(avail.bottom());
+    if (g.top() < avail.top()) g.moveTop(avail.top());
+    if (g.topLeft() != frameGeometry().topLeft()) move(g.topLeft());
+}
+
+void MainWindow::resizeEvent(QResizeEvent* e) {
+    QMainWindow::resizeEvent(e);
+#ifndef Q_OS_WIN
+    // macOS, Linux: the shape is set again when the user stops resizing (Windows: while dragging).
+    if (!refitTimer_) {
+        refitTimer_ = new QTimer(this);
+        refitTimer_->setSingleShot(true);
+        refitTimer_->setInterval(250);
+        connect(refitTimer_, &QTimer::timeout, this, [this] { fitWindowToPicture(); });
+    }
+    refitTimer_->start();
+#endif
+}
+
+// Windows: while the user drags an edge or a corner, the window keeps the picture's shape
+// (as in mpv). The dragged side decides, the other side follows.
+bool MainWindow::nativeEvent(const QByteArray& type, void* message, qintptr* result) {
+#ifdef Q_OS_WIN
+    auto* msg = static_cast<MSG*>(message);
+    if (msg->message == WM_SIZING && cur_ && !isFullScreen() && !isMaximized()) {
+        const QSizeF p = shownSize();
+        RECT wr;
+        if (!p.isEmpty() && videoArea_->width() > 0 && GetWindowRect(msg->hwnd, &wr)) {
+            auto* r = reinterpret_cast<RECT*>(msg->lParam);
+            const double dpr = devicePixelRatioF(), a = p.width() / p.height();
+            // Everything around the picture, in device pixels: frame, title, menu, bars.
+            const int chromeW = (wr.right - wr.left) - int(std::lround(videoArea_->width() * dpr));
+            const int chromeH = (wr.bottom - wr.top) - int(std::lround(videoArea_->height() * dpr));
+            const int w = r->right - r->left, h = r->bottom - r->top;
+            switch (msg->wParam) {
+                case WMSZ_TOP:
+                case WMSZ_BOTTOM:  // height drives width
+                    r->right = r->left + chromeW + int(std::lround((h - chromeH) * a));
+                    break;
+                case WMSZ_TOPLEFT:
+                case WMSZ_TOPRIGHT:  // width drives height, the top edge moves
+                    r->top = r->bottom - (chromeH + int(std::lround((w - chromeW) / a)));
+                    break;
+                default:  // left, right, bottom corners: width drives height
+                    r->bottom = r->top + chromeH + int(std::lround((w - chromeW) / a));
+                    break;
+            }
+            *result = TRUE;
+            return true;
+        }
+    }
+#endif
+    return QMainWindow::nativeEvent(type, message, result);
+}
+
 void MainWindow::zoomWindow(double factor) {
     if (!cur_ || isFullScreen()) return;
     const QSize m = cur_->mediaSize();
@@ -2346,6 +2443,10 @@ QVariantMap MainWindow::testState() const {
     m["winId"] = qulonglong(winId());
     m["window.w"] = width();
     m["window.h"] = height();
+    m["picture.area"] = QString("%1x%2").arg(videoArea_->width()).arg(videoArea_->height());
+    m["picture.areaAspect"] = videoArea_->height() > 0 ? double(videoArea_->width()) / videoArea_->height() : 0.0;
+    {   const QSizeF s = shownSize();
+        m["picture.aspect"] = s.isEmpty() ? 0.0 : s.width() / s.height(); }
     m["video.w"] = videoArea_->width();
     m["video.h"] = videoArea_->height();
     m["volume"] = volume_;

@@ -1,0 +1,47 @@
+# The window takes the picture's shape: no black bars at the sides or at the top and bottom.
+# Its width stays and its height follows; dragging an edge keeps the shape (Windows: WM_SIZING).
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+until media.w == 1920 3000
+mpvset pause yes
+wait 500
+state
+expect picture.aspect ~ 1.7778
+expect picture.areaAspect ~ 1.7778
+# turned by 90 degrees: the window becomes upright
+action pns.rotatezp
+wait 400
+expect picture.areaAspect ~ 0.5625
+action pns.rotatezm
+wait 400
+expect picture.areaAspect ~ 1.7778
+# drag the right edge wider, the bottom edge, and the top-left corner
+sizing right 200 0
+wait 300
+expect picture.areaAspect ~ 1.7778
+sizing bottom 0 -120
+wait 300
+expect picture.areaAspect ~ 1.7778
+sizing topleft 150 0
+wait 300
+expect picture.areaAspect ~ 1.7778
+# other picture shapes: 2.39:1 scope, then 4:3; the window follows each file
+open $MEDIA/shapes/scope_239.mp4
+until media.w == 1920 3000
+until media.h == 804 3000
+wait 500
+expect picture.areaAspect ~ 2.388
+open $MEDIA/shapes/academy_43.mp4
+until media.w == 1440 3000
+wait 500
+expect picture.areaAspect ~ 1.3333
+# side by side compare shows two pictures: twice as wide
+compare slot b $MEDIA/shapes/academy_43.mp4
+until compare.ready == true 3000
+action compare.sidebyside
+wait 500
+expect picture.areaAspect ~ 2.6667
+key Ctrl+Shift+A
+until compare.on == false 2000
+wait 500
+expect picture.areaAspect ~ 1.3333

@@ -194,7 +194,9 @@ void SequenceEngine::show(int index) {
     index_ = index;
     wanted_ = -1;
     view_->setOverlay({});
+    const QSize was = mediaSize();
     view_->setFrame(f);
+    if (mediaSize() != was && !mediaSize().isEmpty()) emit mediaSizeChanged();
     if (!fpsChecked_ && !f->missing && f->error.isEmpty()) {
         fpsChecked_ = true;
         if (f->fps.valid()) {

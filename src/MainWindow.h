@@ -65,6 +65,8 @@ protected:
     void dragEnterEvent(QDragEnterEvent*) override;
     void dropEvent(QDropEvent*) override;
     void mouseReleaseEvent(QMouseEvent*) override;
+    void resizeEvent(QResizeEvent*) override;
+    bool nativeEvent(const QByteArray& type, void* message, qintptr* result) override;
     bool eventFilter(QObject*, QEvent*) override;
 
 private:
@@ -75,6 +77,10 @@ private:
     void buildMenus();
     void applyHotkeys();
     QAction* mouseCommand(int key, Qt::KeyboardModifiers mods) const;
+    // The window keeps the picture's shape (no black bars at the sides or top and bottom).
+    QSizeF shownSize() const;     // the picture as shown: rotation and side-by-side compare included
+    void fitWindowToPicture();
+    QTimer* refitTimer_ = nullptr; // after a resize ends (macOS, Linux; Windows fits while dragging)
     QAction* act(const char* id);
     void on(const char* id, std::function<void()> fn, bool checkable = false);
 

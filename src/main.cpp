@@ -11,6 +11,8 @@
 #include <QProcess>
 #include <QSettings>
 #include <QPalette>
+#include <QStyleFactory>
+#include <QProxyStyle>
 #ifdef Q_OS_WIN
 #include <QEvent>
 #include <QWidget>
@@ -217,36 +219,21 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationName("Coreplay");
     QApplication::setApplicationVersion(COREPLAY_VERSION);
     QApplication::setWindowIcon(QIcon(":/coreplay.png"));
-    {   // No accent colours anywhere: the system accent (sliders, selections, check
-        // boxes, links) becomes grey.
-        QPalette pal = QApplication::palette();
-        for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
-            pal.setColor(group, QPalette::Highlight, QColor(110, 110, 110));
-            pal.setColor(group, QPalette::HighlightedText, QColor(0, 0, 0));
-            pal.setColor(group, QPalette::Accent, QColor(130, 130, 130));
-            pal.setColor(group, QPalette::Link, QColor(170, 170, 170));
-            pal.setColor(group, QPalette::LinkVisited, QColor(140, 140, 140));
+    // One fixed dark look on every system, whatever its light / dark setting or desktop theme:
+    // Fusion with Coreplay's own palette. (Windows used to follow its light mode: the bars and
+    // menus turned light grey there.) Accents stay grey: no accent colour anywhere.
+    // Fusion underlines the menu letters (File, View) all the time; the player shows them clean.
+    struct CleanMenus : QProxyStyle {
+        using QProxyStyle::QProxyStyle;
+        int styleHint(StyleHint h, const QStyleOption* o, const QWidget* w, QStyleHintReturn* r) const override {
+            return h == SH_UnderlineShortcut ? 0 : QProxyStyle::styleHint(h, o, w, r);
         }
-        QApplication::setPalette(pal);
-    }
-    // mpv needs the C numeric locale (it parses "0.5" in its options).
-    std::setlocale(LC_NUMERIC, "C");
-
-#ifdef Q_OS_WIN
-    // Every window (player, dialogs) gets a plain dark title bar: no Windows 11 backdrop,
-    // which tints the title bar and the menu bar with the accent colour.
-    static WindowFrameFix frameFix;
-    app.installEventFilter(&frameFix);
-#endif
-#ifndef Q_OS_WIN
-    // Linux: the same dark look as on Windows (where Coreplay follows Windows' dark mode).
-    // Desktops differ in what they give Qt; Fusion in its dark colours looks the same on all.
-    // A fixed palette, not setColorScheme(): without a desktop theme Qt ignores that.
-    QApplication::setStyle("Fusion");
+    };
+    QApplication::setStyle(new CleanMenus(QStyleFactory::create("Fusion")));
     {
         QPalette p;
         const QColor window(31, 31, 31), base(25, 25, 25), alt(37, 37, 37), button(43, 43, 43);
-        const QColor text(224, 224, 224), dim(122, 122, 122), highlight(47, 101, 202);
+        const QColor text(224, 224, 224), dim(122, 122, 122);
         p.setColor(QPalette::Window, window);
         p.setColor(QPalette::WindowText, text);
         p.setColor(QPalette::Base, base);
@@ -263,13 +250,25 @@ int main(int argc, char* argv[]) {
         p.setColor(QPalette::Mid, QColor(40, 40, 40));
         p.setColor(QPalette::Dark, QColor(20, 20, 20));
         p.setColor(QPalette::Shadow, Qt::black);
-        p.setColor(QPalette::Highlight, highlight);
-        p.setColor(QPalette::HighlightedText, Qt::white);
-        p.setColor(QPalette::Link, QColor(106, 161, 255));
+        for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
+            p.setColor(group, QPalette::Highlight, QColor(110, 110, 110));
+            p.setColor(group, QPalette::HighlightedText, QColor(0, 0, 0));
+            p.setColor(group, QPalette::Accent, QColor(130, 130, 130));
+            p.setColor(group, QPalette::Link, QColor(170, 170, 170));
+            p.setColor(group, QPalette::LinkVisited, QColor(140, 140, 140));
+        }
         for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText})
             p.setColor(QPalette::Disabled, role, dim);
         QApplication::setPalette(p);
     }
+    // mpv needs the C numeric locale (it parses "0.5" in its options).
+    std::setlocale(LC_NUMERIC, "C");
+
+#ifdef Q_OS_WIN
+    // Every window (player, dialogs) gets a plain dark title bar: no Windows 11 backdrop,
+    // which tints the title bar and the menu bar with the accent colour.
+    static WindowFrameFix frameFix;
+    app.installEventFilter(&frameFix);
 #endif
     const QStringList files = absolutePaths(app.arguments().mid(1));
     const QStringList args = app.arguments();
