@@ -768,15 +768,12 @@ void MainWindow::buildMenus() {
         explore->setText(tr("Explore Core Studio"));
         explore->setToolTip("https://imcore.ai/core-studio.html");
         explore->setCursor(Qt::PointingHandCursor);
-        QFont ef = explore->font();
-        ef.setBold(true);
-        explore->setFont(ef);
         explore->setFocusPolicy(Qt::NoFocus);
-        // A filled light pill, the brightest thing on the bar (monochrome like the rest).
-        explore->setStyleSheet("QToolButton { color: rgb(17,17,17); background: rgb(236,236,236); border: none;"
-                               " border-radius: 9px; padding: 1px 14px; margin: 4px 8px 4px 0px; }"
-                               " QToolButton:hover { background: rgb(255,255,255); }"
-                               " QToolButton:pressed { background: rgb(200,200,200); }");
+        // A filled black pill with white text (monochrome like the rest).
+        explore->setStyleSheet("QToolButton { color: rgb(255,255,255); background: rgb(0,0,0); border: none;"
+                               " border-radius: 8px; padding: 0px 12px; margin: 2px 8px 2px 0px; }"
+                               " QToolButton:hover { background: rgb(60,60,60); }"
+                               " QToolButton:pressed { background: rgb(90,90,90); }");
         connect(explore, &QToolButton::clicked, this,
                 [] { QDesktopServices::openUrl(QUrl("https://imcore.ai/core-studio.html")); });
         menuBar()->setCornerWidget(explore, Qt::TopRightCorner);
@@ -840,9 +837,12 @@ void MainWindow::buildMenus() {
     updateAction_ = help->addAction(tr("Check for &Updates..."), this, [this] { updatesDialog(); });
 #endif
     help->addAction(act("help.about"));
-    // Same font and full bar height as the menu titles, so the link's text sits on their line.
-    explore->setFont(menuBar()->font());
-    explore->setFixedHeight(menuBar()->sizeHint().height());
+    // The menu titles' font (bold) and exactly a menu title's height: the row stays as tall as
+    // its labels. (The bar's sizeHint counts this button too, so its own margins grew the bar.)
+    QFont ef = menuBar()->font();
+    ef.setBold(true);
+    explore->setFont(ef);
+    explore->setFixedHeight(menuBar()->actionGeometry(menuBar()->actions().first()).height());
 }
 
 void MainWindow::fillColourMenu(QMenu* m) {
@@ -2449,6 +2449,8 @@ QVariantMap MainWindow::testState() const {
     m["winId"] = qulonglong(winId());
     m["window.w"] = width();
     m["window.h"] = height();
+    m["menubar.h"] = menuBar()->isVisible() ? menuBar()->height() : 0;
+    m["menubar.itemh"] = menuBar()->actions().isEmpty() ? 0 : menuBar()->actionGeometry(menuBar()->actions().first()).height();
 #ifdef Q_OS_WIN
     {   // the title bar as Windows has it (DWM): dark mode on, and its caption colour
         BOOL dark = FALSE;
