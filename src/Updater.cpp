@@ -29,7 +29,8 @@
 #endif
 
 namespace {
-// One channel per download: the Windows installer, each Mac chip's .dmg, the Linux AppImage.
+// One channel per download: the Windows installer, each Mac chip's .dmg, the Linux AppImage
+// and the Linux .deb (the last two are chosen when Coreplay runs: see feedUrl()).
 #if defined(Q_OS_WIN)
 constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/windows/";
 #elif defined(Q_OS_MACOS) && defined(Q_PROCESSOR_ARM_64)
@@ -38,6 +39,7 @@ constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/mac-arm
 constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/mac-x64/";
 #else
 constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/linux-x86_64/";
+constexpr char kDebFeed[] = "https://auth.imcore.ai/coreplay-updates/linux-deb-amd64/";
 #endif
 
 #if defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
@@ -62,6 +64,12 @@ QByteArray derSignature(const QByteArray& raw) {
 #ifdef Q_OS_LINUX
 // The running AppImage (its runtime sets APPIMAGE); empty for the .deb.
 QString appImagePath() { return qEnvironmentVariable("APPIMAGE"); }
+// Installed from the .deb (tools/linux/make_deb.sh puts Coreplay in /opt/coreplay, and dpkg
+// records the package).
+bool debInstall() {
+    return appImagePath().isEmpty() && QCoreApplication::applicationFilePath().startsWith("/opt/coreplay/") &&
+           QFile::exists("/var/lib/dpkg/info/coreplay.list");
+}
 #endif
 #ifdef Q_OS_MACOS
 // /Applications/Coreplay.app (from .../Coreplay.app/Contents/MacOS).
@@ -78,7 +86,7 @@ bool Updater::supported() {
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
     return true;
 #elif defined(Q_OS_LINUX)
-    return !appImagePath().isEmpty();  // the .deb is updated by the system's package manager
+    return !appImagePath().isEmpty() || debInstall();
 #else
     return false;
 #endif
@@ -87,7 +95,12 @@ bool Updater::supported() {
 Updater::Updater(QObject* parent) : QObject(parent), net_(new QNetworkAccessManager(this)) {}
 
 QString Updater::feedUrl() {
-    QString u = qEnvironmentVariable("COREPLAY_UPDATE_URL", kDefaultFeed);
+#ifdef Q_OS_LINUX
+    const char* feed = debInstall() ? kDebFeed : kDefaultFeed;
+#else
+    const char* feed = kDefaultFeed;
+#endif
+    QString u = qEnvironmentVariable("COREPLAY_UPDATE_URL", feed);
     if (!u.endsWith('/')) u += '/';
     return u;
 }
@@ -116,6 +129,9 @@ bool Updater::installedCopy() {
     if (!app.endsWith(".app") || app.startsWith("/Volumes/") || app.contains("/AppTranslocation/")) return false;
     return QFileInfo(QFileInfo(app).absolutePath()).isWritable() && QFileInfo(app).isWritable();
 #elif defined(Q_OS_LINUX)
+    // The .deb is installed by apt as root: pkexec asks for the password in the system's dialog.
+    if (debInstall())
+        return !QStandardPaths::findExecutable("pkexec").isEmpty() && QFile::exists("/usr/bin/apt-get");
     const QString ai = appImagePath();
     return !ai.isEmpty() && QFileInfo(ai).isWritable() && QFileInfo(QFileInfo(ai).absolutePath()).isWritable();
 #else
@@ -169,31 +185,26 @@ bool Updater::verify(const QByteArray& message, const QByteArray& signatureBase6
     void* lib = dlopen("libcrypto.so.3", RTLD_NOW | RTLD_LOCAL);
     if (!lib) lib = dlopen("libcrypto.so.1.1", RTLD_NOW | RTLD_LOCAL);
     if (!lib) return false;
-    using D2i = void* (*)(void**, const unsigned char**, long);
-    using New = void* (*)();
-    using Md = const void* (*)();
-    using Init = int (*)(void*, void**, const void*, void*, void*);
-    using Verify = int (*)(void*, const unsigned char*, size_t, const unsigned char*, size_t);
+    // The EC_KEY calls, not d2i_PUBKEY + EVP_DigestVerify: inside Coreplay (the AppImage and the
+    // .deb on Ubuntu 22.04) OpenSSL 3's key decoder refuses the key (EVP error 0x3000072), so
+    // every release was refused. These calls need no decoder and are in OpenSSL 1.1 and 3.
+    using KeyNew = void* (*)(int);
+    using Oct2Key = int (*)(void*, const unsigned char*, size_t, void*);
+    using Verify = int (*)(int, const unsigned char*, int, const unsigned char*, int, void*);
     using Free = void (*)(void*);
-    auto d2i = reinterpret_cast<D2i>(dlsym(lib, "d2i_PUBKEY"));
-    auto ctxNew = reinterpret_cast<New>(dlsym(lib, "EVP_MD_CTX_new"));
-    auto sha256 = reinterpret_cast<Md>(dlsym(lib, "EVP_sha256"));
-    auto init = reinterpret_cast<Init>(dlsym(lib, "EVP_DigestVerifyInit"));
-    auto verifyFn = reinterpret_cast<Verify>(dlsym(lib, "EVP_DigestVerify"));
-    auto ctxFree = reinterpret_cast<Free>(dlsym(lib, "EVP_MD_CTX_free"));
-    auto keyFree = reinterpret_cast<Free>(dlsym(lib, "EVP_PKEY_free"));
+    auto keyNew = reinterpret_cast<KeyNew>(dlsym(lib, "EC_KEY_new_by_curve_name"));
+    auto oct2key = reinterpret_cast<Oct2Key>(dlsym(lib, "EC_KEY_oct2key"));
+    auto verifyFn = reinterpret_cast<Verify>(dlsym(lib, "ECDSA_verify"));
+    auto keyFree = reinterpret_cast<Free>(dlsym(lib, "EC_KEY_free"));
     bool ok = false;
-    if (d2i && ctxNew && sha256 && init && verifyFn && ctxFree && keyFree) {
-        // SubjectPublicKeyInfo (DER): SEQUENCE { id-ecPublicKey, prime256v1 } + BIT STRING 04 || X || Y.
-        const QByteArray spki = QByteArray::fromHex("3059301306072a8648ce3d020106082a8648ce3d030107034200") + publicKeyPoint();
-        const unsigned char* p = reinterpret_cast<const unsigned char*>(spki.data());
-        void* key = d2i(nullptr, &p, long(spki.size()));
-        const QByteArray der = derSignature(sig);
-        void* ctx = ctxNew();
-        if (key && ctx && init(ctx, nullptr, sha256(), nullptr, key) == 1)
-            ok = verifyFn(ctx, reinterpret_cast<const unsigned char*>(der.data()), size_t(der.size()),
-                          reinterpret_cast<const unsigned char*>(message.data()), size_t(message.size())) == 1;
-        if (ctx) ctxFree(ctx);
+    if (keyNew && oct2key && verifyFn && keyFree) {
+        constexpr int kPrime256v1 = 415;  // NID_X9_62_prime256v1
+        void* key = keyNew(kPrime256v1);
+        const QByteArray point = publicKeyPoint(), der = derSignature(sig);
+        const QByteArray digest = QCryptographicHash::hash(message, QCryptographicHash::Sha256);
+        if (key && oct2key(key, reinterpret_cast<const unsigned char*>(point.data()), size_t(point.size()), nullptr) == 1)
+            ok = verifyFn(0, reinterpret_cast<const unsigned char*>(digest.data()), int(digest.size()),
+                          reinterpret_cast<const unsigned char*>(der.data()), int(der.size()), key) == 1;
         if (key) keyFree(key);
     }
     dlclose(lib);
@@ -324,7 +335,8 @@ void Updater::cancel() {
 // macOS: a shell step waits for this process to end, puts the .dmg's Coreplay.app in place of
 // this one (the old app comes back if the copy fails) and starts it.
 // Linux: the new AppImage is put next to this one now; after Coreplay ends it takes its name
-// and starts.
+// and starts. The .deb: after Coreplay ends, apt installs it (pkexec asks for the password)
+// and Coreplay starts again, the new version or, when the password was refused, the old one.
 bool Updater::install(const QString& file, QString* error) {
 #if defined(Q_OS_WIN)
     if (QProcess::startDetached(file, {"/S", "/RUN"})) return true;
@@ -348,6 +360,18 @@ open "$app")SH";
     if (error) *error = tr("The update could not start.");
     return false;
 #elif defined(Q_OS_LINUX)
+    if (debInstall()) {
+        static const char* debScript = R"SH(pid="$1"; deb="$2"
+while kill -0 "$pid" 2>/dev/null; do sleep 0.2; done
+pkexec /usr/bin/apt-get install -y -q -o DPkg::Lock::Timeout=120 "$deb"
+rm -f "$deb"
+exec setsid /usr/bin/coreplay)SH";
+        const QStringList args{"-c", debScript, "coreplay-update", QString::number(QCoreApplication::applicationPid()),
+                               QFileInfo(file).absoluteFilePath()};
+        if (QProcess::startDetached("/bin/sh", args)) return true;
+        if (error) *error = tr("The update could not start.");
+        return false;
+    }
     const QString target = appImagePath(), next = target + ".update";
     QFile::remove(next);
     if (!QFile::copy(file, next) ||

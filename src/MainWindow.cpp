@@ -1773,6 +1773,9 @@ Updater* MainWindow::updater() {
     if (!updater_) {
         updater_ = new Updater(this);
         connect(updater_, &Updater::ready, this, [this](const QString& file) { lastUpdateFile_ = file; });
+        // The last check or download error, for the test driver (update.error).
+        connect(updater_, &Updater::checked, this, [](bool, const QString& err) { qApp->setProperty("updateError", err); });
+        connect(updater_, &Updater::failed, this, [](const QString& err) { qApp->setProperty("updateError", err); });
     }
     return updater_;
 }
@@ -2519,6 +2522,7 @@ QVariantMap MainWindow::testState() const {
     m["update.supported"] = Updater::supported();
     m["update.installedCopy"] = Updater::installedCopy();
     m["update.installError"] = qApp->property("updateInstallError").toString();
+    m["update.error"] = qApp->property("updateError").toString();
     m["version"] = Updater::currentVersion();
     m["newWindow"] = newWindowPerFile();
     m["info.overlay"] = infoOverlay_->isVisible();
