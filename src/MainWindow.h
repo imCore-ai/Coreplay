@@ -68,6 +68,7 @@ protected:
     void resizeEvent(QResizeEvent*) override;
     bool nativeEvent(const QByteArray& type, void* message, qintptr* result) override;
     bool eventFilter(QObject*, QEvent*) override;
+    bool event(QEvent*) override;
 
 private:
     enum class Repeat { None, One, All };

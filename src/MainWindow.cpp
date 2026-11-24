@@ -57,6 +57,7 @@
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+#include <QOpenGLWidget>
 #include "GradeWindow.h"
 #include "HotkeyOverlay.h"
 #include "Updater.h"
@@ -262,6 +263,11 @@ void MainWindow::buildUi() {
     videoArea_->setPalette(pal);
     stack_ = new QStackedLayout(videoArea_);
     stack_->setStackingMode(QStackedLayout::StackOne);
+    // The window is an OpenGL window from its first frame. The engines' OpenGL views are
+    // added after the first paint (the warm-up), and a shown window that gets its first
+    // OpenGL view is destroyed and made again by Qt: it vanished and came back at every
+    // start. A hidden OpenGL view here makes that switch before the window is shown.
+    (new QOpenGLWidget(videoArea_))->hide();
     placeholder_ = new QLabel(videoArea_);
     placeholder_->setAlignment(Qt::AlignCenter);
     placeholder_->setTextFormat(Qt::PlainText);  // rich text costs start-up time
@@ -1473,6 +1479,15 @@ void MainWindow::closeMedia() {
     updateTitle();
 }
 
+// Counts the native windows this window gets (the tests): more than one = Qt destroyed and
+// made the window again, and it vanished from the screen for a moment.
+bool MainWindow::event(QEvent* e) {
+    // On qApp, not a member: the first one comes while the members are still being built.
+    if (e->type() == QEvent::WinIdChange && internalWinId())
+        qApp->setProperty("nativeWindows", qApp->property("nativeWindows").toInt() + 1);
+    return QMainWindow::event(e);
+}
+
 // ------------------------------------------------------------------ transport helpers
 
 void MainWindow::seekBy(double s) {
@@ -2522,6 +2537,7 @@ QVariantMap MainWindow::testState() const {
         m["perf.mpvVfFps"] = mpv_->property("estimated-vf-fps");
         m["perf.mpvDisplayFps"] = mpv_->property("estimated-display-fps");
     }
+    m["window.nativeWindows"] = qApp->property("nativeWindows").toInt();
     m["gl.state"] = glState_;
     m["gl.softwareSetting"] = QSettings().value("gl/software", false).toBool();
     m["mpv.fastScaling"] = mpv_ && mpv_->mpvView()->software();

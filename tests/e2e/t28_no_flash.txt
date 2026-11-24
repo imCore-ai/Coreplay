@@ -1,0 +1,13 @@
+# The player window is made once and kept: Qt destroys and makes again a shown window that
+# gets its first OpenGL view, and on Windows the window vanished and came back at every
+# start (the engines' views are added after the first paint). One native window, always.
+wait 1000
+expect window.nativeWindows == 1
+open $MEDIA/h264_23976.mp4
+until engine == mpv 5000
+wait 500
+expect window.nativeWindows == 1
+open $MEDIA/exr_seq/shot_v001.1050.exr
+until seq.pixelType == f32 4000
+wait 300
+expect window.nativeWindows == 1
