@@ -1595,10 +1595,6 @@ Mapupunta sa Recycle Bin ang orihinal.</translation>
         <translation>Update</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Hindi nagsimula ang installer: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Lahat (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ I-off ito pagkatapos mag-install ng GPU driver.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>Hindi tugma ang na-download na file sa signed release. Binura ito.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Hindi nagsimula ang installer: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Hindi masimulan ang update.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Walang update para sa system na ito.</translation>
     </message>
 </context>
 </TS>

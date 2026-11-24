@@ -1,5 +1,6 @@
 #pragma once
-// In-app updates from the signed feed (https://auth.imcore.ai/coreplay-updates/windows/).
+// In-app updates from the signed feed (https://auth.imcore.ai/coreplay-updates/<channel>/:
+// windows, mac-arm64, mac-x64, linux-x86_64 for the AppImage).
 // latest.json is trusted only when latest.json.sig verifies against the
 // public key built into Coreplay (ECDSA P-256 / SHA-256), and the downloaded installer
 // only when its size and SHA-256 match that signed manifest.
@@ -22,8 +23,12 @@ public:
     static QString feedUrl();                // COREPLAY_UPDATE_URL, else the imCore feed
     static QString currentVersion();
     static bool newer(const QString& a, const QString& b);  // a > b
+    // True when this system has an update channel (Linux: the AppImage only, not the .deb).
+    static bool supported();
     // True when this copy is the installed one (it can update itself).
     static bool installedCopy();
+    // Starts the verified update (installer, .dmg or AppImage); Coreplay closes after true.
+    static bool install(const QString& file, QString* error);
 
     void check();                            // -> checked()
     void download();                         // after check(): -> progress(), ready() / failed()

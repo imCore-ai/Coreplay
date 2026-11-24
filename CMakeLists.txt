@@ -103,6 +103,10 @@ if(MSVC)
         /DELAYLOAD:libmpv-2.dll /DELAYLOAD:OpenImageIO.dll /DELAYLOAD:OpenImageIO_Util.dll
         /DELAYLOAD:OpenColorIO_2_6.dll)
     target_link_libraries(coreplay PRIVATE delayimp bcrypt dwmapi)  # bcrypt: update signature check; dwmapi: title bar
+elseif(APPLE)
+    target_link_libraries(coreplay PRIVATE "-framework Security" "-framework CoreFoundation")  # update signature check
+elseif(UNIX)
+    target_link_libraries(coreplay PRIVATE ${CMAKE_DL_LIBS})  # the update check loads the system's libcrypto
 endif()
 
 # Interface languages (Settings > General > Language). English is the source text; each

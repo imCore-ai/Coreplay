@@ -1595,10 +1595,6 @@ Fail asal dihantar ke Tong Kitar Semula.</translation>
         <translation>Kemas Kini</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Pemasang tidak dapat dimulakan: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Semua (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Matikannya selepas memasang pemacu GPU.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>Fail yang dimuat turun tidak sepadan dengan keluaran yang ditandatangani. Ia telah dipadam.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Pemasang tidak dapat dimulakan: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Kemas kini tidak dapat dimulakan.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Kemas kini tidak tersedia pada sistem ini.</translation>
     </message>
 </context>
 </TS>

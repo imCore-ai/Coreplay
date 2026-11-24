@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>تحديث</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>تعذّر بدء المثبِّت: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>الكل (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Turn it off after installing a GPU driver.</source>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>الملف المُنزَّل لا يطابق الإصدار الموقّع. تم حذفه.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>تعذّر بدء المثبِّت: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>تعذّر بدء التحديث.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>التحديثات غير متاحة على هذا النظام.</translation>
     </message>
 </context>
 </TS>

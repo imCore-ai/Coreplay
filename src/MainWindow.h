@@ -53,7 +53,7 @@ public:
                     bool audio = true);
     void testLoadSubtitle(const QString& path) { loadSubtitle(path); }
     void testSubStyle(const QString& key, const QString& value);
-    void testUpdate(const QString& step);   // check / download (never installs)
+    void testUpdate(const QString& step);   // check / download / install (install: the Mac and Linux end-to-end test)
     void testAction(const QString& id) { if (QAction* a = actions_.value(id)) a->trigger(); }
     QString testCompare(const QStringList& args);
     void testPerfReset();
@@ -185,6 +185,7 @@ private:
     void updatePlaceholderLogo();
     void checkOpenGL();             // after the first paint: is OpenGL 4.1 there?
     QString glState_;
+    QString lastUpdateFile_;  // the last verified update download
     QTimer cacheBandTimer_;
     class SettingsDialog* settings_ = nullptr;
     void openSettings(int page);

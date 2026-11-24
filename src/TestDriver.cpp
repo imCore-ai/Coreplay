@@ -101,6 +101,23 @@ void TestDriver::step() {
                     log(QString("FAIL  key %1 has %2 actions").arg(rest).arg(owners.size()));
                 }
             }
+        } else if (cmd == "realkey") {
+            // realkey <key>: the key through Qt's input queue as the system delivers it, so
+            // Qt's shortcut map and every widget on the way see it (not the action alone).
+            // The window is made active for Qt only: the system focus stays where it is.
+            const QKeySequence ks = QKeySequence::fromString(rest, QKeySequence::PortableText);
+            if (ks.isEmpty() || !w_->windowHandle()) {
+                ++failures_;
+                log("FAIL  realkey: cannot send '" + rest + "'");
+            } else {
+                QT_WARNING_PUSH
+                QT_WARNING_DISABLE_DEPRECATED
+                QApplication::setActiveWindow(w_);
+                QT_WARNING_POP
+                const QKeyCombination kc = ks[0];
+                QTest::keyClick(w_->windowHandle(), kc.key(), kc.keyboardModifiers());
+                log("realkey " + rest);
+            }
         } else if (cmd == "wait") {
             ++pc_;
             QTimer::singleShot(rest.toInt(), this, &TestDriver::step);
@@ -430,7 +447,7 @@ void TestDriver::step() {
             if (!ok) ++failures_;
             log(QString("%1  probe %2 %3 %4 %5 (got %6)").arg(ok ? "PASS" : "FAIL", QFileInfo(file).fileName(), key, op, want, got));
         } else if (cmd == "update") {
-            // update check | update download   (never runs the installer)
+            // update check | update download | update install   (install: Mac / Linux end-to-end test only)
             w_->testUpdate(t.value(1));
             log(line);
         } else if (cmd == "settings") {

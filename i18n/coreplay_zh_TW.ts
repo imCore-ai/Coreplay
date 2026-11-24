@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>更新</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>無法啟動安裝程式：%1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>全部 (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Turn it off after installing a GPU driver.</source>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>下載的檔案與已簽署的版本不符，已將其刪除。</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>無法啟動安裝程式：%1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>無法開始更新。</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>此系統不提供更新。</translation>
     </message>
 </context>
 </TS>

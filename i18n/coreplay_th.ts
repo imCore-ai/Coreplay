@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>อัปเดต</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>ตัวติดตั้งเริ่มทำงานไม่ได้: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>ทั้งหมด (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Turn it off after installing a GPU driver.</source>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>ไฟล์ที่ดาวน์โหลดไม่ตรงกับรีลีสที่ลงนามไว้ จึงถูกลบแล้ว</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>ตัวติดตั้งเริ่มทำงานไม่ได้: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>ไม่สามารถเริ่มการอัปเดตได้</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>ระบบนี้ไม่มีการอัปเดต</translation>
     </message>
 </context>
 </TS>

@@ -1,0 +1,13 @@
+# A signed newer release, found, downloaded, verified and INSTALLED: Coreplay closes, the
+# update puts the new version in its place and starts it (run_update_mac.sh checks that).
+update check
+until update.state != checking 20000
+expect update.state == available
+expect update.available == true
+expect update.installedCopy == true
+update download
+until update.state != downloading 300000
+expect update.state == ready
+update install
+wait 3000
+expect update.installError == x

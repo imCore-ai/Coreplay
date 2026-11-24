@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>अपडेट</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>इंस्टॉलर शुरू नहीं हो सका: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>सभी (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ GPU ड्राइवर इंस्टॉल करने के बाद �
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>डाउनलोड की गई फ़ाइल साइन की गई रिलीज़ से मेल नहीं खाती। उसे हटा दिया गया।</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>इंस्टॉलर शुरू नहीं हो सका: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>अपडेट शुरू नहीं हो सका।</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>इस सिस्टम पर अपडेट उपलब्ध नहीं हैं।</translation>
     </message>
 </context>
 </TS>

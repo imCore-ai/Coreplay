@@ -1595,10 +1595,6 @@ L&apos;original va dans la Corbeille.</translation>
         <translation>Mise à jour</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Le programme d&apos;installation n&apos;a pas pu démarrer : %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Tous (RVB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Désactivez-le après avoir installé un pilote GPU.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>Le fichier téléchargé ne correspond pas à la version signée. Il a été supprimé.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Le programme d&apos;installation n&apos;a pas pu démarrer : %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>La mise à jour n&apos;a pas pu démarrer.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Les mises à jour ne sont pas disponibles sur ce système.</translation>
     </message>
 </context>
 </TS>

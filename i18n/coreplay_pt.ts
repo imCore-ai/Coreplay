@@ -1595,10 +1595,6 @@ O original vai para a Lixeira.</translation>
         <translation>Atualizar</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Não foi possível iniciar o instalador: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Todos (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Desligue depois de instalar um driver de GPU.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>O arquivo baixado não corresponde à versão assinada. Ele foi excluído.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Não foi possível iniciar o instalador: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Não foi possível iniciar a atualização.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>As atualizações não estão disponíveis neste sistema.</translation>
     </message>
 </context>
 </TS>

@@ -1595,10 +1595,6 @@ Bản gốc được chuyển vào Thùng rác.</translation>
         <translation>Cập nhật</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Không thể khởi động trình cài đặt: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Tất cả (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Hãy tắt nó sau khi cài trình điều khiển GPU.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>Tệp đã tải không khớp với bản phát hành đã ký. Tệp đã bị xóa.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Không thể khởi động trình cài đặt: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Không thể bắt đầu cập nhật.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Không có bản cập nhật cho hệ thống này.</translation>
     </message>
 </context>
 </TS>

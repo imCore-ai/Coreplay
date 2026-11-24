@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>アップデート</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>インストーラーを起動できませんでした：%1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>すべて (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ GPU ドライバーをインストールしたらオフにしてください。<
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>ダウンロードしたファイルが署名済みリリースと一致しないため、削除しました。</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>インストーラーを起動できませんでした：%1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>アップデートを開始できませんでした。</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>このシステムではアップデートを利用できません。</translation>
     </message>
 </context>
 </TS>

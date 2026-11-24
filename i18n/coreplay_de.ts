@@ -1595,10 +1595,6 @@ Das Original kommt in den Papierkorb.</translation>
         <translation>Update</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Der Installer konnte nicht gestartet werden: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Alle (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Nach der Installation eines GPU-Treibers wieder ausschalten.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>Die heruntergeladene Datei entspricht nicht dem signierten Release. Sie wurde gelöscht.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Der Installer konnte nicht gestartet werden: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Das Update konnte nicht gestartet werden.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Updates sind auf diesem System nicht verfügbar.</translation>
     </message>
 </context>
 </TS>

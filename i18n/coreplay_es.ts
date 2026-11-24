@@ -1595,10 +1595,6 @@ El original va a la Papelera de reciclaje.</translation>
         <translation>Actualizar</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>No se pudo iniciar el instalador: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Todos (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Desactívelo después de instalar un controlador de GPU.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>El archivo descargado no coincide con la versión firmada. Se ha eliminado.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>No se pudo iniciar el instalador: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>No se pudo iniciar la actualización.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Las actualizaciones no están disponibles en este sistema.</translation>
     </message>
 </context>
 </TS>

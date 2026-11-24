@@ -838,10 +838,9 @@ void MainWindow::buildMenus() {
     QMenu* help = menuBar()->addMenu(tr("&Help"));
     help->addAction(act("help.hotkeys"));
     help->addAction(tr("&Edit Hotkeys..."), this, [this] { openSettings(1); });
-#ifdef Q_OS_WIN
-    // The update feed carries the Windows installer. Linux gets new versions as a new package.
-    updateAction_ = help->addAction(tr("Check for &Updates..."), this, [this] { updatesDialog(); });
-#endif
+    // Windows, both Macs and the Linux AppImage update themselves; the .deb is a system package.
+    if (Updater::supported())
+        updateAction_ = help->addAction(tr("Check for &Updates..."), this, [this] { updatesDialog(); });
     help->addAction(act("help.about"));
     // The menu titles' font (bold) and exactly a menu title's height: the row stays as tall as
     // its labels. (The bar's sizeHint counts this button too, so its own margins grew the bar.)
@@ -1771,7 +1770,10 @@ bool MainWindow::testExport(const QString& presetId, const QString& output, bool
 // ------------------------------------------------------------------ updates
 
 Updater* MainWindow::updater() {
-    if (!updater_) updater_ = new Updater(this);
+    if (!updater_) {
+        updater_ = new Updater(this);
+        connect(updater_, &Updater::ready, this, [this](const QString& file) { lastUpdateFile_ = file; });
+    }
     return updater_;
 }
 
@@ -1884,15 +1886,21 @@ void MainWindow::updatesDialog() {
     connect(u, &Updater::ready, this, [this, pd](const QString& installer) {
         pd->close();
         if (!Updater::installedCopy()) {
-            // Not the installed copy (a build folder): show the verified installer.
+            // Not a copy that can replace itself (a build folder, the .dmg, a read-only place):
+            // show the verified download.
 #ifdef Q_OS_WIN
             QProcess::startDetached("explorer.exe", {"/select,", QDir::toNativeSeparators(installer)});
+#elif defined(Q_OS_MACOS)
+            QProcess::startDetached("open", {"-R", installer});
+#else
+            QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(installer).absolutePath()));
 #endif
             return;
         }
-        // Silent per-user upgrade; the installer waits for Coreplay to close, then starts it again.
-        if (QProcess::startDetached(installer, {"/S", "/RUN"})) close();
-        else QMessageBox::warning(this, tr("Update"), tr("The installer could not start: %1").arg(installer));
+        // The update waits for Coreplay to close, puts the new version in place and starts it.
+        QString err;
+        if (Updater::install(installer, &err)) close();
+        else QMessageBox::warning(this, tr("Update"), err);
     }, Qt::SingleShotConnection);
     u->download();
 }
@@ -1901,6 +1909,13 @@ void MainWindow::testUpdate(const QString& step) {
     Updater* u = updater();
     if (step == "check") u->check();
     else if (step == "download") u->download();
+    // install: the real install step on the verified download (the end-to-end update test on a
+    // Mac or a Linux AppImage). The release tests never use it: the Windows installer would run.
+    else if (step == "install" && u->state() == "ready") {
+        QString err;
+        if (Updater::installedCopy() && Updater::install(lastUpdateFile_, &err)) close();
+        else qApp->setProperty("updateInstallError", err.isEmpty() ? QString("not an installed copy") : err);
+    }
 }
 
 void MainWindow::setChannel(int c, bool toggle) {
@@ -2501,6 +2516,9 @@ QVariantMap MainWindow::testState() const {
     m["update.latest"] = updater_ ? updater_->latest().version : QString();
     m["update.available"] = updater_ && updater_->updateAvailable();
     m["update.feed"] = Updater::feedUrl();
+    m["update.supported"] = Updater::supported();
+    m["update.installedCopy"] = Updater::installedCopy();
+    m["update.installError"] = qApp->property("updateInstallError").toString();
     m["version"] = Updater::currentVersion();
     m["newWindow"] = newWindowPerFile();
     m["info.overlay"] = infoOverlay_->isVisible();

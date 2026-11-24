@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>Обновление</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Не удалось запустить установщик: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Все (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Turn it off after installing a GPU driver.</source>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>Загруженный файл не соответствует подписанному выпуску. Он удалён.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Не удалось запустить установщик: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Не удалось запустить обновление.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Обновления недоступны в этой системе.</translation>
     </message>
 </context>
 </TS>

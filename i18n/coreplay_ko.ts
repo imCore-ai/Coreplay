@@ -1595,10 +1595,6 @@ The original goes to the Recycle Bin.</source>
         <translation>업데이트</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>설치 프로그램을 시작하지 못했습니다: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>전체 (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ GPU 드라이버를 설치한 후에는 끄세요.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>다운로드한 파일이 서명된 릴리스와 일치하지 않아 삭제했습니다.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>설치 프로그램을 시작하지 못했습니다: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>업데이트를 시작할 수 없습니다.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>이 시스템에서는 업데이트를 사용할 수 없습니다.</translation>
     </message>
 </context>
 </TS>

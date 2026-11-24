@@ -16,14 +16,72 @@
 
 #include "UpdateKey.h"
 
+#include <QProcess>
+
 #ifdef Q_OS_WIN
 #define NOMINMAX
 #include <windows.h>
 #include <bcrypt.h>
+#elif defined(Q_OS_MACOS)
+#include <Security/Security.h>
+#elif defined(Q_OS_LINUX)
+#include <dlfcn.h>
 #endif
 
 namespace {
+// One channel per download: the Windows installer, each Mac chip's .dmg, the Linux AppImage.
+#if defined(Q_OS_WIN)
 constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/windows/";
+#elif defined(Q_OS_MACOS) && defined(Q_PROCESSOR_ARM_64)
+constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/mac-arm64/";
+#elif defined(Q_OS_MACOS)
+constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/mac-x64/";
+#else
+constexpr char kDefaultFeed[] = "https://auth.imcore.ai/coreplay-updates/linux-x86_64/";
+#endif
+
+#if defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
+// The built-in public key as an uncompressed point: 04 || X || Y.
+QByteArray publicKeyPoint() {
+    QByteArray p(1, '\x04');
+    p.append(reinterpret_cast<const char*>(kUpdateKeyX), 32);
+    p.append(reinterpret_cast<const char*>(kUpdateKeyY), 32);
+    return p;
+}
+// raw r || s (the feed's format) -> DER SEQUENCE { INTEGER r, INTEGER s } (what Apple and OpenSSL take).
+QByteArray derSignature(const QByteArray& raw) {
+    auto integer = [](QByteArray v) {
+        while (v.size() > 1 && v[0] == '\0' && !(uchar(v[1]) & 0x80)) v.remove(0, 1);
+        if (uchar(v[0]) & 0x80) v.prepend('\0');
+        return QByteArray(1, '\x02') + char(v.size()) + v;
+    };
+    const QByteArray body = integer(raw.left(32)) + integer(raw.mid(32, 32));
+    return QByteArray(1, '\x30') + char(body.size()) + body;
+}
+#endif
+#ifdef Q_OS_LINUX
+// The running AppImage (its runtime sets APPIMAGE); empty for the .deb.
+QString appImagePath() { return qEnvironmentVariable("APPIMAGE"); }
+#endif
+#ifdef Q_OS_MACOS
+// /Applications/Coreplay.app (from .../Coreplay.app/Contents/MacOS).
+QString bundlePath() {
+    QDir d(QCoreApplication::applicationDirPath());
+    d.cdUp();
+    d.cdUp();
+    return d.absolutePath();
+}
+#endif
+}  // namespace
+
+bool Updater::supported() {
+#if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
+    return true;
+#elif defined(Q_OS_LINUX)
+    return !appImagePath().isEmpty();  // the .deb is updated by the system's package manager
+#else
+    return false;
+#endif
 }
 
 Updater::Updater(QObject* parent) : QObject(parent), net_(new QNetworkAccessManager(this)) {}
@@ -51,12 +109,23 @@ bool Updater::installedCopy() {
     return !dir.isEmpty() &&
            QFileInfo(dir).canonicalFilePath().compare(QFileInfo(QCoreApplication::applicationDirPath()).canonicalFilePath(),
                                                       Qt::CaseInsensitive) == 0;
+#elif defined(Q_OS_MACOS)
+    // Not from the .dmg (read-only) or a translocated copy (macOS runs a quarantined app from a
+    // read-only place): only an app the user moved to a folder they can write to.
+    const QString app = bundlePath();
+    if (!app.endsWith(".app") || app.startsWith("/Volumes/") || app.contains("/AppTranslocation/")) return false;
+    return QFileInfo(QFileInfo(app).absolutePath()).isWritable() && QFileInfo(app).isWritable();
+#elif defined(Q_OS_LINUX)
+    const QString ai = appImagePath();
+    return !ai.isEmpty() && QFileInfo(ai).isWritable() && QFileInfo(QFileInfo(ai).absolutePath()).isWritable();
 #else
     return false;
 #endif
 }
 
-// ECDSA P-256 over SHA-256, raw r||s, checked by Windows' own CNG with the built-in key.
+// ECDSA P-256 over SHA-256 with the built-in key; the feed's signature is raw r||s, base64.
+// Windows: its own CNG. macOS: Apple's Security framework. Linux: the system's OpenSSL
+// (libcrypto, loaded only for this check: the same library Qt uses for https).
 bool Updater::verify(const QByteArray& message, const QByteArray& signatureBase64) {
     const QByteArray sig = QByteArray::fromBase64(signatureBase64.trimmed());
     if (sig.size() != 64) return false;
@@ -80,9 +149,58 @@ bool Updater::verify(const QByteArray& message, const QByteArray& signatureBase6
     }
     BCryptCloseAlgorithmProvider(alg, 0);
     return ok;
+#elif defined(Q_OS_MACOS)
+    const QByteArray point = publicKeyPoint(), der = derSignature(sig);
+    CFDataRef keyData = CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(point.data()), point.size());
+    int bits = 256;
+    CFNumberRef size = CFNumberCreate(nullptr, kCFNumberIntType, &bits);
+    const void* keys[] = {kSecAttrKeyType, kSecAttrKeyClass, kSecAttrKeySizeInBits};
+    const void* values[] = {kSecAttrKeyTypeECSECPrimeRandom, kSecAttrKeyClassPublic, size};
+    CFDictionaryRef attrs = CFDictionaryCreate(nullptr, keys, values, 3, &kCFTypeDictionaryKeyCallBacks,
+                                               &kCFTypeDictionaryValueCallBacks);
+    SecKeyRef key = SecKeyCreateWithData(keyData, attrs, nullptr);
+    CFDataRef msg = CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(message.data()), message.size());
+    CFDataRef signature = CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(der.data()), der.size());
+    const bool ok = key && SecKeyVerifySignature(key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256, msg, signature, nullptr);
+    for (CFTypeRef r : {CFTypeRef(keyData), CFTypeRef(size), CFTypeRef(attrs), CFTypeRef(key), CFTypeRef(msg), CFTypeRef(signature)})
+        if (r) CFRelease(r);
+    return ok;
+#elif defined(Q_OS_LINUX)
+    void* lib = dlopen("libcrypto.so.3", RTLD_NOW | RTLD_LOCAL);
+    if (!lib) lib = dlopen("libcrypto.so.1.1", RTLD_NOW | RTLD_LOCAL);
+    if (!lib) return false;
+    using D2i = void* (*)(void**, const unsigned char**, long);
+    using New = void* (*)();
+    using Md = const void* (*)();
+    using Init = int (*)(void*, void**, const void*, void*, void*);
+    using Verify = int (*)(void*, const unsigned char*, size_t, const unsigned char*, size_t);
+    using Free = void (*)(void*);
+    auto d2i = reinterpret_cast<D2i>(dlsym(lib, "d2i_PUBKEY"));
+    auto ctxNew = reinterpret_cast<New>(dlsym(lib, "EVP_MD_CTX_new"));
+    auto sha256 = reinterpret_cast<Md>(dlsym(lib, "EVP_sha256"));
+    auto init = reinterpret_cast<Init>(dlsym(lib, "EVP_DigestVerifyInit"));
+    auto verifyFn = reinterpret_cast<Verify>(dlsym(lib, "EVP_DigestVerify"));
+    auto ctxFree = reinterpret_cast<Free>(dlsym(lib, "EVP_MD_CTX_free"));
+    auto keyFree = reinterpret_cast<Free>(dlsym(lib, "EVP_PKEY_free"));
+    bool ok = false;
+    if (d2i && ctxNew && sha256 && init && verifyFn && ctxFree && keyFree) {
+        // SubjectPublicKeyInfo (DER): SEQUENCE { id-ecPublicKey, prime256v1 } + BIT STRING 04 || X || Y.
+        const QByteArray spki = QByteArray::fromHex("3059301306072a8648ce3d020106082a8648ce3d030107034200") + publicKeyPoint();
+        const unsigned char* p = reinterpret_cast<const unsigned char*>(spki.data());
+        void* key = d2i(nullptr, &p, long(spki.size()));
+        const QByteArray der = derSignature(sig);
+        void* ctx = ctxNew();
+        if (key && ctx && init(ctx, nullptr, sha256(), nullptr, key) == 1)
+            ok = verifyFn(ctx, reinterpret_cast<const unsigned char*>(der.data()), size_t(der.size()),
+                          reinterpret_cast<const unsigned char*>(message.data()), size_t(message.size())) == 1;
+        if (ctx) ctxFree(ctx);
+        if (key) keyFree(key);
+    }
+    dlclose(lib);
+    return ok;
 #else
     Q_UNUSED(message);
-    return false;  // macOS / Linux: verification to be added with those ports
+    return false;
 #endif
 }
 
@@ -199,4 +317,56 @@ void Updater::cancel() {
     if (state_ != "downloading") return;
     state_ = "idle";
     if (reply_) reply_->abort();
+}
+
+// Starts the verified update. The caller closes Coreplay when this returns true:
+// Windows: the installer runs silently, waits for Coreplay to close and starts it again.
+// macOS: a shell step waits for this process to end, puts the .dmg's Coreplay.app in place of
+// this one (the old app comes back if the copy fails) and starts it.
+// Linux: the new AppImage is put next to this one now; after Coreplay ends it takes its name
+// and starts.
+bool Updater::install(const QString& file, QString* error) {
+#if defined(Q_OS_WIN)
+    if (QProcess::startDetached(file, {"/S", "/RUN"})) return true;
+    if (error) *error = tr("The installer could not start: %1").arg(file);
+    return false;
+#elif defined(Q_OS_MACOS)
+    static const char* script = R"SH(pid="$1"; dmg="$2"; app="$3"
+while kill -0 "$pid" 2>/dev/null; do sleep 0.2; done
+mnt="$(mktemp -d)" || exit 1
+hdiutil attach -quiet -nobrowse -readonly -mountpoint "$mnt" "$dmg" || exit 1
+new="$app.update.$$"; old="$app.old.$$"
+if ditto "$mnt/Coreplay.app" "$new"; then
+  mv "$app" "$old" && { mv "$new" "$app" || mv "$old" "$app"; }
+fi
+rm -rf "$new" "$old"
+hdiutil detach -quiet "$mnt"; rmdir "$mnt"; rm -f "$dmg"
+open "$app")SH";
+    const QStringList args{"-c", script, "coreplay-update", QString::number(QCoreApplication::applicationPid()), file,
+                           bundlePath()};
+    if (QProcess::startDetached("/bin/sh", args)) return true;
+    if (error) *error = tr("The update could not start.");
+    return false;
+#elif defined(Q_OS_LINUX)
+    const QString target = appImagePath(), next = target + ".update";
+    QFile::remove(next);
+    if (!QFile::copy(file, next) ||
+        !QFile::setPermissions(next, QFile::permissions(target) | QFile::ExeOwner | QFile::ExeGroup | QFile::ExeOther)) {
+        if (error) *error = tr("Cannot write %1").arg(next);
+        return false;
+    }
+    QFile::remove(file);
+    static const char* script = R"SH(pid="$1"; next="$2"; target="$3"
+while kill -0 "$pid" 2>/dev/null; do sleep 0.2; done
+mv -f "$next" "$target" && exec setsid "$target")SH";
+    const QStringList args{"-c", script, "coreplay-update", QString::number(QCoreApplication::applicationPid()), next,
+                           target};
+    if (QProcess::startDetached("/bin/sh", args)) return true;
+    if (error) *error = tr("The update could not start.");
+    return false;
+#else
+    Q_UNUSED(file);
+    if (error) *error = tr("Updates are not available on this system.");
+    return false;
+#endif
 }

@@ -1595,10 +1595,6 @@ File asli dipindahkan ke Recycle Bin.</translation>
         <translation>Perbarui</translation>
     </message>
     <message>
-        <source>The installer could not start: %1</source>
-        <translation>Installer tidak dapat dijalankan: %1</translation>
-    </message>
-    <message>
         <source>All (RGB)</source>
         <translation>Semua (RGB)</translation>
     </message>
@@ -2562,6 +2558,18 @@ Matikan setelah memasang driver GPU.</translation>
     <message>
         <source>The downloaded file does not match the signed release. It was deleted.</source>
         <translation>File yang diunduh tidak cocok dengan rilis yang ditandatangani. File telah dihapus.</translation>
+    </message>
+    <message>
+        <source>The installer could not start: %1</source>
+        <translation>Installer tidak dapat dijalankan: %1</translation>
+    </message>
+    <message>
+        <source>The update could not start.</source>
+        <translation>Pembaruan tidak dapat dimulai.</translation>
+    </message>
+    <message>
+        <source>Updates are not available on this system.</source>
+        <translation>Pembaruan tidak tersedia di sistem ini.</translation>
     </message>
 </context>
 </TS>
