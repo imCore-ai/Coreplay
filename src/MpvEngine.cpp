@@ -331,6 +331,7 @@ MpvEngine::MpvEngine(QWidget* parentWidget, QObject* parent) : Engine(parent) {
     mpv_observe_property(mpv_, 0, "container-fps", MPV_FORMAT_DOUBLE);
     mpv_observe_property(mpv_, 0, "dwidth", MPV_FORMAT_INT64);
     mpv_observe_property(mpv_, 0, "dheight", MPV_FORMAT_INT64);
+    mpv_observe_property(mpv_, 0, "chapter-list", MPV_FORMAT_NONE);
     mpv_set_wakeup_callback(mpv_, [](void* ctx) {
         auto* self = static_cast<MpvEngine*>(ctx);
         QMetaObject::invokeMethod(self, [self] { self->drainEvents(); }, Qt::QueuedConnection);
@@ -396,6 +397,8 @@ void MpvEngine::drainEvents() {
                     emit pausedChanged(paused_);
                 } else if (name == "eof-reached") {
                     if (has && *static_cast<int*>(p->data)) emit endReached();
+                } else if (name == "chapter-list") {
+                    emit chaptersChanged();
                 } else if (name == "container-fps") {
                     const double f = has ? *static_cast<double*>(p->data) : 0.0;
                     if (f > 0 || !comparing()) fps_ = f;  // the compare graph has no rate of its own: keep A's
@@ -539,6 +542,27 @@ bool MpvEngine::chapterStep(int dir) {
     command({"add", "chapter", dir >= 0 ? "1" : "-1"});
     return true;
 }
+
+QList<Chapter> MpvEngine::chapters() const {
+    QList<Chapter> out;
+    int64_t n = 0;
+    if (mpv_get_property(mpv_, "chapter-list/count", MPV_FORMAT_INT64, &n) < 0) return out;
+    for (int64_t i = 0; i < n; ++i) {
+        Chapter c;
+        c.title = getString(QString("chapter-list/%1/title").arg(i).toUtf8().constData());
+        mpv_get_property(mpv_, QString("chapter-list/%1/time").arg(i).toUtf8().constData(), MPV_FORMAT_DOUBLE, &c.time);
+        out << c;
+    }
+    return out;
+}
+
+int MpvEngine::chapter() const {
+    int64_t c = -1;
+    if (mpv_get_property(mpv_, "chapter", MPV_FORMAT_INT64, &c) < 0) return -1;
+    return int(c);
+}
+
+void MpvEngine::gotoChapter(int i) { setProp("chapter", QString::number(i)); }
 
 void MpvEngine::setAbLoop(double a, double b) {
     setProp("ab-loop-a", a < 0 ? "no" : QString::number(a, 'f', 6));

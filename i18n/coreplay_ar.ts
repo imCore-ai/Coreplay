@@ -1880,6 +1880,14 @@ Close and lose the grades?</source>
         <source>Close Without Saving</source>
         <translation>إغلاق دون حفظ</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>الفصول(&amp;C)</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>الفصل %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

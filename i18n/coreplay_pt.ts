@@ -1880,6 +1880,14 @@ Fechar e perder as correções?</translation>
         <source>Close Without Saving</source>
         <translation>Fechar sem salvar</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>Capí&amp;tulos</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Capítulo %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

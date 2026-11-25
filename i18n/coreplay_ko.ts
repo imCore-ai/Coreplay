@@ -1880,6 +1880,14 @@ Close and lose the grades?</source>
         <source>Close Without Saving</source>
         <translation>저장하지 않고 닫기</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>챕터(&amp;C)</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>챕터 %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

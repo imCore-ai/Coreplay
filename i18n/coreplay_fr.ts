@@ -1880,6 +1880,14 @@ Fermer et perdre les étalonnages ?</translation>
         <source>Close Without Saving</source>
         <translation>Fermer sans enregistrer</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>&amp;Chapitres</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Chapitre %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

@@ -92,6 +92,9 @@ public:
     void adjustSubScale(double d) override;
     void gotoSub(int dir) override;
     bool chapterStep(int dir) override;
+    QList<Chapter> chapters() const override;
+    int chapter() const override;
+    void gotoChapter(int i) override;
 
     void setAbLoop(double a, double b) override;
     void setLoopFile(bool loop) override;

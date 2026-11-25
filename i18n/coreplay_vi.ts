@@ -1880,6 +1880,14 @@ Close and lose the grades?</source>
         <source>Close Without Saving</source>
         <translation>Đóng không lưu</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>&amp;Chương</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Chương %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

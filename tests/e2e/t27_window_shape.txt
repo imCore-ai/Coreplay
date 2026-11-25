@@ -8,10 +8,13 @@ wait 500
 state
 expect picture.aspect ~ 1.7778
 expect picture.areaAspect ~ 1.7778
-# turned by 90 degrees: the window becomes upright
+# turned by 90 degrees: the window becomes upright, as far as the screen allows (its minimum
+# width is the menu bar's; on a 1080-line screen an upright 16:9 picture keeps side bars)
 action pns.rotatezp
 wait 400
-expect picture.areaAspect ~ 0.5625
+expect picture.aspect ~ 0.5625
+expect picture.areaAspect < 1
+expect picture.areaAspect ~ =picture.fitAspect
 action pns.rotatezm
 wait 400
 expect picture.areaAspect ~ 1.7778

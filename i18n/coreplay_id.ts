@@ -1880,6 +1880,14 @@ Tutup dan buang grade-nya?</translation>
         <source>Close Without Saving</source>
         <translation>Tutup Tanpa Menyimpan</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>&amp;Bab</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Bab %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

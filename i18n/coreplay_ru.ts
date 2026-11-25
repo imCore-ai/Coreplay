@@ -1880,6 +1880,14 @@ Close and lose the grades?</source>
         <source>Close Without Saving</source>
         <translation>Закрыть без сохранения</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>&amp;Главы</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Глава %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

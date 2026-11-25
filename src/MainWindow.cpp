@@ -822,7 +822,13 @@ void MainWindow::buildMenus() {
                "sub.delayup", "sub.posup", "sub.posdown", "sub.fontinc", "sub.fontdec", "sub.style"});
 
     QMenu* nav = menuBar()->addMenu(tr("&Navigate"));
-    add(nav, {"nav.prev", "nav.next", "nav.prevfile", "nav.nextfile"});
+    add(nav, {"nav.prev", "nav.next", "nav.prevfile", "nav.nextfile", ""});
+    // Chapters: the file's chapter list, read each time the menu opens; grey when it has none.
+    chapterMenu_ = nav->addMenu(tr("&Chapters"));
+    connect(nav, &QMenu::aboutToShow, this, [this] {
+        chapterMenu_->menuAction()->setEnabled(cur_ && !cur_->chapters().isEmpty());
+    });
+    connect(chapterMenu_, &QMenu::aboutToShow, this, [this] { fillChapterMenu(chapterMenu_); });
 
     QMenu* cmp = menuBar()->addMenu(tr("&Compare"));
     add(cmp, {"compare.toggle", "", "compare.flipmode", "compare.wipe", "compare.sidebyside", "compare.difference", "",
@@ -848,6 +854,34 @@ void MainWindow::buildMenus() {
     ef.setBold(true);
     explore->setFont(ef);
     explore->setFixedHeight(menuBar()->actionGeometry(menuBar()->actions().first()).height());
+}
+
+void MainWindow::fillChapterMenu(QMenu* m) {
+    m->clear();
+    const QList<Chapter> list = cur_ ? cur_->chapters() : QList<Chapter>{};
+    const int now = cur_ ? cur_->chapter() : -1;
+    for (int i = 0; i < list.size(); ++i) {
+        const Chapter& c = list[i];
+        const int t = int(std::max(0.0, c.time));
+        const QString time = QString("[%1:%2:%3]").arg(t / 3600, 2, 10, QChar('0'))
+                                 .arg(t / 60 % 60, 2, 10, QChar('0')).arg(t % 60, 2, 10, QChar('0'));
+        QString title = c.title.trimmed().isEmpty() ? tr("Chapter %1").arg(i + 1) : c.title.trimmed();
+        title.replace('&', "&&");  // a name's own "&" is not a menu key
+        // The text after the tab is drawn at the right, like a hotkey: the start time.
+        QAction* a = m->addAction(title + '\t' + time);
+        a->setCheckable(true);
+        a->setChecked(i == now);
+        connect(a, &QAction::triggered, this, [this, i] { if (cur_) cur_->gotoChapter(i); });
+    }
+}
+
+void MainWindow::testChapterMenu(int i, const QString& png) {
+    emit chapterMenu_->aboutToShow();
+    if (i >= 0 && i < chapterMenu_->actions().size()) chapterMenu_->actions()[i]->trigger();
+    if (!png.isEmpty()) {
+        chapterMenu_->adjustSize();
+        chapterMenu_->grab().save(png);
+    }
 }
 
 void MainWindow::fillColourMenu(QMenu* m) {
@@ -957,6 +991,16 @@ void MainWindow::connectEngine(Engine* e) {
         lastDur_ = cur_->duration();
     });
     connect(e, &Engine::durationChanged, this, [this, e](double s) { if (e == cur_) seekBar_->setDuration(s); });
+    // Chapter marks on the seek bar: at each change of the list, and at each file load (a
+    // file with the same list as the one before gives no change).
+    auto marks = [this, e] {
+        if (e != cur_) return;
+        std::vector<double> starts;
+        for (const Chapter& c : e->chapters()) starts.push_back(c.time);
+        seekBar_->setChapters(std::move(starts));
+    };
+    connect(e, &Engine::chaptersChanged, this, marks);
+    connect(e, &Engine::loaded, this, marks);
     connect(e, &Engine::pausedChanged, this, [this, e](bool p) {
         if (e != cur_) return;
         playBtn_->setIcon(grayIcon(style(), p ? QStyle::SP_MediaPlay : QStyle::SP_MediaPause));
@@ -1425,6 +1469,7 @@ void MainWindow::beginRow(int row) {
     subFiles_.clear();
     seekBar_->setAb(-1, -1);
     seekBar_->setCacheMask({}, {});
+    seekBar_->setChapters({});
     playlist_->setCurrent(row);
     addRecent(path);
     updateTitle();
@@ -1475,6 +1520,7 @@ void MainWindow::closeMedia() {
     stack_->setCurrentWidget(placeholder_);
     seekBar_->setDuration(0);
     seekBar_->setCacheMask({}, {});
+    seekBar_->setChapters({});
     updateTitle();
 }
 
@@ -2475,6 +2521,16 @@ QVariantMap MainWindow::testState() const {
     m["playlist.visible"] = playlistDock_->isVisible();
     m["menu.visible"] = menuBar()->isVisible();
     m["seekbar.visible"] = seekBar_->isVisible();
+    m["seekbar.chapterMarks"] = seekBar_->chapterMarks();
+    m["chapters.count"] = cur_ ? int(cur_->chapters().size()) : 0;
+    m["chapter.current"] = cur_ ? cur_->chapter() : -1;
+    {   // the Chapters menu as it shows now: "name<TAB>[time]", "*" before the checked one
+        QMenu cm;
+        const_cast<MainWindow*>(this)->fillChapterMenu(&cm);
+        QStringList items;
+        for (QAction* a : cm.actions()) items << (a->isChecked() ? "*" : "") + a->text().replace('\t', ' ');
+        m["chapters.menu"] = items.join(" | ");
+    }
     m["controls.visible"] = controls_->isVisible();
     m["status.visible"] = statusBar()->isVisible();
     m["fullscreen"] = isFullScreen();
@@ -2498,7 +2554,15 @@ QVariantMap MainWindow::testState() const {
     m["picture.area"] = QString("%1x%2").arg(videoArea_->width()).arg(videoArea_->height());
     m["picture.areaAspect"] = videoArea_->height() > 0 ? double(videoArea_->width()) / videoArea_->height() : 0.0;
     {   const QSizeF s = shownSize();
-        m["picture.aspect"] = s.isEmpty() ? 0.0 : s.width() / s.height(); }
+        const double aspect = s.isEmpty() ? 0.0 : s.width() / s.height();
+        m["picture.aspect"] = aspect;
+        // The picture area's shape nearest to the picture's that this screen allows: the window
+        // has a minimum width (its menu bar) and a maximum height (the screen), so on a short
+        // screen an upright picture keeps bars at its sides.
+        const QSize extra = frameGeometry().size() - videoArea_->size();
+        const int minW = std::max(minimumWidth(), minimumSizeHint().width()) - (width() - videoArea_->width());
+        const int maxH = screen()->availableGeometry().height() - extra.height();
+        m["picture.fitAspect"] = aspect > 0 && maxH > 0 ? std::max(aspect, double(minW) / maxH) : aspect; }
     m["video.w"] = videoArea_->width();
     m["video.h"] = videoArea_->height();
     m["volume"] = volume_;

@@ -1,0 +1,38 @@
+# Chapters: Navigate > Chapters lists the file's chapters (name and start time, the one that
+# plays now checked), a row goes to that chapter, and the seek bar marks each chapter start.
+# A movie with no chapters: no list, no marks.
+open $MEDIA/h264_23976.mp4
+until engine == mpv 3000
+until duration ~ 10.01 5000
+expect chapters.count == 0
+expect seekbar.chapterMarks == 0
+open $MEDIA/chapters/chapters.mp4
+until chapters.count == 3 5000
+until duration ~ 30 5000
+key Space
+until mpv.pause == yes 1000
+# Three chapter starts: marks at 8 s and 20 s (the first starts at 0 s, which has no mark)
+expect seekbar.chapterMarks == 3
+expect chapters.menu has *S4 入口 | 大門 [00:00:00]
+# a name's own "&" stays one character in the menu
+expect chapters.menu has Rock && Roll [00:00:08]
+# a chapter with no name gets one
+expect chapters.menu has Chapter 3 [00:00:20]
+chaptermenu 1
+until position ~ 8 2000
+until chapter.current == 1 2000
+expect chapters.menu has *Rock && Roll
+chaptermenu 2
+until position ~ 20 2000
+until chapter.current == 2 2000
+expect chapters.menu has *Chapter 3 [00:00:20]
+chaptermenu 0
+until position < 0.1 2000
+until chapter.current == 0 2000
+# Next (Ctrl+PgDn) still steps chapter by chapter
+action nav.next
+until chapter.current == 1 2000
+until position ~ 8 2000
+chaptermenu grab $OUT/t29_chapters_menu.png
+grab $OUT/t29_chapters.png
+grabwindow $OUT/t29_chapters_window.png

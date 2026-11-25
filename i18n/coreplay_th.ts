@@ -1880,6 +1880,14 @@ Close and lose the grades?</source>
         <source>Close Without Saving</source>
         <translation>ปิดโดยไม่บันทึก</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>บท(&amp;C)</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>บทที่ %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

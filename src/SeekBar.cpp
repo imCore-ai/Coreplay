@@ -48,6 +48,12 @@ void SeekBar::paintEvent(QPaintEvent*) {
             const int xb = track.left() + int(b / dur_ * track.width());
             p.fillRect(QRect(xa, 1, std::max(1, xb - xa), 3), QColor(170, 170, 170));
         }
+        // Chapter marks: a short light line through the track, shorter than the position handle.
+        for (double c : chapters_) {
+            if (c <= 0 || c >= dur_) continue;  // the first chapter starts at the start
+            const int xc = track.left() + int(c / dur_ * track.width());
+            p.fillRect(QRect(xc, track.top() - 3, 1, track.height() + 6), QColor(225, 225, 225));
+        }
         const int x = track.left() + int(std::clamp(pos_ / dur_, 0.0, 1.0) * track.width());
         p.setPen(Qt::NoPen);
         p.setBrush(QColor(220, 220, 220));

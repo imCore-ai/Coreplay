@@ -23,6 +23,12 @@ struct ViewTransform {
     int rotate = 0;       // degrees, multiple of 90
 };
 
+// A chapter of a movie file: its name (may be empty) and its start, in seconds.
+struct Chapter {
+    QString title;
+    double time = 0;
+};
+
 class Engine : public QObject {
     Q_OBJECT
 public:
@@ -61,6 +67,9 @@ public:
     virtual void adjustSubScale(double) {}
     virtual void gotoSub(int) {}
     virtual bool chapterStep(int) { return false; }  // false when the file has no chapters
+    virtual QList<Chapter> chapters() const { return {}; }
+    virtual int chapter() const { return -1; }      // the chapter that plays now; -1 = none or before the first
+    virtual void gotoChapter(int) {}                // go to the start of that chapter
 
     virtual void setAbLoop(double a, double b) = 0; // <0 clears that point
     virtual void setLoopFile(bool loop) = 0;
@@ -87,4 +96,5 @@ signals:
     void message(const QString& text);              // OSD text
     void cacheChanged();
     void mediaSizeChanged();                        // the picture's size is known or changed
+    void chaptersChanged();                         // the file's chapter list is known or changed
 };

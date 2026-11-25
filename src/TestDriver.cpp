@@ -50,9 +50,11 @@ bool TestDriver::check(const QString& field, const QString& op, const QString& v
     if (!st.contains(field)) { *got = "<no such field>"; return false; }
     const QVariant v = st.value(field);
     *got = v.toString();
+    // "=<field>": compare with another field of the state (a value the app computes)
+    const QString want = value.startsWith('=') && st.contains(value.mid(1)) ? st.value(value.mid(1)).toString() : value;
     bool numA = false, numB = false;
     const double a = v.toString().toDouble(&numA);
-    const double b = value.toDouble(&numB);
+    const double b = want.toDouble(&numB);
     if (numA && numB) {
         if (op == "==") return a == b;
         if (op == "!=") return a != b;
@@ -62,9 +64,9 @@ bool TestDriver::check(const QString& field, const QString& op, const QString& v
         if (op == "<") return a < b;
         if (op == "~") return std::abs(a - b) <= std::abs(b) * 0.03 + 1e-9;
     }
-    if (op == "==") return v.toString() == value;
-    if (op == "has") return v.toString().contains(value);  // text contains
-    if (op == "!=") return v.toString() != value;
+    if (op == "==") return v.toString() == want;
+    if (op == "has") return v.toString().contains(want);  // text contains
+    if (op == "!=") return v.toString() != want;
     return false;
 }
 
@@ -475,6 +477,12 @@ void TestDriver::step() {
         } else if (cmd == "action") {
             // action <id>: trigger a menu action by its hotkey id (also ones with no key)
             w_->testAction(t.value(1));
+            log(line);
+        } else if (cmd == "chaptermenu") {
+            // chaptermenu <row>: pick that row of Navigate > Chapters (0 = the first chapter)
+            // chaptermenu grab <png>: a picture of that menu
+            if (t.value(1) == "grab") w_->testChapterMenu(-1, t.value(2));
+            else w_->testChapterMenu(t.value(1).toInt());
             log(line);
         } else if (cmd == "mpvset") {
             // mpvset <property> <value...>: set a libmpv property (diagnostics)

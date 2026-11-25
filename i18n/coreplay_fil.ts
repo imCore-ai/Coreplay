@@ -1880,6 +1880,14 @@ Isara at mawala ang mga grade?</translation>
         <source>Close Without Saving</source>
         <translation>Isara Nang Hindi Sine-save</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>&amp;Mga Kabanata</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Kabanata %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

@@ -55,6 +55,9 @@ public:
     void testSubStyle(const QString& key, const QString& value);
     void testUpdate(const QString& step);   // check / download / install (install: the Mac and Linux end-to-end test)
     void testAction(const QString& id) { if (QAction* a = actions_.value(id)) a->trigger(); }
+    // Fills the Navigate > Chapters menu and picks row i, as a click on it does; with a
+    // path and no row (-1), saves a picture of the menu instead.
+    void testChapterMenu(int i, const QString& png = {});
     QString testCompare(const QStringList& args);
     void testPerfReset();
     QString testGrade(const QStringList& args);
@@ -153,6 +156,7 @@ private:
     void addRecent(const QString& path);
     void rebuildRecent();
     void fillColourMenu(QMenu* m);
+    void fillChapterMenu(QMenu* m);
 
     void updateStatus();
     void updateTitle();
@@ -228,6 +232,7 @@ private:
     QDockWidget* infoDock_ = nullptr;
     QTextEdit* infoText_ = nullptr;
     QMenu* recentMenu_ = nullptr;
+    QMenu* chapterMenu_ = nullptr;
 
     QHash<QString, QAction*> actions_;
     QFileSystemWatcher hotkeyWatcher_;

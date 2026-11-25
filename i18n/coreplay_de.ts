@@ -1880,6 +1880,14 @@ Schließen und das Grading verwerfen?</translation>
         <source>Close Without Saving</source>
         <translation>Ohne Speichern schließen</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>&amp;Kapitel</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Kapitel %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

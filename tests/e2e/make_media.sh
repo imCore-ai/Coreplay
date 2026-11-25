@@ -63,3 +63,11 @@ for c in red:0xC02020 blue:0x2020C0; do
   $FF -f lavfi -i "color=c=$v:s=640x360:r=24:d=1" -start_number 1 "$M/cmp_$n/$n.%04d.png"
   $FF -f lavfi -i "color=c=$v:s=640x360:r=24:d=2" -c:v libx264 -pix_fmt yuv420p "$M/cmp_$n.mp4"
 done
+
+# A 30 s movie with three chapters (0 s, 8 s, 20 s; the last has no name) for t29, in its own folder
+mkdir -p "$M/chapters"
+printf ';FFMETADATA1\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=0\nEND=8000\ntitle=S4 \xe5\x85\xa5\xe5\x8f\xa3 | \xe5\xa4\xa7\xe9\x96\x80\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=8000\nEND=20000\ntitle=Rock & Roll\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=20000\nEND=30000\ntitle=\n' > "$M/chapters/chapters.txt"
+$FF -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=30" -f lavfi -i "sine=frequency=440:duration=30" \
+    -i "$M/chapters/chapters.txt" -map 0 -map 1 -map_metadata 2 -map_chapters 2 \
+    -c:v libx264 -preset veryfast -pix_fmt yuv420p -c:a aac "$M/chapters/chapters.mp4"
+rm -f "$M/chapters/chapters.txt"

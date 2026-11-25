@@ -1880,6 +1880,14 @@ Tutup dan buang gred?</translation>
         <source>Close Without Saving</source>
         <translation>Tutup Tanpa Menyimpan</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>B&amp;ab</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>Bab %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>

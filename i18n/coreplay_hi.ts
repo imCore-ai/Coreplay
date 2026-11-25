@@ -1880,6 +1880,14 @@ Close and lose the grades?</source>
         <source>Close Without Saving</source>
         <translation>सहेजे बिना बंद करें</translation>
     </message>
+    <message>
+        <source>&amp;Chapters</source>
+        <translation>अध्याय(&amp;C)</translation>
+    </message>
+    <message>
+        <source>Chapter %1</source>
+        <translation>अध्याय %1</translation>
+    </message>
 </context>
 <context>
     <name>MovFix</name>
