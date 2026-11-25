@@ -8,6 +8,10 @@
 # build's libraries out of reach. An Apple silicon Mac builds both: x86_64 is cross-compiled
 # and its start-up check runs under Rosetta.
 # Signing: Developer ID when COREPLAY_SIGN_IDENTITY names one in the keychain, else ad-hoc.
+# With COREPLAY_SIGN_KEYCHAIN (+ its password file COREPLAY_SIGN_KEYCHAIN_PASSWORD_FILE) the
+# identity is taken from that keychain; with COREPLAY_NOTARY_PROFILE the .dmg is notarized by
+# Apple (notarytool, profile stored in that keychain) and the ticket is stapled to it;
+# COREPLAY_NOTARY_DEVELOPER_DIR picks the tools for that step only (the build keeps its own).
 # COREPLAY_TESTS=1: a test build (the --test-script driver), for the end-to-end tests only.
 set -euo pipefail
 arch="$1"; version="$2"; root="${3:-$HOME/CoreplayBuild}"
@@ -68,6 +72,12 @@ bad="$(find "$app/Contents" -type f -print0 | xargs -0 file | grep "Mach-O" | gr
 [ -z "$bad" ] || { echo "files for another chip in the app:"; echo "$bad"; exit 1; }
 
 # 5. Signature.
+kcargs=()
+if [ -n "${COREPLAY_SIGN_KEYCHAIN:-}" ]; then
+  security unlock-keychain -p "$(cat "$COREPLAY_SIGN_KEYCHAIN_PASSWORD_FILE")" "$COREPLAY_SIGN_KEYCHAIN"
+  security set-keychain-settings -t 7200 "$COREPLAY_SIGN_KEYCHAIN"
+  kcargs=(--keychain "$COREPLAY_SIGN_KEYCHAIN")
+fi
 if [ -n "${COREPLAY_SIGN_IDENTITY:-}" ]; then
   ent="$B/entitlements.plist"
   cat > "$ent" <<'PLIST'
@@ -78,8 +88,8 @@ if [ -n "${COREPLAY_SIGN_IDENTITY:-}" ]; then
   <key>com.apple.security.cs.allow-unsigned-executable-memory</key><true/>
 </dict></plist>
 PLIST
-  sign() { codesign --force --timestamp --options runtime --sign "$COREPLAY_SIGN_IDENTITY" "$@"; }
-  find "$app/Contents" -type f \( -name '*.dylib' -o -name '*.so' \) -print0 | xargs -0 -n 20 codesign --force --timestamp --options runtime --sign "$COREPLAY_SIGN_IDENTITY"
+  sign() { codesign --force --timestamp --options runtime ${kcargs[@]+"${kcargs[@]}"} --sign "$COREPLAY_SIGN_IDENTITY" "$@"; }
+  find "$app/Contents" -type f \( -name '*.dylib' -o -name '*.so' \) -print0 | xargs -0 -n 20 codesign --force --timestamp --options runtime ${kcargs[@]+"${kcargs[@]}"} --sign "$COREPLAY_SIGN_IDENTITY"
   for f in "$app"/Contents/Frameworks/*.framework; do [ -e "$f" ] && sign "$f"; done
   sign --entitlements "$ent" "$app"
   codesign --verify --deep --strict --verbose=2 "$app"
@@ -97,8 +107,16 @@ for i in 1 2 3 4 5; do
   [ $i -eq 5 ] && exit 1
   echo "hdiutil busy, retry $i"; sleep 10
 done
-[ -n "${COREPLAY_SIGN_IDENTITY:-}" ] && codesign --force --timestamp --sign "$COREPLAY_SIGN_IDENTITY" "$dmg"
+[ -n "${COREPLAY_SIGN_IDENTITY:-}" ] && codesign --force --timestamp ${kcargs[@]+"${kcargs[@]}"} --sign "$COREPLAY_SIGN_IDENTITY" "$dmg"
 hdiutil verify -quiet "$dmg"
+if [ -n "${COREPLAY_SIGN_IDENTITY:-}" ] && [ -n "${COREPLAY_NOTARY_PROFILE:-}" ]; then
+  nx() { if [ -n "${COREPLAY_NOTARY_DEVELOPER_DIR:-}" ]; then DEVELOPER_DIR="$COREPLAY_NOTARY_DEVELOPER_DIR" xcrun "$@"; else xcrun "$@"; fi; }
+  nx notarytool submit "$dmg" --keychain-profile "$COREPLAY_NOTARY_PROFILE" ${kcargs[@]+"${kcargs[@]}"} --wait --timeout 2h | tee "$B/notary.log"
+  grep -q "status: Accepted" "$B/notary.log" || { echo "Apple did not accept the .dmg"; exit 1; }
+  nx stapler staple "$dmg"
+  nx stapler validate "$dmg"
+  spctl -a -t open --context context:primary-signature -vv "$dmg"
+fi
 
 # 7. Start-up check: from the mounted .dmg, with the build's libraries out of reach.
 mv "$DEPS" "$DEPS-hidden"
