@@ -13,10 +13,9 @@
 | Ubuntu 22.04+ / Debian 12+ | [Coreplay-Linux-amd64.deb](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-Linux-amd64.deb) — `sudo apt install ./Coreplay-Linux-amd64.deb` |
 
 > [!IMPORTANT]
-> **Code signing is in progress. The warning you may see is normal, and Coreplay is safe to run.**
+> **On Windows you may see a warning the first time. It is normal, and Coreplay is safe to run.** The macOS downloads are signed by imCore and checked by Apple.
 > - **Windows:** on *Windows protected your PC*, click **More info**, then **Run anyway**.
-> - **macOS:** open Coreplay once and click **Done**. Then open **System Settings → Privacy & Security**, scroll down and click **Open Anyway**. Or run `xattr -dr com.apple.quarantine /Applications/Coreplay.app` in Terminal.
-> - **Linux:** no warning.
+> - **macOS** and **Linux:** no warning.
 
 ## New in {{VERSION}}
 

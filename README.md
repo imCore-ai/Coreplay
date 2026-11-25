@@ -27,19 +27,17 @@
 </p>
 
 > [!IMPORTANT]
-> **Code signing is in progress. The warning you may see is normal, and Coreplay is safe to run.**
-> Coreplay is new, and its certificates from Microsoft and Apple are not issued yet. Until they are,
-> Windows and macOS show a warning the first time you open it. That warning appears for every new
-> app that is not signed yet. It does not mean that something is wrong with Coreplay: its full source
-> code is in this repository, and every download is built from it by GitHub Actions.
+> **On Windows you may see a warning the first time. It is normal, and Coreplay is safe to run.**
+> The macOS downloads are signed by imCore and checked by Apple, so they open without a warning.
+> The Windows certificate is not issued yet. Until it is, Windows shows a warning the first time you
+> open Coreplay. That warning appears for every new app that is not signed yet. It does not mean that
+> something is wrong with Coreplay: its full source code is in this repository, and every download is
+> built from it by GitHub Actions.
 >
 > - **Windows:** on *Windows protected your PC*, click **More info**, then **Run anyway**.
-> - **macOS:** open Coreplay once and click **Done**. Then open **System Settings → Privacy & Security**,
->   scroll down and click **Open Anyway**. Or run this one line in Terminal:
->   `xattr -dr com.apple.quarantine /Applications/Coreplay.app`
-> - **Linux:** no warning.
+> - **macOS** and **Linux:** no warning.
 >
-> You do this only once. When the signing is done, the warning goes away.
+> You do this only once. When the Windows signing is done, the warning goes away.
 
 ![Coreplay: playing, an A/B wipe against the graded shot, and the grading window](docs/images/demo.webp)
 
