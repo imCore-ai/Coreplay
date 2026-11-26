@@ -12,11 +12,6 @@
 | Linux (x86-64, any desktop) | [Coreplay-Linux-x86_64.AppImage](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-Linux-x86_64.AppImage) |
 | Ubuntu 22.04+ / Debian 12+ | [Coreplay-Linux-amd64.deb](https://github.com/imCore-ai/coreplay/releases/download/v{{VERSION}}/Coreplay-Linux-amd64.deb) — `sudo apt install ./Coreplay-Linux-amd64.deb` |
 
-> [!IMPORTANT]
-> **Coreplay is signed by imCore. Windows may still warn you for a short time**, because the Windows certificate is new.
-> - **Windows:** if you see *Windows protected your PC*, click **More info**, check that the publisher is **IMCORE CORP.**, then click **Run anyway**.
-> - **macOS** and **Linux:** no warning.
-
 ## New in {{VERSION}}
 
 {{NEWS}}

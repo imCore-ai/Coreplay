@@ -26,17 +26,6 @@
   Windows 10 and 11 · macOS 12 and later · Linux x86-64 · <a href="https://github.com/imCore-ai/coreplay/releases">All releases</a>
 </p>
 
-> [!IMPORTANT]
-> **Coreplay is signed by imCore. Windows may still warn you for a short time.**
-> The Windows and macOS downloads are signed by imCore, and Apple has checked the macOS ones. The
-> Windows certificate is new, so Windows can still show a warning the first time you open Coreplay.
->
-> - **Windows:** if you see *Windows protected your PC*, click **More info**, check that the
->   publisher is **IMCORE CORP.**, then click **Run anyway**.
-> - **macOS** and **Linux:** no warning.
->
-> You do this only once. The warning goes away as the new certificate earns Windows' trust.
-
 ![Coreplay: playing, an A/B wipe against the graded shot, and the grading window](docs/images/demo.webp)
 
 <p align="center"><sub>Background: <i>God Being</i>, made with <a href="https://imcore.ai/core-studio.html">Core Studio</a>.</sub></p>
@@ -126,7 +115,7 @@ Get it from the **[latest release](https://github.com/imCore-ai/coreplay/release
 
 | System | File | Install |
 |---|---|---|
-| Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. If Windows warns you, see the note at the top. |
+| Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. |
 | macOS 12 or later, Apple silicon (M1 and newer) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. |
 | macOS 12 or later, Intel | `Coreplay-macOS-x86_64.dmg` | The same. Not sure which Mac you have? Apple menu > About This Mac: "Chip" means Apple silicon, "Processor" means Intel. |
 | Linux (x86-64) | `Coreplay-Linux-x86_64.AppImage` | `chmod +x` it and run it. Ubuntu 22.04+ / Debian 12+: or `sudo apt install ./Coreplay-Linux-amd64.deb`. |
