@@ -27,17 +27,15 @@
 </p>
 
 > [!IMPORTANT]
-> **On Windows you may see a warning the first time. It is normal, and Coreplay is safe to run.**
-> The macOS downloads are signed by imCore and checked by Apple, so they open without a warning.
-> The Windows certificate is not issued yet. Until it is, Windows shows a warning the first time you
-> open Coreplay. That warning appears for every new app that is not signed yet. It does not mean that
-> something is wrong with Coreplay: its full source code is in this repository, and every download is
-> built from it by GitHub Actions.
+> **Coreplay is signed by imCore. Windows may still warn you for a short time.**
+> The Windows and macOS downloads are signed by imCore, and Apple has checked the macOS ones. The
+> Windows certificate is new, so Windows can still show a warning the first time you open Coreplay.
 >
-> - **Windows:** on *Windows protected your PC*, click **More info**, then **Run anyway**.
+> - **Windows:** if you see *Windows protected your PC*, click **More info**, check that the
+>   publisher is **IMCORE CORP.**, then click **Run anyway**.
 > - **macOS** and **Linux:** no warning.
 >
-> You do this only once. When the Windows signing is done, the warning goes away.
+> You do this only once. The warning goes away as the new certificate earns Windows' trust.
 
 ![Coreplay: playing, an A/B wipe against the graded shot, and the grading window](docs/images/demo.webp)
 
@@ -128,8 +126,8 @@ Get it from the **[latest release](https://github.com/imCore-ai/coreplay/release
 
 | System | File | Install |
 |---|---|---|
-| Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. The first time, allow it as shown in the note at the top. |
-| macOS 12 or later, Apple silicon (M1 and newer) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. The first time, allow it as shown in the note at the top. |
+| Windows 10 / 11 | `Coreplay-Windows-Setup.exe` | Run it. Installs for your user only, no admin prompt. If Windows warns you, see the note at the top. |
+| macOS 12 or later, Apple silicon (M1 and newer) | `Coreplay-macOS-arm64.dmg` | Drag Coreplay to Applications. |
 | macOS 12 or later, Intel | `Coreplay-macOS-x86_64.dmg` | The same. Not sure which Mac you have? Apple menu > About This Mac: "Chip" means Apple silicon, "Processor" means Intel. |
 | Linux (x86-64) | `Coreplay-Linux-x86_64.AppImage` | `chmod +x` it and run it. Ubuntu 22.04+ / Debian 12+: or `sudo apt install ./Coreplay-Linux-amd64.deb`. |
 
