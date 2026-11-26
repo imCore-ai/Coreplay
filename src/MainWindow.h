@@ -37,6 +37,12 @@ public:
 
     // Opens files (replacing the playlist) or appends them.
     void openPaths(const QStringList& paths, bool append = false);
+    // A checked coreplay:// link (see Link.h): opens the clip, or adds it to the playlist;
+    // then goes to `frame` (0 = the first frame, -1 = not given) and pauses there, and puts
+    // `b` in slot B of Compare.
+    void openLink(const QString& src, bool add, qint64 frame, const QString& b);
+    // Tells the user that a link was refused.
+    void showLinkRefused();
     bool hasMedia() const { return !currentPath_.isEmpty(); }
     static bool newWindowPerFile();          // View > Open Each File in a New Window
     void setInfoOverlay(bool on);
@@ -255,6 +261,9 @@ private:
     CompareView cmpView_{CompareMode::Wipe, false, 0.5f};
     QString cmpPath_;              // slot B
     QString pendingB_;             // B waiting for a new A to load
+    qint64 pendingFrame_ = -1;     // a link's frame, waiting for its clip to load
+    double pendingFrameAt_ = -1;   // ... the time it was sent to; B waits until the clip is there
+    qint64 pendingFrameSince_ = 0;
     LutChoice cmpLutB_;            // slot B's LUT (slot A's is lut_)
     class CompareBar* compareBar_ = nullptr;
     int cmpOffset_ = 0;

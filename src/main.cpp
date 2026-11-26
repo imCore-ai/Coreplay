@@ -3,6 +3,10 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#ifdef Q_OS_MACOS
+#include <QFileOpenEvent>
+#include <QUrl>
+#endif
 #include <QFileInfo>
 #include <QIcon>
 #include <QLocalServer>
@@ -79,6 +83,7 @@ public:
 #include <memory>
 
 #include "I18n.h"
+#include "Link.h"
 #include "MainWindow.h"
 #ifdef COREPLAY_TESTS
 #include "TestDriver.h"
@@ -130,6 +135,7 @@ QStringList absolutePaths(const QStringList& args) {
         const QString& a = args[i];
         if (withValue.contains(a)) { ++i; continue; }
         if (a.startsWith("--")) continue;  // --new, --add, --test-instance
+        if (Link::isLink(a)) continue;     // a coreplay:// link is never a file (see main)
         out << (QFileInfo::exists(a) ? QFileInfo(a).absoluteFilePath() : a);
     }
     return out;
@@ -172,6 +178,29 @@ private:
     QList<QByteArray> queue_;
     int tries_ = 0;
 };
+
+#ifdef Q_OS_MACOS
+// A coreplay:// link on macOS: the system sends it to the application as a FileOpen event.
+// Only that scheme is taken here; it goes through the same check as on the other systems.
+class LinkEvents : public QObject {
+public:
+    explicit LinkEvents(MainWindow* w) : w_(w) {}
+    bool eventFilter(QObject*, QEvent* e) override {
+        if (e->type() != QEvent::FileOpen) return false;
+        const QUrl url = static_cast<QFileOpenEvent*>(e)->url();
+        if (url.scheme().toLower() != "coreplay") return false;
+        const LinkRequest r = Link::parse(url.toString(QUrl::FullyEncoded), Link::hostsFromSettings());
+        if (r.ok) w_->openLink(r.src, r.add, r.frame, r.b);
+        else w_->showLinkRefused();
+        w_->raise();
+        w_->activateWindow();
+        return true;
+    }
+
+private:
+    MainWindow* w_;
+};
+#endif
 }  // namespace
 
 #if defined(COREPLAY_TESTS) && defined(Q_OS_WIN)
@@ -300,8 +329,22 @@ int main(int argc, char* argv[]) {
     app.installEventFilter(&frameFix);
     app.installNativeEventFilter(&frameFix);
 #endif
-    const QStringList files = absolutePaths(app.arguments().mid(1));
-    const QStringList args = app.arguments();
+    // A coreplay:// link comes from a web page: untrusted input (see Link.h). When this
+    // process was started with one, the link is the ONLY thing it acts on. Every other
+    // argument is dropped here, so a link can never bring a switch with it.
+    QStringList rawArgs = app.arguments();
+    LinkRequest link;
+    bool hasLink = false;
+    for (const QString& a : rawArgs.mid(1)) {
+        if (!Link::isLink(a)) continue;
+        link = Link::parse(a, Link::hostsFromSettings());
+        hasLink = true;
+        break;
+    }
+    if (hasLink) rawArgs = rawArgs.mid(0, 1);
+    const QStringList args = rawArgs;
+    const QStringList files = hasLink ? (link.ok ? QStringList{link.src} : QStringList{})
+                                      : absolutePaths(args.mid(1));
     const int scriptAt = args.indexOf("--test-script");
     const bool testing = scriptAt > 0 && scriptAt + 1 < args.size();
     if (testing) QApplication::setOrganizationName("CoreplayTest");  // keep the user's settings untouched
@@ -310,7 +353,8 @@ int main(int argc, char* argv[]) {
     // hand-overs), so the hand-over can be tested end to end.
     const bool testInstance = args.contains("--test-instance");
     const bool newWindow = (testing && !testInstance) || args.contains("--new");
-    const bool add = args.contains("--add");  // Explorer's "Add to Coreplay playlist"
+    // Explorer's "Add to Coreplay playlist", or a link with add=1.
+    const bool add = args.contains("--add") || (hasLink && link.ok && link.add);
     // --listen <name>: a second window started by the running one; it takes the rest of
     // its file selection from that window under this name.
     const int listenAt = args.indexOf("--listen");
@@ -329,7 +373,12 @@ int main(int argc, char* argv[]) {
             // The header carries this launch's start time: launches that started together
             // (one multi-file selection) are grouped however late the window reads them.
             const qint64 launched = QDateTime::currentMSecsSinceEpoch() - msSinceProcessStart();
-            const QByteArray msg = (QString(add ? "#add %1\n" : "#open %1\n").arg(launched) + files.join('\n') +
+            // A link adds option lines (they start with '#'; a source never does).
+            QString body = files.join('\n');
+            if (hasLink && !link.ok) body = "#badlink";
+            if (hasLink && link.ok && link.frame >= 0) body += QString("\n#frame %1").arg(link.frame);
+            if (hasLink && link.ok && !link.b.isEmpty()) body += "\n#b " + link.b;
+            const QByteArray msg = (QString(add ? "#add %1\n" : "#open %1\n").arg(launched) + body +
                                     "\n\x04").toUtf8();
             // Wait while the lock's owner is alive (a cold first start, with antivirus
             // scanning new files, can take seconds); take over only if it has died.
@@ -423,6 +472,18 @@ int main(int argc, char* argv[]) {
                     const bool addMsg = header.startsWith("#add");
                     const qint64 launched = header.section(' ', 1, 1).toLongLong();
                     if (header.startsWith('#')) lines.removeFirst();
+                    // Option lines of a coreplay:// link (the sending launch checked the link).
+                    bool fromLink = false, badLink = false;
+                    qint64 linkFrame = -1;
+                    QString linkB;
+                    for (int i = lines.size() - 1; i >= 0; --i) {
+                        if (!lines[i].startsWith('#')) continue;
+                        fromLink = true;
+                        if (lines[i] == "#badlink") badLink = true;
+                        else if (lines[i].startsWith("#frame ")) linkFrame = lines[i].mid(7).toLongLong();
+                        else if (lines[i].startsWith("#b ")) linkB = lines[i].mid(3);
+                        lines.removeAt(i);
+                    }
                     const bool append = addMsg || (*lastOpen && launched && std::llabs(launched - *lastOpen) < 1500);
                     if (launched) *lastOpen = launched;  // an add marks the selection too: it may arrive first
                     s->write("ok\n");  // the launch waits for this before it exits
@@ -430,6 +491,17 @@ int main(int argc, char* argv[]) {
                     auto note = [](const QString& what, int n) {
                         qApp->setProperty("handovers", qApp->property("handovers").toString() + QString("%1:%2 ").arg(what).arg(n));
                     };
+                    if (fromLink) {
+                        // A link always goes to this window: no second window, no grouping.
+                        if (badLink || lines.isEmpty()) w.showLinkRefused();
+                        else w.openLink(lines.first(), addMsg, linkFrame, linkB);
+                        note(badLink || lines.isEmpty() ? "badlink" : "link", lines.size());
+                        if (testing) return;
+                        w.setWindowState((w.windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+                        w.raise();
+                        w.activateWindow();
+                        return;
+                    }
                     if (owner && !lines.isEmpty() && !addMsg) {
                         // A new selection while a file plays, with the setting on: a second window.
                         if (!append && MainWindow::newWindowPerFile() && w.hasMedia()) {
@@ -500,6 +572,16 @@ int main(int argc, char* argv[]) {
         return rc;
     }
 #endif
-    if (!files.isEmpty()) w.openPaths(files);
+#ifdef Q_OS_MACOS
+    // macOS gives a link to the running application as an event, not as an argument.
+    static LinkEvents linkEvents(&w);
+    app.installEventFilter(&linkEvents);
+#endif
+    if (hasLink) {
+        if (link.ok) w.openLink(link.src, link.add, link.frame, link.b);
+        else w.showLinkRefused();
+    } else if (!files.isEmpty()) {
+        w.openPaths(files);
+    }
     return app.exec();
 }

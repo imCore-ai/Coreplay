@@ -62,6 +62,11 @@ if ($Installer) {
     if (Test-Path $dist) { Remove-Item -Recurse -Force $dist }
     New-Item -ItemType Directory -Force $dist | Out-Null
     Copy-Item "$build\coreplay.exe" $dist
+    # Code signing (imCore's certificate): only on a PC that has the signer and its filled-in
+    # credentials (%USERPROFILE%\.imcore-sign). Elsewhere the files stay unsigned here; the
+    # GitHub build signs its installer in build.yml. A signing failure stops the build.
+    $signer = Join-Path $env:USERPROFILE ".imcore-sign\sign.ps1"
+    if (Test-Path $signer) { & $signer -IfReady "$dist\coreplay.exe" }
     Get-ChildItem $build -Filter *.dll | Where-Object { $_.Name -ne "Qt6Test.dll" } | Copy-Item -Destination $dist
     foreach ($d in "platforms", "styles", "imageformats", "iconengines", "generic", "networkinformation", "tls") {
         if (Test-Path "$build\$d") { Copy-Item -Recurse "$build\$d" $dist }
@@ -115,5 +120,6 @@ if ($Installer) {
     $setup = Join-Path $root "dist\Coreplay-$version-Setup.exe"
     & $Nsis /V2 "/DVERSION=$version" "/DSRC=$dist" "/DOUTFILE=$setup" "$root\installer\coreplay.nsi"
     if ($LASTEXITCODE) { throw "makensis failed" }
+    if (Test-Path $signer) { & $signer -IfReady $setup }
     Write-Host "Built $setup"
 }

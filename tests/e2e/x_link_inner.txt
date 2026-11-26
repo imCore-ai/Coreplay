@@ -1,0 +1,19 @@
+# Driven by t31 (run_link.sh): other processes are started with a coreplay:// link.
+# 1. open at frame 48 and pause there
+until playlist.count == 1 20000
+until paused == true 8000
+until position ~ 2.002 5000
+expect title has h264_23976
+# 2. add=1: the playlist grows, the clip that plays stays
+until playlist.count == 2 12000
+expect playlist.current == 0
+expect newWindow == false
+# 3. the refused link
+until handovers has badlink 12000
+expect playlist.count == 2
+expect title has h264_23976
+# 4. compare
+until compare.on == true 20000
+expect compare.b == cmp_blue.mp4
+expect title has cmp_red
+expect handovers has link:1

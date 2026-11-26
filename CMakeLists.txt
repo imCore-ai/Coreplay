@@ -56,6 +56,7 @@ add_executable(coreplay WIN32
     src/Compare.h
     src/CompareBar.h        src/CompareBar.cpp
     src/Playlist.h          src/Playlist.cpp
+    src/Link.h              src/Link.cpp
     src/SeekBar.h           src/SeekBar.cpp
     src/Osd.h               src/Osd.cpp
     src/HotkeyOverlay.h     src/HotkeyOverlay.cpp

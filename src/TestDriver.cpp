@@ -5,6 +5,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include "CompareBar.h"
+#include "Link.h"
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QApplication>
@@ -83,6 +84,20 @@ void TestDriver::step() {
         if (cmd == "open" || cmd == "append") {
             log(cmd + " " + rest);
             w_->openPaths(rest.split('|', Qt::SkipEmptyParts), cmd == "append");
+        } else if (cmd == "linkparse" && t.size() >= 3) {
+            // linkparse ok|bad <link>: the check of a coreplay:// link alone; nothing is opened.
+            const QString link = rest.mid(t[1].size()).trimmed();
+            const LinkRequest r = Link::parse(link);
+            const bool pass = r.ok == (t[1] == "ok");
+            if (!pass) ++failures_;
+            log(QString("%1  linkparse %2 %3 (%4)").arg(pass ? "PASS" : "FAIL", t[1], link,
+                                                      r.ok ? QString("accepted") : "refused: " + r.error));
+        } else if (cmd == "link") {
+            // link <link>: what a launch with this link does in the window.
+            const LinkRequest r = Link::parse(rest);
+            if (r.ok) w_->openLink(r.src, r.add, r.frame, r.b);
+            else w_->showLinkRefused();
+            log("link " + rest + (r.ok ? " -> opened" : " -> refused: " + r.error));
         } else if (cmd == "key") {
             const QKeySequence ks = QKeySequence::fromString(rest, QKeySequence::PortableText);
             if (ks.isEmpty()) {

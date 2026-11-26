@@ -56,6 +56,9 @@ cmake -S . -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TA
 ninja -C "$B"
 app="$B/Coreplay.app"
 plutil -replace LSMinimumSystemVersion -string 12.0 "$app/Contents/Info.plist"
+# The coreplay:// link (see src/Link.h): macOS sends it to the application as an open event.
+plutil -replace CFBundleURLTypes -json \
+  '[{"CFBundleURLName":"ai.imcore.coreplay.link","CFBundleURLSchemes":["coreplay"]}]' "$app/Contents/Info.plist"
 
 # 4. The bundle: Qt and the libraries inside it, nothing outside, everything for macOS 12.
 "$QT/bin/macdeployqt" "$app" -always-overwrite -libpath="$DEPS/mpv/lib" -libpath="$V/lib"

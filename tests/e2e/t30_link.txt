@@ -1,0 +1,80 @@
+# The coreplay:// link (src/Link.h). Any web page can send one, so the check is strict.
+wait 1000
+# ---- accepted
+linkparse ok coreplay://open?src=$MEDIA/h264_23976.mp4
+linkparse ok coreplay://open?src=$MEDIA/h264_23976.mp4&frame=48&add=0
+linkparse ok coreplay://open?src=$MEDIA/h264_23976.mp4&b=$MEDIA/prores_25.mov
+linkparse ok coreplay://open?src=$MEDIA/exr_fps/bar.1001.exr
+linkparse ok coreplay://open?src=$MEDIA/png_seq
+linkparse ok coreplay://open?src=%5C%5Cnas%5Cshare%5Cshot%20one%5Ccomp_v003.mov
+linkparse ok coreplay://open?src=https://studio.imcore.ai/uploads/abc.mp4
+linkparse ok coreplay://open?src=http://localhost:5180/uploads/abc.mp4
+linkparse ok COREPLAY://open?src=$MEDIA/h264_23976.mp4&add=1
+# ---- refused: not this link
+linkparse bad coreplay://run?src=$MEDIA/h264_23976.mp4
+linkparse bad coreplay://open
+linkparse bad coreplay://open?frame=3
+linkparse bad coreplay://open/extra?src=$MEDIA/h264_23976.mp4
+linkparse bad coreplay://user@open?src=$MEDIA/h264_23976.mp4
+linkparse bad coreplay://open:99?src=$MEDIA/h264_23976.mp4
+# ---- refused: a parameter that is not one of the four, or given twice
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&exec=calc.exe
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&src=$MEDIA/prores_25.mov
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&add=2
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&frame=-1
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&frame=1e9
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&frame=12345678901
+# ---- refused: a source that is a switch, or carries a second line for the hand-over
+linkparse bad coreplay://open?src=--test-script
+linkparse bad coreplay://open?src=-x.mp4
+linkparse bad coreplay://open?src=%23add%200.mp4
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4%0A%23b%20C:/evil.mp4
+linkparse bad coreplay://open?src=$MEDIA/h264%0D%0A.mp4
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&b=--new
+# ---- refused: not a media file, not an absolute path
+linkparse bad coreplay://open?src=C:/Windows/System32/calc.exe
+linkparse bad coreplay://open?src=C:/Users/Public/script.bat
+linkparse bad coreplay://open?src=C:/Users/Public/notes.txt
+linkparse bad coreplay://open?src=clip.mp4
+linkparse bad coreplay://open?src=../clip.mp4
+linkparse bad coreplay://open?src=$MEDIA/h264_23976.mp4&b=C:/Windows/System32/cmd.exe
+# ---- refused: a web source that is not https on an allowed host
+linkparse bad coreplay://open?src=https://example.com/a.mp4
+linkparse bad coreplay://open?src=https://imcore.ai.example.com/a.mp4
+linkparse bad coreplay://open?src=https://notimcore.ai/a.mp4
+linkparse bad coreplay://open?src=http://studio.imcore.ai/a.mp4
+linkparse bad coreplay://open?src=https://user:pw@studio.imcore.ai/a.mp4
+linkparse bad coreplay://open?src=https://studio.imcore.ai/a.exe
+linkparse bad coreplay://open?src=https://studio.imcore.ai/a.exr
+linkparse bad coreplay://open?src=file:///C:/a.mp4
+linkparse bad coreplay://open?src=ftp://studio.imcore.ai/a.mp4
+linkparse bad coreplay://open?src=smb://nas/share/a.mp4
+linkparse bad coreplay://open?src=javascript:alert(1)
+# ---- what an accepted link does: open, go to the frame and pause there
+link coreplay://open?src=$MEDIA/h264_23976.mp4&frame=48
+until playlist.count == 1 5000
+until paused == true 5000
+until fps.rational == 24000/1001 5000
+until position ~ 2.002 3000
+expect title has h264_23976
+# ---- add=1: the playlist grows, the clip that plays stays
+link coreplay://open?src=$MEDIA/prores_25.mov&add=1
+until playlist.count == 2 3000
+expect playlist.current == 0
+expect title has h264_23976
+# ---- b: the second clip goes to slot B of Compare
+link coreplay://open?src=$MEDIA/cmp_red.mp4&b=$MEDIA/cmp_blue.mp4&frame=10
+until playlist.count == 1 5000
+until compare.on == true 8000
+expect compare.b == cmp_blue.mp4
+expect title has cmp_red
+# ---- a refused link changes nothing
+link coreplay://open?src=C:/Windows/System32/calc.exe
+wait 500
+expect playlist.count == 1
+expect title has cmp_red
+# ---- a sequence: frame is counted from its first frame
+link coreplay://open?src=$MEDIA/exr_fps/bar.1001.exr&frame=3
+until engine == seq 5000
+until paused == true 5000
+until frame == 1004 3000

@@ -228,6 +228,12 @@ Section "Coreplay (required)" SecApp
   WriteRegStr HKCU "${REG_APP}\Capabilities" "ApplicationDescription" "Fast player for movies and image sequences"
   WriteRegStr HKCU "${REG_APP}\Capabilities" "ApplicationIcon" '"$INSTDIR\${EXE}",0'
   WriteRegStr HKCU "Software\RegisteredApplications" "Coreplay" "${REG_APP}\Capabilities"
+  ; The coreplay:// link (a web page asks Coreplay to open a clip; see src/Link.h).
+  ; The whole link is ONE quoted argument; Coreplay ignores every other argument beside a link.
+  WriteRegStr HKCU "Software\Classes\coreplay" "" "URL:Coreplay"
+  WriteRegStr HKCU "Software\Classes\coreplay" "URL Protocol" ""
+  WriteRegStr HKCU "Software\Classes\coreplay\DefaultIcon" "" '"$INSTDIR\${EXE}",0'
+  WriteRegStr HKCU "Software\Classes\coreplay\shell\open\command" "" '"$INSTDIR\${EXE}" "%1"'
   !insertmacro WriteProgId "${PROGID_Video}" "Video (Coreplay)"
   !insertmacro WriteProgId "${PROGID_Sequence}" "Image sequence (Coreplay)"
   !insertmacro WriteProgId "${PROGID_Playlist}" "Playlist (Coreplay)"
@@ -313,6 +319,7 @@ Section "Uninstall"
   DeleteRegKey HKCU "Software\Classes\${PROGID_Audio}"
   DeleteRegKey HKCU "Software\Classes\${PROGID_Image}"
   DeleteRegKey HKCU "Software\Classes\Applications\${EXE}"
+  DeleteRegKey HKCU "Software\Classes\coreplay"
   DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\App Paths\${EXE}"
   DeleteRegValue HKCU "Software\RegisteredApplications" "Coreplay"
   DeleteRegKey HKCU "${REG_APP}\Capabilities"

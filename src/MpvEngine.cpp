@@ -1,3 +1,4 @@
+#include "Link.h"
 #include "MpvEngine.h"
 
 #include <QCoreApplication>
@@ -465,6 +466,11 @@ void MpvEngine::drainEvents() {
     }
 }
 
+// What mpv is given for a clip: the absolute path of a file, or a web address as it is.
+static QString target(const QString& path) {
+    return Link::isRemote(path) ? path : QFileInfo(path).absoluteFilePath();
+}
+
 bool MpvEngine::open(const QString& path) {
     if (comparing() || cmpLeaving_) {
         cmpPath_.clear();
@@ -475,7 +481,7 @@ bool MpvEngine::open(const QString& path) {
     size_ = {};
     next_.clear();
     ++expectStarts_;
-    command({"loadfile", QFileInfo(path).absoluteFilePath(), "replace"});  // also empties the queue
+    command({"loadfile", target(path), "replace"});  // also empties the queue
     setPaused(false);
     return true;
 }
@@ -490,7 +496,7 @@ void MpvEngine::setNext(const QString& path) {
     if (path == next_) return;
     next_ = path;
     command({"playlist-clear"});  // keeps the current file
-    if (!path.isEmpty()) command({"loadfile", QFileInfo(path).absoluteFilePath(), "append"});
+    if (!path.isEmpty()) command({"loadfile", target(path), "append"});
 }
 
 // paused_ takes the new state at once; mpv's own report (the "pause" observer) confirms it.
@@ -669,7 +675,7 @@ bool MpvEngine::setCompare(const QString& pathB, int offsetFrames) {
                             .arg(offsetFrames > 0 ? "-" : "+").arg(std::abs(offsetFrames) / fps, 0, 'f', 6);
         if (audio) graph += ";[aid1]anull[ao]";  // A's sound
         // lavfi filters take frames in system memory: decode on the GPU, then copy.
-        opts += ",hwdec=auto-copy,external-files=" + quoted(QFileInfo(pathB).absoluteFilePath()) +
+        opts += ",hwdec=auto-copy,external-files=" + quoted(target(pathB)) +
                 ",lavfi-complex=" + quoted(graph);
         cmpPath_ = pathB;
         cmpPacked_ = QSize(2 * a.width(), a.height());

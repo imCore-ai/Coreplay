@@ -1102,6 +1102,21 @@ void MainWindow::openPaths(const QStringList& paths, bool append) {
     if (!append || !cur_) playRow(first);
 }
 
+void MainWindow::openLink(const QString& src, bool add, qint64 frame, const QString& b) {
+    openPaths({src}, add);
+    if (add) return;  // added to the playlist: the clip that plays is not changed
+    pendingFrame_ = frame;
+    pendingFrameAt_ = -1;
+    if (!b.isEmpty()) {
+        pendingB_ = b;  // after openPaths, which keeps an earlier B the same way
+        showCompareBar(true);
+    }
+}
+
+void MainWindow::showLinkRefused() {
+    osd_->showMessage(tr("Coreplay did not open this link"), 4000);
+}
+
 void MainWindow::markSwitch(const char* mode) {
     switchMode_ = mode;
     // Where the old clip's last frame ended on the wall clock (only when it played to its end).
@@ -2451,8 +2466,28 @@ void MainWindow::updateStatus() {
         if (int miss = seq_->sequence().missingCount()) s += tr("   %1 missing frames").arg(miss);
     }
     if (rate_ != 1.0) s += tr("   speed %1x").arg(rate_);
+    // A link's frame: go there and pause as soon as the clip shows a picture.
+    if (pendingFrame_ >= 0 && cur_ && !cur_->mediaSize().isEmpty()) {
+        const Rational r = cur_->fps();
+        if (cur_ == seq_) {
+            seq_->setPaused(true);
+            seq_->seekFrameIndex(int(std::min<qint64>(pendingFrame_, std::max(0, seq_->sequence().count() - 1))));
+            pendingFrame_ = -1;
+        } else if (r.valid()) {
+            pendingFrameAt_ = pendingFrame_ / r.value();
+            pendingFrameSince_ = QDateTime::currentMSecsSinceEpoch();
+            cur_->setPaused(true);
+            cur_->seekAbsolute(pendingFrameAt_);
+            pendingFrame_ = -1;
+        }
+    }
+    // Compare starts from the clip's position: wait until the clip is at the link's frame (2 s at most).
+    const bool atFrame = pendingFrame_ < 0 &&
+                         (pendingFrameAt_ < 0 || !cur_ || std::abs(cur_->position() - pendingFrameAt_) < 0.25 ||
+                          QDateTime::currentMSecsSinceEpoch() - pendingFrameSince_ > 2000);
+    if (atFrame) pendingFrameAt_ = -1;
     // B waiting for a new A: start as soon as A shows a picture.
-    if (!pendingB_.isEmpty() && cur_ && !cur_->mediaSize().isEmpty() && !comparing_) {
+    if (atFrame && !pendingB_.isEmpty() && cur_ && !cur_->mediaSize().isEmpty() && !comparing_) {
         const QString b = pendingB_;
         pendingB_.clear();
         startCompare(b);

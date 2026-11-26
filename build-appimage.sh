@@ -37,11 +37,11 @@ Type=Application
 Name=Coreplay
 GenericName=Media Player
 Comment=Play and review movies and image sequences (EXR, DPX, TIFF, PNG)
-Exec=coreplay %F
+Exec=coreplay %U
 Icon=coreplay
 Terminal=false
 Categories=AudioVideo;Video;Player;Graphics;
-MimeType=video/mp4;video/quicktime;video/x-matroska;video/webm;video/x-msvideo;video/mpeg;video/x-m4v;image/x-exr;image/x-dpx;image/tiff;image/png;image/jpeg;
+MimeType=video/mp4;video/quicktime;video/x-matroska;video/webm;video/x-msvideo;video/mpeg;video/x-m4v;image/x-exr;image/x-dpx;image/tiff;image/png;image/jpeg;x-scheme-handler/coreplay;
 StartupWMClass=coreplay
 X-AppImage-Version=$version
 EOF

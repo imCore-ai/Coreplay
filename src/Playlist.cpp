@@ -1,3 +1,4 @@
+#include "Link.h"
 #include "Playlist.h"
 
 #include <QContextMenuEvent>
@@ -48,6 +49,10 @@ bool Playlist::isMediaFile(const QString& path) {
 QStringList Playlist::expand(const QStringList& paths) {
     QStringList out;
     for (const QString& p : paths) {
+        if (Link::isRemote(p)) {  // a web address (from a coreplay:// link): not a file path
+            out << p;
+            continue;
+        }
         const QFileInfo fi(p);
         if (!fi.isDir()) {
             out << fi.absoluteFilePath();
