@@ -44,7 +44,9 @@ jobs:
       MPV_URL: https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/20261111/mpv-dev-x86_64-20261111-git-bcde6b93cc.7z
       MPV_SHA256: 273c079b11ea5575822f972756f4c9a71149a5c10130353abeb8586738938452
       VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}\vcpkg-bincache
-      HAS_WIN_SIGNING: ${{ secrets.ES_CREDENTIAL_ID != '' }}
+      # Sign only the release builds (a v* tag): every signature counts against the plan, and
+      # the builds of main and of pull requests are not given to anyone.
+      HAS_WIN_SIGNING: ${{ secrets.ES_CREDENTIAL_ID != '' && startsWith(github.ref, 'refs/tags/v') }}
     steps:
       - uses: actions/checkout@v4
         with:
