@@ -95,7 +95,32 @@ jobs:
           if (-not $nsis) { $nsis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe" }
           .\build.ps1 -QtDir $env:QT_ROOT_DIR -Vcpkg C:\vcpkg-cp -Installer -Nsis $nsis
           "setup=$((Resolve-Path dist\Coreplay-*-Setup.exe).Path)" >> $env:GITHUB_OUTPUT
+          "nsis=$nsis" >> $env:GITHUB_OUTPUT
         id: pkg
+      # coreplay.exe is signed too (as build.ps1 does on a PC with the signer), then the
+      # installer is packed again from the same folder with the same makensis command.
+      - name: Sign coreplay.exe (SSL.com eSigner)
+        if: env.HAS_WIN_SIGNING == 'true'
+        uses: SSLcom/esigner-codesign@v1.3.2
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.ES_CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${{ github.workspace }}\dist\Coreplay\coreplay.exe
+          override: true
+          malware_block: false
+          environment_name: PROD
+      - name: Pack the installer again with the signed coreplay.exe
+        if: env.HAS_WIN_SIGNING == 'true'
+        shell: pwsh
+        run: |
+          $s = Get-AuthenticodeSignature dist\Coreplay\coreplay.exe
+          "$($s.Status)  $($s.SignerCertificate.Subject)"
+          if ($s.Status -ne 'Valid') { throw "coreplay.exe signature is $($s.Status)" }
+          & "${{ steps.pkg.outputs.nsis }}" /V2 "/DVERSION=$env:COREPLAY_VERSION" "/DSRC=$PWD\dist\Coreplay" "/DOUTFILE=${{ steps.pkg.outputs.setup }}" installer\coreplay.nsi
+          if ($LASTEXITCODE) { throw "makensis failed" }
       # Install it like a user and start it: it must still run 15 s later (its libraries are
       # delay-loaded, so a missing one crashes it only after the window opens). Error dialogs
       # are off, so a crash ends the process instead of waiting on a dialog.
