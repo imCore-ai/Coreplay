@@ -174,7 +174,12 @@ Grade Grade::fromJson(const QJsonObject& o) {
 QString Grade::writeMpvShader(int slot, bool leftHalfOnly) const {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/shaders";
     QDir().mkpath(dir);
-    const QString path = QString("%1/grade_%2.glsl").arg(dir).arg(slot & 1 ? 'b' : 'a');
+    // mpv keeps each shader file it has read, by name: every grade gets its own name (this
+    // process's id, so two Coreplay windows never share one). The file from two grades ago
+    // is not in mpv's list any more: remove it.
+    const QString name = QString("%1/grade_%2_%3.glsl").arg(dir).arg(QCoreApplication::applicationPid());
+    QFile::remove(name.arg(slot - 2));
+    const QString path = name.arg(slot);
     float v[kUniforms];
     uniformValues(v);
     QByteArray text = "//!HOOK MAIN\n//!BIND HOOKED\n//!DESC Coreplay grade\n";

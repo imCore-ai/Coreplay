@@ -41,9 +41,10 @@ struct Grade {
     void uniformValues(float out[kUniforms]) const;
     static const char* const* uniformNames();
 
-    // mpv user shader (HOOK MAIN) with this grade's values as constants. Two file names
-    // in turn (slot 0 / 1), so mpv sees a new path and reloads. `leftHalfOnly`: compare
-    // mode (A|B packed), grade A only. Empty when it cannot be written.
+    // mpv user shader (HOOK MAIN) with this grade's values as constants. A new file name
+    // for every `slot` (a number that only goes up): mpv reads a shader file once per name
+    // and keeps it, so a reused name would keep showing the old grade. `leftHalfOnly`:
+    // compare mode (A|B packed), grade A only. Empty when it cannot be written.
     QString writeMpvShader(int slot, bool leftHalfOnly) const;
 
     // Bakes the grade into a .cube (N^3, domain 0..1); empty + *error on failure.

@@ -26,6 +26,24 @@ until grade.window == false 2000
 key Alt+G
 until grade.window == true 2000
 grade drag 0 0
+# every change shows, not only the first two (mpv keeps a shader file it read once, by name)
+grade set brightness 101
+wait 300
+grade set brightness 102
+wait 300
+grade set brightness 150
+wait 300
+pixel 0.375 0.25 m_b150
+expectpixel m_b150 != m_raw_1 20
+grade set brightness 60
+wait 300
+pixel 0.375 0.25 m_b60
+expectpixel m_b60 != m_raw_1 20
+expectpixel m_b60 != m_b150 40
+grade set brightness 100
+wait 300
+pixel 0.375 0.25 m_b100
+expectpixel m_b100 == m_raw_1 4
 grade set contrast 130
 grade set saturation 70
 grade set hue 40
